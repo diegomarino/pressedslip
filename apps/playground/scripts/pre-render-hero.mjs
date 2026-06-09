@@ -11,7 +11,7 @@
  *
  * biome-ignore-all lint/suspicious/noConsole: CLI script; stdout/stderr ARE the output channel.
  */
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -117,6 +117,7 @@ async function main() {
   }
 
   const outPath = resolve(appRoot, "public/hero.png");
+  await mkdir(dirname(outPath), { recursive: true });
   await writeFile(outPath, rendered.bytes);
   console.log(`✓ hero.png written: ${outPath} (${rendered.width}×${rendered.height})`);
 }
