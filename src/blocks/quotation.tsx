@@ -67,7 +67,7 @@ export const quotationBlock: BlockDefinition<QuotationData> = defineBlock({
       </div>
     );
   },
-  shell: { showTitle: true, separator: "thin", padding: "normal" },
+  shell: { showTitle: true, padding: "normal" },
   hints: [
     "Required: `data.text`",
     "Tip: Set `data.attribution` to render an em-dash byline right-aligned below the quote",

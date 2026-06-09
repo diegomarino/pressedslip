@@ -37,7 +37,7 @@ export const monoTheme = defineTheme({
     titleAlignment: "right",
     titleFillChar: "#",
     contentPadding: "normal",
-    separatorThickness: "thin",
+    separatorThickness: "none",
     listItemBullet: "-",
   },
   header: {

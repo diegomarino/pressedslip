@@ -109,7 +109,7 @@ export const listBlock: BlockDefinition<ListData> = defineBlock({
       </div>
     );
   },
-  shell: { showTitle: true, separator: "thin", padding: "normal" },
+  shell: { showTitle: true, padding: "normal" },
   hints: [
     "Required: `data.groups` (min 1), `data.groups[].items[]`",
     "Tip: Set `id` on items to render as bold prefix",

@@ -53,6 +53,6 @@ export const keyValueBlock: BlockDefinition<KeyValueData> = defineBlock({
       </div>
     );
   },
-  shell: { showTitle: true, separator: "thin", padding: "normal" },
+  shell: { showTitle: true, padding: "normal" },
   hints: ["Required: `data.label`, `data.value`", "Docs: docs/blocks/key-value.md"],
 });

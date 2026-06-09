@@ -66,7 +66,7 @@ export const kpiBlock: BlockDefinition<KpiData> = defineBlock({
       </div>
     );
   },
-  shell: { showTitle: true, separator: "thin", padding: "normal" },
+  shell: { showTitle: true, padding: "normal" },
   hints: [
     "Required: `data.value`",
     "Tip: Set `data.label` for an uppercase eyebrow above the value",

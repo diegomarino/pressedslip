@@ -71,7 +71,7 @@ export const textCellBlock: BlockDefinition<TextCellData> = defineBlock({
       </div>
     );
   },
-  shell: { showTitle: true, separator: "thin", padding: "normal" },
+  shell: { showTitle: true, padding: "normal" },
   hints: [
     "Required: `data.text`",
     "Values of `data.align`: left|center|right|justify",

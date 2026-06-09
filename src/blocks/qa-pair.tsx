@@ -52,6 +52,6 @@ export const qaPairBlock: BlockDefinition<QaPairData> = defineBlock({
       </div>
     );
   },
-  shell: { showTitle: true, separator: "thin", padding: "normal" },
+  shell: { showTitle: true, padding: "normal" },
   hints: ["Required: `data.question`, `data.answer`", "Docs: docs/blocks/qa-pair.md"],
 });

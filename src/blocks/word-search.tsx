@@ -133,7 +133,7 @@ export const wordSearchBlock: BlockDefinition<WordSearchData> = defineBlock({
       </div>
     );
   },
-  shell: { showTitle: true, separator: "thin", padding: "normal" },
+  shell: { showTitle: true, padding: "normal" },
   hints: [
     "Required: `data.grid` (string[][], 6–12 rows, 6–12 cols, rectangular)",
     "Required: `data.words` (string[], min 1)",
