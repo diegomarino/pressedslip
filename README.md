@@ -23,7 +23,9 @@ should be generated from typed blocks instead of hand-built layout code.
 ## Install
 
 ```bash
+# pick one
 pnpm add pressedslip
+# or
 npm install pressedslip
 ```
 
