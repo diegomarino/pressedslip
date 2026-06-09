@@ -24,7 +24,7 @@ import {
   wordSearchBlock,
 } from "pressedslip/browser";
 import type { JSX } from "react";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from "react";
 import { z } from "zod";
 import type { DraftComposition } from "../state/draft-composition.js";
 import { type JsonPathSegment, resolveJsonPath } from "../util/json-path-resolver.js";
@@ -70,7 +70,29 @@ type JsonEditorProps = {
   onParsedDraft: (draft: DraftComposition) => void;
 };
 
-export function JsonEditor({ text, onTextChange, onParsedDraft }: JsonEditorProps): JSX.Element {
+export type JsonEditorHandle = {
+  flushParsedDraft: () => DraftComposition | null;
+};
+
+function parseDraftForBuilder(value: string): DraftComposition | null {
+  const parseErrors: ParseError[] = [];
+  const parsed = parseJsonc(value, parseErrors, { allowTrailingComma: true });
+  if (parseErrors.length > 0) return null;
+  const outer = draftSchema.safeParse(parsed);
+  if (!outer.success) return null;
+  const draft = outer.data as DraftComposition;
+  for (const slot of draft.slots) {
+    const def = registry.find(slot.blockType);
+    if (def === undefined) continue;
+    if (!def.schema.safeParse(slot.data).success) return null;
+  }
+  return draft;
+}
+
+export const JsonEditor = forwardRef<JsonEditorHandle, JsonEditorProps>(function JsonEditor(
+  { text, onTextChange, onParsedDraft },
+  ref,
+): JSX.Element {
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const lintFn = useMemo(
@@ -148,26 +170,33 @@ export function JsonEditor({ text, onTextChange, onParsedDraft }: JsonEditorProp
       onTextChange(value);
       if (debounceTimer.current !== null) clearTimeout(debounceTimer.current);
       debounceTimer.current = setTimeout(() => {
-        const onChangeErrors: ParseError[] = [];
-        const parsed = parseJsonc(value, onChangeErrors, { allowTrailingComma: true });
-        if (onChangeErrors.length > 0) return; // JSONC parse errors stay in the gutter
-        const outer = draftSchema.safeParse(parsed);
-        if (!outer.success) return; // outer error → gutter; draft NOT mutated
-        const draft = outer.data as DraftComposition;
         // Gate the parse-back on per-slot validation too — only push to the
         // builder when EVERY slot.data passes its block's schema. Otherwise
         // the JSON gutter shows the errors and the builder keeps its prior state.
-        for (const slot of draft.slots) {
-          const def = registry.find(slot.blockType);
-          if (def === undefined) return;
-          if (!def.schema.safeParse(slot.data).success) return;
-        }
+        const draft = parseDraftForBuilder(value);
+        if (draft === null) return;
         onParsedDraft(draft);
         // 250ms = perceived-instant ceiling per Nielsen norms; long enough to
         // coalesce normal typing bursts, short enough to feel reactive.
       }, 250);
     },
     [onTextChange, onParsedDraft],
+  );
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      flushParsedDraft: () => {
+        if (debounceTimer.current !== null) {
+          clearTimeout(debounceTimer.current);
+          debounceTimer.current = null;
+        }
+        const draft = parseDraftForBuilder(text);
+        if (draft !== null) onParsedDraft(draft);
+        return draft;
+      },
+    }),
+    [onParsedDraft, text],
   );
 
   useEffect(
@@ -188,4 +217,4 @@ export function JsonEditor({ text, onTextChange, onParsedDraft }: JsonEditorProp
       />
     </div>
   );
-}
+});

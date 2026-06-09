@@ -3,7 +3,18 @@
  * scripts/verify-browser-harness.mjs build-success-only gate.
  */
 
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
+import { initialCompositionJsonc } from "../src/initial-composition.js";
+
+async function previewDigest(page: Page) {
+  return page.evaluate(async () => {
+    const img = document.querySelector(".preview-img") as HTMLImageElement | null;
+    if (img === null) throw new Error("preview image not found");
+    const bytes = await (await fetch(img.src)).arrayBuffer();
+    const digest = await crypto.subtle.digest("SHA-256", bytes);
+    return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0")).join("");
+  });
+}
 
 test("1. cold load — page loads with CTA, no errors, builder pre-loaded", async ({ page }) => {
   const errors: string[] = [];
@@ -212,7 +223,30 @@ test("8. stale banner appears on JSON edit and clears on Render (W8a)", async ({
   await expect(page.locator(".preview-stale-banner")).toHaveCount(0, { timeout: 15000 });
 });
 
-test("9. width-preset auto-render does NOT clear stale state (W8b)", async ({ page }) => {
+test("9. Render flushes current JSON edits without waiting for debounce", async ({ page }) => {
+  await page.goto("/");
+  await page.locator(".preview-cta").click();
+  await page.waitForFunction(
+    () => {
+      const i = document.querySelector(".preview-img") as HTMLImageElement | null;
+      return i?.src.startsWith("blob:");
+    },
+    undefined,
+    { timeout: 15000 },
+  );
+  const beforeDigest = await previewDigest(page);
+
+  await page.locator(".cm-content").click();
+  await page.keyboard.press("ControlOrMeta+A");
+  await page.keyboard.insertText(initialCompositionJsonc.replace('"18°C"', '"99°C"'));
+  await page.getByRole("button", { name: "Render" }).click();
+
+  await expect(page.locator(".preview-stale-banner")).toHaveCount(0, { timeout: 15000 });
+  const afterDigest = await previewDigest(page);
+  expect(afterDigest).not.toBe(beforeDigest);
+});
+
+test("10. width-preset auto-render does NOT clear stale state (W8b)", async ({ page }) => {
   await page.goto("/");
   await page.locator(".preview-cta").click();
   await page.waitForFunction(
@@ -246,7 +280,7 @@ test("9. width-preset auto-render does NOT clear stale state (W8b)", async ({ pa
   await expect(page.locator(".preview-stale-banner")).toBeVisible();
 });
 
-test("10. sp8e-1 — showcase variant adds to builder and preview renders", async ({ page }) => {
+test("11. sp8e-1 — showcase variant adds to builder and preview renders", async ({ page }) => {
   await page.goto("/");
   // First render via CTA to boot wasm.
   await page.locator(".preview-cta").click();
@@ -284,7 +318,7 @@ test("10. sp8e-1 — showcase variant adds to builder and preview renders", asyn
   );
 });
 
-test("11. sp8f — theme switch produces new render with built-ins", async ({ page }) => {
+test("12. sp8f — theme switch produces new render with built-ins", async ({ page }) => {
   await page.goto("/");
 
   // Boot initial render via CTA.

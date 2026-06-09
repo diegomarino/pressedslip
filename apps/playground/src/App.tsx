@@ -19,7 +19,7 @@ import {
   PanelResizeHandle,
 } from "react-resizable-panels";
 import { Builder } from "./components/Builder.js";
-import { JsonEditor } from "./components/JsonEditor.js";
+import { JsonEditor, type JsonEditorHandle } from "./components/JsonEditor.js";
 import { Palette } from "./components/Palette.js";
 import { Preview } from "./components/Preview.js";
 import { Toolbar } from "./components/Toolbar.js";
@@ -94,6 +94,7 @@ export function App(): JSX.Element {
   const [isStale, setIsStale] = useState<boolean>(false);
   const renderDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const previewPanelRef = useRef<ImperativePanelHandle>(null);
+  const jsonEditorRef = useRef<JsonEditorHandle>(null);
 
   // Resize the preview Panel so its inner width equals `width` (the canonical
   // PNG width). The preview-scroll has 16 px horizontal padding on each side,
@@ -163,10 +164,11 @@ export function App(): JSX.Element {
   );
 
   const triggerRender = useCallback(
-    (opts: { clearStale: boolean }) => {
+    (opts: { clearStale: boolean; draft?: DraftComposition }) => {
+      const draft = opts.draft ?? editor.draft;
       setIsRendering(true);
       setError(null);
-      renderDraft(editor.draft, themeId, { width })
+      renderDraft(draft, themeId, { width })
         .then((result) => {
           setPreviewSrc(result.src);
           if (opts.clearStale) setIsStale(false);
@@ -195,7 +197,10 @@ export function App(): JSX.Element {
     }, 150);
   }, [triggerRender]);
 
-  const onRender = useCallback(() => triggerRender({ clearStale: true }), [triggerRender]);
+  const onRender = useCallback(() => {
+    const parsedDraft = jsonEditorRef.current?.flushParsedDraft() ?? null;
+    triggerRender({ clearStale: true, ...(parsedDraft !== null ? { draft: parsedDraft } : {}) });
+  }, [triggerRender]);
 
   const onThemeChange = useCallback(
     (id: ThemeId) => {
@@ -371,6 +376,7 @@ export function App(): JSX.Element {
                 <PanelResizeHandle className="resize-handle-h" />
                 <Panel defaultSize={55} minSize={20}>
                   <JsonEditor
+                    ref={jsonEditorRef}
                     text={draftText}
                     onTextChange={(next: string) => {
                       setDraftText(next);
