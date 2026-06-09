@@ -29,38 +29,54 @@ const registry = createRegistry(builtinBlocks);
 const theme = await loadThemeFonts(themes.default);
 
 const composition = {
-  id: "daily-briefing",
+  id: "morning-brief",
   version: 1,
-  date: "2026-06-08",
+  date: new Date().toISOString().slice(0, 10),
   status: "ready",
   slots: [
     {
       index: 0,
-      blockType: "textCell",
-      title: "Daily Briefing",
-      data: { text: "Your first printable composition" },
+      blockType: "kpi",
+      title: "WEATHER",
+      data: { value: "18°C", label: "OLEIROS", caption: "Partly cloudy · low 13°C" },
     },
     {
       index: 1,
-      blockType: "kpi",
-      title: "System",
-      data: { label: "Uptime", value: "99.9%" },
-    },
-    {
-      index: 2,
       blockType: "list",
-      title: "Quick Notes",
+      title: "CALENDAR",
       data: {
         groups: [
           {
+            title: "MORNING",
             items: [
-              { value: "pressedslip renders to 1-bit PNG" },
-              { value: "Use pressedslip/browser for browser rendering" },
-              { value: "Use pressedslip/transports for delivery" },
+              { id: "09:00", value: "Weekly sync · Design × Eng" },
+              { id: "10:30", value: "1-on-1 with María" },
+            ],
+          },
+          {
+            title: "AFTERNOON",
+            items: [
+              { id: "14:00", value: "Deep work block" },
+              { id: "16:45", value: "Product demo · Acme Corp" },
             ],
           },
         ],
       },
+    },
+    {
+      index: 2,
+      blockType: "quotation",
+      title: "QUOTE",
+      data: {
+        text: "Make it work, make it right, make it fast.",
+        attribution: "Kent Beck",
+      },
+    },
+    {
+      index: 3,
+      blockType: "keyValue",
+      title: "DAYLIGHT",
+      data: { label: "Sunrise · Sunset", value: "06:22 · 21:04" },
     },
   ],
   failedBlocks: [],
@@ -74,8 +90,8 @@ const { bytes } = await render(composition, {
   width: PAPER.thermal80,
 });
 
-await writeFile("briefing.png", bytes);
-console.log("Rendered briefing.png");
+await writeFile("morning-brief.png", bytes);
+console.log("Rendered morning-brief.png");
 ```
 
 Run it:
@@ -84,9 +100,9 @@ Run it:
 npx tsx render-briefing.ts
 ```
 
-Open `briefing.png`. You should see a receipt-style document with three blocks.
+Open `morning-brief.png`. You should see a receipt-style document with four blocks.
 
-![Example render](../assets/visual-refs/composition-example.png)
+![Morning briefing rendered at 80mm thermal width](../assets/visual-refs/composition-example.png)
 
 ## What You Did
 

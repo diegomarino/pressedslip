@@ -1,7 +1,7 @@
 {
   "name": "pressedslip",
   "version": "0.1.2",
-  "description": "Opinionated printable content blocks for thermal-printer-friendly PNG rendering.",
+  "description": "Compose printable slips from pre-built content blocks and send them directly to your thermal printer.",
   "type": "module",
   "engines": {
     "node": ">=22.11"

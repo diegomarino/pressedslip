@@ -46,7 +46,7 @@ export const initialCompositionJsonc = `// pressedslip playground seed (visible 
             "title": "MORNING",
             "items": [
               { "id": "09:00", "value": "Weekly sync · Design × Eng" },
-              { "id": "10:30", "value": "1-on-1 with Mariana Costa" },
+              { "id": "10:30", "value": "1-on-1 with María" },
             ],
           },
           {

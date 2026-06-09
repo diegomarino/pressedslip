@@ -1,21 +1,14 @@
 #!/usr/bin/env tsx
 /**
- * Renders the canonical visual references for sp7 docs.
+ * Renders the canonical visual references for docs.
  *
  * Outputs:
  *   - One PNG per builtin block (6) at canonical width.
  *   - One PNG per theme (3).
- *   - One Composition example PNG.
- *   - Annotated-overlay PNGs per theme: TODO (manual; see Step 4 notes below).
+ *   - One Composition example PNG (morning briefing).
  *
- * Run via: npx tsx scripts/docs/render-visual-refs.ts
- * Add to package.json scripts: "docs:visual-refs": "tsx scripts/docs/render-visual-refs.ts"
- *
+ * Run via: pnpm docs:visual-refs
  * Output goes to docs/assets/visual-refs/.
- *
- * Determinism: best-effort — committed PNGs may differ by 1-2 pixels
- * across maintainer machines (resvg-wasm WASM seeding). Regenerate +
- * commit if your local diff is noisy.
  */
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
@@ -30,6 +23,7 @@ import {
   themes,
 } from "../../src/index.js";
 import { builtinFixtures } from "../../src/testing/index.js";
+import { streakBlockNode } from "./streak-block-node.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = resolve(__dirname, "../../docs/assets/visual-refs");
@@ -39,7 +33,7 @@ const FONT_PATH = resolve(__dirname, "../../tests/fixtures/fonts/jetbrains-mono-
 const fontBytes = new Uint8Array(readFileSync(FONT_PATH));
 const font = await loadFontFromBuffer("JetBrainsMono", fontBytes);
 
-const registry = createRegistry(builtinBlocks);
+const registry = createRegistry([...builtinBlocks, streakBlockNode]);
 
 // Helpers.
 function makeComposition(
@@ -49,7 +43,7 @@ function makeComposition(
   return {
     id,
     version: 1,
-    date: "2026-05-24",
+    date: "2026-06-09",
     status: "ready",
     slots: slots.map((s, i) => ({ index: i, ...s })),
     failedBlocks: [],
@@ -58,18 +52,21 @@ function makeComposition(
   };
 }
 
-async function renderToPng(composition: Composition, outName: string): Promise<void> {
-  const r = await render(composition, {
-    registry,
-    fonts: [font],
-    width: PAPER.thermal80,
-  });
+async function renderToPng(
+  composition: Composition,
+  outName: string,
+  themeTemplate?: (typeof themes)[keyof typeof themes],
+): Promise<void> {
+  const options = themeTemplate
+    ? { registry, theme: themeTemplate, width: PAPER.thermal80 }
+    : { registry, fonts: [font], width: PAPER.thermal80 };
+  const r = await render(composition, options);
   const outPath = resolve(OUT_DIR, outName);
   writeFileSync(outPath, r.bytes);
   console.log(`[visual-refs] ${outName} — ${r.width}×${r.height}px (${r.bytes.length} bytes)`);
 }
 
-// 1. Per-builtin block (6 blocks, warm/default theme with explicit fonts).
+// 1. Per-builtin block (individual fixtures, unchanged).
 const blockTypes = ["textCell", "list", "keyValue", "qaPair", "kpi", "quotation"] as const;
 
 for (const blockType of blockTypes) {
@@ -82,70 +79,64 @@ for (const blockType of blockTypes) {
   await renderToPng(composition, `block-${blockType}.png`);
 }
 
-// 2. Per-theme — same multi-block showcase rendered under each theme.
-//    Themes export: default | mono | compact.
-const themeShowcaseSlots = [
-  {
-    blockType: "textCell",
-    data: builtinFixtures.textCell[Object.keys(builtinFixtures.textCell)[0]],
-    title: "textCell",
-  },
+// Morning briefing slots — shared between the hero and theme comparison images.
+const morningBriefingSlots = [
   {
     blockType: "kpi",
-    data: builtinFixtures.kpi[Object.keys(builtinFixtures.kpi)[0]],
-    title: "kpi",
+    title: "WEATHER",
+    data: { value: "18°C", label: "OLEIROS", caption: "Partly cloudy · low 13°C" },
   },
   {
     blockType: "list",
-    data: builtinFixtures.list[Object.keys(builtinFixtures.list)[0]],
-    title: "list",
-  },
-];
-
-for (const [themeName, themeTemplate] of Object.entries(themes)) {
-  const composition = makeComposition(`theme-${themeName}`, themeShowcaseSlots);
-  const r = await render(composition, {
-    registry,
-    theme: themeTemplate,
-    width: PAPER.thermal80,
-  });
-  const outPath = resolve(OUT_DIR, `theme-${themeName}.png`);
-  writeFileSync(outPath, r.bytes);
-  console.log(
-    `[visual-refs] theme-${themeName}.png — ${r.width}×${r.height}px (${r.bytes.length} bytes)`,
-  );
-}
-
-// 3. Annotated-overlay PNGs per theme — manual step.
-//    The renderer does not yet support a debug-overlay flag.
-//    TODO: for each base theme-*.png, author a side-by-side annotated version
-//    (padding / margin / font-role boxes) using a graphics tool and check it in
-//    as theme-<name>-annotated.png. See T5 Step 4 in the sp7 Phase B+D+E plan.
-console.log("[visual-refs] TODO: theme-*-annotated.png — produce manually (see Step 4 notes)");
-
-// 4. Composition example — richer multi-slot composition for architecture/composition.md.
-const compositionExample = makeComposition("composition-example", [
-  {
-    blockType: "textCell",
-    data: builtinFixtures.textCell[Object.keys(builtinFixtures.textCell)[0]],
-    title: "Headline",
-  },
-  {
-    blockType: "kpi",
-    data: builtinFixtures.kpi[Object.keys(builtinFixtures.kpi)[0]],
-    title: "KPI",
-  },
-  {
-    blockType: "list",
-    data: builtinFixtures.list[Object.keys(builtinFixtures.list)[0]],
-    title: "List",
+    title: "CALENDAR",
+    data: {
+      groups: [
+        {
+          title: "MORNING",
+          items: [
+            { id: "09:00", value: "Weekly sync · Design × Eng" },
+            { id: "10:30", value: "1-on-1 with María" },
+          ],
+        },
+        {
+          title: "AFTERNOON",
+          items: [
+            { id: "14:00", value: "Deep work block" },
+            { id: "16:45", value: "Product demo · Acme Corp" },
+          ],
+        },
+      ],
+    },
   },
   {
     blockType: "quotation",
-    data: builtinFixtures.quotation[Object.keys(builtinFixtures.quotation)[0]],
-    title: "Quote",
+    title: "QUOTE",
+    data: { text: "Make it work, make it right, make it fast.", attribution: "Kent Beck" },
   },
-]);
+  {
+    blockType: "keyValue",
+    title: "DAYLIGHT",
+    data: { label: "Sunrise · Sunset", value: "06:22 · 21:04" },
+  },
+  {
+    blockType: "streakDemo",
+    title: "STREAK",
+    data: {
+      days: 12,
+      last7: [true, true, false, true, true, true, true],
+      label: "deep work mornings",
+    },
+  },
+];
+
+// 2. Per-theme — morning briefing under each theme.
+for (const [themeName, themeTemplate] of Object.entries(themes)) {
+  const composition = makeComposition(`theme-${themeName}`, morningBriefingSlots);
+  await renderToPng(composition, `theme-${themeName}.png`, themeTemplate);
+}
+
+// 3. Composition example — hero image for the README.
+const compositionExample = makeComposition("composition-example", morningBriefingSlots);
 await renderToPng(compositionExample, "composition-example.png");
 
 console.log("[visual-refs] done");

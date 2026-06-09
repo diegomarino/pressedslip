@@ -1,14 +1,14 @@
 # pressedslip
 
-> Opinionated printable content blocks for apps that need deterministic,
-> inspectable PNG output for thermal printers, receipts, briefings, and compact
-> status displays.
+> Compose printable slips from pre-built content blocks and send them directly to your thermal printer.
 
 [![npm version](https://img.shields.io/npm/v/pressedslip.svg)](https://www.npmjs.com/package/pressedslip)
 [![CI](https://github.com/diegomarino/pressedslip/actions/workflows/ci.yml/badge.svg)](https://github.com/diegomarino/pressedslip/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-![Example render](https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/composition-example.png)
+![Morning briefing rendered at 80mm thermal width](https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/composition-example.png)
+
+<video src="https://github.com/diegomarino/pressedslip/releases/download/v0.1.0/demo-pressedslip.mp4" controls autoplay loop muted width="100%"></video>
 
 `pressedslip` lets you describe printable content as data, render it through
 React/Satori/resvg, inspect the resulting composition, and then save the PNG or
@@ -46,22 +46,54 @@ const registry = createRegistry(builtinBlocks);
 const theme = await loadThemeFonts(themes.default);
 
 const composition = {
-  id: "hello",
+  id: "morning-brief",
   version: 1,
-  date: "2026-06-08",
+  date: new Date().toISOString().slice(0, 10),
   status: "ready",
   slots: [
     {
       index: 0,
-      blockType: "textCell",
-      title: "Hello",
-      data: { text: "Your first composition." },
+      blockType: "kpi",
+      title: "WEATHER",
+      data: { value: "18°C", label: "OLEIROS", caption: "Partly cloudy · low 13°C" },
     },
     {
       index: 1,
-      blockType: "kpi",
-      title: "Metrics",
-      data: { label: "Uptime", value: "99.9%" },
+      blockType: "list",
+      title: "CALENDAR",
+      data: {
+        groups: [
+          {
+            title: "MORNING",
+            items: [
+              { id: "09:00", value: "Weekly sync · Design × Eng" },
+              { id: "10:30", value: "1-on-1 with María" },
+            ],
+          },
+          {
+            title: "AFTERNOON",
+            items: [
+              { id: "14:00", value: "Deep work block" },
+              { id: "16:45", value: "Product demo · Acme Corp" },
+            ],
+          },
+        ],
+      },
+    },
+    {
+      index: 2,
+      blockType: "quotation",
+      title: "QUOTE",
+      data: {
+        text: "Make it work, make it right, make it fast.",
+        attribution: "Kent Beck",
+      },
+    },
+    {
+      index: 3,
+      blockType: "keyValue",
+      title: "DAYLIGHT",
+      data: { label: "Sunrise · Sunset", value: "06:22 · 21:04" },
     },
   ],
   failedBlocks: [],
@@ -75,7 +107,35 @@ const { bytes } = await render(composition, {
   width: PAPER.thermal80,
 });
 
-await writeFile("out.png", bytes);
+await writeFile("morning-brief.png", bytes);
+```
+
+## Output format
+
+`render()` produces a **1-bit PNG raster** at the printer's native 203 DPI. Width
+is pixel-exact — 576 px for an 80mm roll is exactly 72mm of printable area at
+that DPI. The `PAPER` constants handle the mm→px conversion and carry the
+hardware margin metadata so you never need to calculate it manually:
+
+| Preset | Roll width | Printable | Pixels | DPI |
+|---|---|---|---|---|
+| `PAPER.thermal58` | 58mm | ~48mm | 384 px | 203 |
+| `PAPER.thermal80` | 80mm | ~72mm | 576 px | 203 |
+| `PAPER.thermal110` | 110mm | ~104mm | 832 px | 203 |
+| `PAPER.a4Portrait` | — | 210mm | ~1672 px | 203 |
+| `PAPER.a4Landscape` | — | 297mm | ~2368 px | 203 |
+| `PAPER.letterPortrait` | — | 215.9mm | ~1720 px | 203 |
+
+**Sending to a printer:** `pressedslip/transports` ships an ESC/POS encoder
+that converts the PNG into a printer-ready raster byte stream, plus a TCP
+transport that opens a socket and sends it directly to any network-attached
+thermal printer. No printer driver required.
+
+```ts
+import { createEscPosTransport } from "pressedslip/transports";
+
+const transport = createEscPosTransport({ host: "192.168.1.50", port: 9100 });
+await transport.send({ bytes });
 ```
 
 ## Why pressedslip?
@@ -91,8 +151,9 @@ await writeFile("out.png", bytes);
   deterministic font and layout roles.
 - **Provider lifecycle** - async data fetchers with parallel fetch, timeout,
   cache, and fail-soft. Plug in OpenMeteo, a static-text source, or your own.
-- **Thermal-printer-ready transports** - ESC/POS encoder plus file and HTTP
-  transports out of the box (`pressedslip/transports`).
+- **Direct-to-printer delivery** - ESC/POS encoder converts the PNG to a raster
+  byte stream; the TCP transport sends it straight to a network-attached printer.
+  File and HTTP transports included for non-printer workflows (`pressedslip/transports`).
 
 ## Public API
 
