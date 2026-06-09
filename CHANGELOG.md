@@ -1,3 +1,23 @@
+## [0.1.3](https://github.com/diegomarino/pressedslip/compare/v0.1.2...v0.1.3) (2026-06-09)
+
+### Bug Fixes
+
+* remove hardcoded separator from builtin blocks so theme separatorThickness is respected ([8065d59](https://github.com/diegomarino/pressedslip/commit/8065d5924dbdc6d42c3841924a678c146f925d06))
+
+### Documentation
+
+* clean up Quick Example composition with type assertion ([9f77ed1](https://github.com/diegomarino/pressedslip/commit/9f77ed1df12e515f2804aafa1dbd4267895f66be))
+* embed demo video via GitHub CDN ([de72489](https://github.com/diegomarino/pressedslip/commit/de72489c5f9b8eef2d13da05ee706d3f71bc1598))
+* improve README and visual refs with real morning briefing content ([94e3325](https://github.com/diegomarino/pressedslip/commit/94e33251d2f5bd4579e77f52ff140575ddb8c0a9))
+
+### Maintenance
+
+* **meta:** align npm keywords with GitHub topics (12 terms) ([9fb9910](https://github.com/diegomarino/pressedslip/commit/9fb9910fadf0b8a725e4bd9d5304dc88a31a62b6))
+
+### Continuous Integration
+
+* use RELEASE_TOKEN PAT for checkout and semantic-release to bypass branch ruleset ([07841af](https://github.com/diegomarino/pressedslip/commit/07841af9e802a78c28f91903f48d9da2d8a3b8d8))
+
 ## [0.1.2](https://github.com/diegomarino/pressedslip/compare/v0.1.1...v0.1.2) (2026-06-09)
 
 ### Bug Fixes
