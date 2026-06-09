@@ -1,0 +1,69 @@
+{
+  "name": "sectioned-list-on-this-day",
+  "sourceMeta": {
+    "sampledFrom": "synthetic — modeled after marplanner onThisDay block shape (events/births/deaths sections); adapted to list block shape",
+    "sampledOn": "2026-05-21",
+    "sanitization": "Historical facts are public-domain Wikipedia content; dates anchored to 2024-01-01; no PII",
+    "verifiedAgainst": "reference-code"
+  },
+  "input": {
+    "version": 1,
+    "date": "2024-01-01",
+    "member": {
+      "id": "mbr-0001",
+      "name": "Sample Name 1"
+    },
+    "blocks": [
+      {
+        "type": "list",
+        "id": "LST-000002",
+        "title": "Block 1",
+        "data": {
+          "groups": [
+            {
+              "title": "EVENTS",
+              "separator": ": ",
+              "items": [
+                { "id": "1776", "value": "Declaration of Independence adopted" },
+                { "id": "1969", "value": "Moon landing" },
+                { "id": "1991", "value": "World Wide Web becomes publicly available" }
+              ]
+            },
+            {
+              "title": "BIRTHS",
+              "separator": ": ",
+              "items": [
+                { "id": "1707", "value": "Leonhard Euler, mathematician" },
+                { "id": "1942", "value": "Stephen Hawking, physicist" }
+              ]
+            },
+            {
+              "title": "DEATHS",
+              "separator": ": ",
+              "items": [{ "id": "1966", "value": "Walt Disney, animator" }]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "expected": {
+    "slotCount": 1,
+    "slotBlockTypes": ["list"],
+    "failedBlockTypes": [],
+    "briefingStatus": "ready",
+    "contentChecks": [
+      {
+        "slotIndex": 0,
+        "path": "data.groups.0.title",
+        "contains": "EVENTS"
+      },
+      {
+        "slotIndex": 0,
+        "path": "data.groups.1.title",
+        "contains": "BIRTHS"
+      }
+    ]
+  },
+  "notes": "Covers: list block (sectioned, 3 groups with titles + id separators); onThisDay-block events/births/deaths pattern."
+}

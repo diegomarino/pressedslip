@@ -1,0 +1,47 @@
+{
+  "name": "qa-pair-riddle",
+  "sourceMeta": {
+    "sampledFrom": "synthetic — modeled after marplanner riddle block shape; adapted to qa-pair block shape",
+    "sampledOn": "2026-05-21",
+    "sanitization": "Riddle content is public-domain; no PII; date anchored to 2024-01-01",
+    "verifiedAgainst": "reference-code"
+  },
+  "input": {
+    "version": 1,
+    "date": "2024-01-01",
+    "member": {
+      "id": "mbr-0002",
+      "name": "Sample Name 2"
+    },
+    "blocks": [
+      {
+        "type": "qa-pair",
+        "id": "QAP-000003",
+        "title": "Block 1",
+        "data": {
+          "question": "I speak without a mouth and hear without ears. I have no body, but I come alive with the wind. What am I?",
+          "answer": "An echo."
+        }
+      }
+    ]
+  },
+  "expected": {
+    "slotCount": 1,
+    "slotBlockTypes": ["qa-pair"],
+    "failedBlockTypes": [],
+    "briefingStatus": "ready",
+    "contentChecks": [
+      {
+        "slotIndex": 0,
+        "path": "data.question",
+        "contains": "wind"
+      },
+      {
+        "slotIndex": 0,
+        "path": "data.answer",
+        "contains": "echo"
+      }
+    ]
+  },
+  "notes": "Covers: qa-pair block; riddle-block pattern (riddle/answer variant of the qa-pair shape)."
+}

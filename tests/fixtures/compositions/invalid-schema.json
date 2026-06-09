@@ -1,0 +1,10 @@
+{
+  "id": "fixture-invalid",
+  "version": 1,
+  "date": "2026-05-19",
+  "status": "ready",
+  "slots": [{ "index": 0, "blockType": "textCell", "data": { "wrongField": 42 } }],
+  "failedBlocks": [],
+  "providerOutcomes": {},
+  "timing": { "totalMs": 0, "fetchPhaseMs": 0, "renderPhaseMs": 0 }
+}

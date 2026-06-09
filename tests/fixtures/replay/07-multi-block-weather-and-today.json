@@ -1,0 +1,64 @@
+{
+  "name": "multi-block-weather-and-today",
+  "sourceMeta": {
+    "sampledFrom": "synthetic — modeled after typical marplanner morning briefing with weather + today's calendar events",
+    "sampledOn": "2026-05-21",
+    "sanitization": "Location replaced with 'Sample City' / 40.4168,-3.7038; calendar event titles replaced with 'Sample Event N'; member name anonymized",
+    "verifiedAgainst": "reference-code"
+  },
+  "input": {
+    "version": 1,
+    "date": "2024-01-01",
+    "member": {
+      "id": "mbr-0002",
+      "name": "Sample Name 2"
+    },
+    "blocks": [
+      {
+        "type": "kpi",
+        "id": "KPI-000002",
+        "title": "Block 1",
+        "data": {
+          "value": "8°C",
+          "label": "CLOUDY",
+          "caption": "Min 5°C · Max 11°C · Rain 30%"
+        }
+      },
+      {
+        "type": "list",
+        "id": "LST-000003",
+        "title": "Block 2",
+        "data": {
+          "groups": [
+            {
+              "items": [
+                { "value": "Sample Event 1" },
+                { "value": "10:00 Sample Event 2" },
+                { "value": "15:30 Sample Event 3" }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "expected": {
+    "slotCount": 2,
+    "slotBlockTypes": ["kpi", "list"],
+    "failedBlockTypes": [],
+    "briefingStatus": "ready",
+    "contentChecks": [
+      {
+        "slotIndex": 0,
+        "path": "data.label",
+        "contains": "CLOUDY"
+      },
+      {
+        "slotIndex": 1,
+        "path": "data.groups.0.items.1.value",
+        "contains": "Sample Event 2"
+      }
+    ]
+  },
+  "notes": "Covers: multi-block envelope (kpi + list); weather + today combined briefing pattern."
+}

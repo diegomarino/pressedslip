@@ -1,0 +1,48 @@
+{
+  "name": "text-cell-footer",
+  "sourceMeta": {
+    "sampledFrom": "synthetic — models the trailing footer text-cell used in marplanner briefings (generated-at timestamp, right-aligned)",
+    "sampledOn": "2026-05-21",
+    "sanitization": "Timestamp anchored to 2024-01-01T06:00:00Z; no PII",
+    "verifiedAgainst": "reference-code"
+  },
+  "input": {
+    "version": 1,
+    "date": "2024-01-01",
+    "member": {
+      "id": "mbr-0001",
+      "name": "Sample Name 1"
+    },
+    "blocks": [
+      {
+        "type": "text-cell",
+        "id": "TXC-000004",
+        "title": "Block 1",
+        "data": {
+          "text": "Generated 06:00 · 2024-01-01",
+          "fontSize": "small",
+          "align": "right"
+        }
+      }
+    ]
+  },
+  "expected": {
+    "slotCount": 1,
+    "slotBlockTypes": ["text-cell"],
+    "failedBlockTypes": [],
+    "briefingStatus": "ready",
+    "contentChecks": [
+      {
+        "slotIndex": 0,
+        "path": "data.align",
+        "contains": "right"
+      },
+      {
+        "slotIndex": 0,
+        "path": "data.fontSize",
+        "contains": "small"
+      }
+    ]
+  },
+  "notes": "Covers: text-cell block (small right-aligned); footer/timestamp pattern used at end of marplanner briefings."
+}

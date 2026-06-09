@@ -1,0 +1,117 @@
+{
+  "name": "full-briefing-all-six-shapes",
+  "sourceMeta": {
+    "sampledFrom": "synthetic — modeled after a full marplanner morning briefing using all 6 block shapes in one envelope",
+    "sampledOn": "2026-05-21",
+    "sanitization": "All names, events, locations anonymized; public-domain quotes kept; date anchored to 2024-01-01",
+    "verifiedAgainst": "reference-code"
+  },
+  "input": {
+    "version": 1,
+    "date": "2024-01-01",
+    "member": {
+      "id": "mbr-0001",
+      "name": "Sample Name 1"
+    },
+    "blocks": [
+      {
+        "type": "text-cell",
+        "id": "TXC-000002",
+        "title": "Block 1",
+        "data": {
+          "text": "Mon, Jan 01 2024",
+          "fontSize": "large",
+          "align": "center"
+        }
+      },
+      {
+        "type": "kpi",
+        "id": "KPI-000003",
+        "title": "Block 2",
+        "data": {
+          "value": "12°C",
+          "label": "PARTLY_CLOUDY",
+          "caption": "Min 7°C · Max 15°C · Rain 20%"
+        }
+      },
+      {
+        "type": "list",
+        "id": "LST-000005",
+        "title": "Block 3",
+        "data": {
+          "groups": [
+            {
+              "items": [{ "value": "Sample Event 1" }, { "value": "11:00 Sample Event 2" }]
+            }
+          ]
+        }
+      },
+      {
+        "type": "key-value",
+        "id": "KVL-000003",
+        "title": "Block 4",
+        "data": {
+          "label": "Lunch",
+          "value": "Tomato soup"
+        }
+      },
+      {
+        "type": "qa-pair",
+        "id": "QAP-000002",
+        "title": "Block 5",
+        "data": {
+          "question": "What has keys but no locks, space but no room, and you can enter but not go in?",
+          "answer": "A keyboard."
+        }
+      },
+      {
+        "type": "quotation",
+        "id": "QUO-000002",
+        "title": "Block 6",
+        "data": {
+          "text": "The best way to predict the future is to invent it.",
+          "attribution": "Alan Kay"
+        }
+      }
+    ]
+  },
+  "expected": {
+    "slotCount": 6,
+    "slotBlockTypes": ["text-cell", "kpi", "list", "key-value", "qa-pair", "quotation"],
+    "failedBlockTypes": [],
+    "briefingStatus": "ready",
+    "contentChecks": [
+      {
+        "slotIndex": 0,
+        "path": "data.text",
+        "contains": "2024"
+      },
+      {
+        "slotIndex": 1,
+        "path": "data.value",
+        "contains": "°C"
+      },
+      {
+        "slotIndex": 2,
+        "path": "data.groups.0.items.0.value",
+        "contains": "Sample Event 1"
+      },
+      {
+        "slotIndex": 3,
+        "path": "data.label",
+        "contains": "Lunch"
+      },
+      {
+        "slotIndex": 4,
+        "path": "data.answer",
+        "contains": "keyboard"
+      },
+      {
+        "slotIndex": 5,
+        "path": "data.attribution",
+        "contains": "Alan Kay"
+      }
+    ]
+  },
+  "notes": "Covers: ALL 6 block shapes in a single envelope (text-cell, kpi, list, key-value, qa-pair, quotation); full-briefing integration pattern."
+}

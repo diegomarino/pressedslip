@@ -1,0 +1,114 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`public API surface > locks the /browser entry surface 1`] = `
+[
+  "SHELL_DEFAULTS",
+  "applyTextStyle",
+  "builtinBlocks",
+  "compose",
+  "composeJsoncWithHints",
+  "computeBriefingStatus",
+  "createFixturePoolProvider",
+  "createMemoryCache",
+  "createProviderRegistry",
+  "createRegistry",
+  "createStaticTextProvider",
+  "defineBlock",
+  "defineProvider",
+  "keyValueBlock",
+  "kpiBlock",
+  "listBlock",
+  "loadThemeFonts",
+  "memoryFontCache",
+  "qaPairBlock",
+  "quotationBlock",
+  "render",
+  "textCellBlock",
+  "themes",
+  "wordSearchBlock",
+]
+`;
+
+exports[`public API surface > locks the /providers entry surface 1`] = `
+[
+  "createFileCache",
+  "createFixturePoolProvider",
+  "createMemoryCache",
+  "createOpenMeteoProvider",
+  "createProviderRegistry",
+  "createStaticTextProvider",
+  "defineProvider",
+  "nodeFontCache",
+]
+`;
+
+exports[`public API surface > locks the /testing entry surface 1`] = `
+[
+  "assertBlockCount",
+  "assertBlockTypes",
+  "assertNoFailedBlocks",
+  "assertStructurallyEqual",
+  "builtinFixtures",
+  "keyValueFixtures",
+  "kpiFixtures",
+  "listFixtures",
+  "qaPairFixtures",
+  "quotationFixtures",
+  "textCellFixtures",
+  "wordSearchFixtures",
+]
+`;
+
+exports[`public API surface > locks the /transports entry surface 1`] = `
+[
+  "DEFAULT_ESCPOS_TIMEOUT_MS",
+  "DEFAULT_HTTP_TIMEOUT_MS",
+  "MAX_COMPRESSED_BYTES",
+  "PRINT_MAX_HEIGHT_DOTS",
+  "PRINT_WIDTH_DOTS",
+  "createEscPosTransport",
+  "createFileTransport",
+  "createHttpTransport",
+  "pngToEscPosRaster",
+  "transportError",
+]
+`;
+
+exports[`public API surface > locks the root entry surface 1`] = `
+[
+  "HEADER_DEFAULTS",
+  "PAPER",
+  "SHELL_DEFAULTS",
+  "TEXT_STYLES_DEFAULTS",
+  "applyHeaderDefaults",
+  "applyShellDefaults",
+  "applyTextStyle",
+  "builtinBlocks",
+  "compose",
+  "composeJsoncWithHints",
+  "computeBriefingStatus",
+  "createConsoleLogger",
+  "createFixturePoolProvider",
+  "createMemoryCache",
+  "createProviderRegistry",
+  "createRegistry",
+  "createStaticTextProvider",
+  "defineBlock",
+  "defineProvider",
+  "defineTheme",
+  "keyValueBlock",
+  "kpiBlock",
+  "listBlock",
+  "loadFontFromBuffer",
+  "loadFontFromUrl",
+  "loadThemeFonts",
+  "memoryFontCache",
+  "qaPairBlock",
+  "quotationBlock",
+  "render",
+  "textCellBlock",
+  "themes",
+  "validateTheme",
+  "wordSearchBlock",
+]
+`;

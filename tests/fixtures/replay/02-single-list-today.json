@@ -1,0 +1,49 @@
+{
+  "name": "single-list-today",
+  "sourceMeta": {
+    "sampledFrom": "synthetic — modeled after marplanner today block shape (calendar events as bullets); adapted to list block shape",
+    "sampledOn": "2026-05-21",
+    "sanitization": "Calendar event titles replaced with 'Sample Event N'; times anchored to 2024-01-01 window; member name anonymized",
+    "verifiedAgainst": "reference-code"
+  },
+  "input": {
+    "version": 1,
+    "date": "2024-01-01",
+    "member": {
+      "id": "mbr-0001",
+      "name": "Sample Name 1"
+    },
+    "blocks": [
+      {
+        "type": "list",
+        "id": "LST-000001",
+        "title": "Block 1",
+        "data": {
+          "groups": [
+            {
+              "items": [
+                { "value": "Sample Event 1" },
+                { "value": "09:30 Sample Event 2" },
+                { "value": "14:00 Sample Event 3" }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "expected": {
+    "slotCount": 1,
+    "slotBlockTypes": ["list"],
+    "failedBlockTypes": [],
+    "briefingStatus": "ready",
+    "contentChecks": [
+      {
+        "slotIndex": 0,
+        "path": "data.groups.0.items.0.value",
+        "contains": "Sample Event 1"
+      }
+    ]
+  },
+  "notes": "Covers: list block (flat, no title); today-block calendar event bullet pattern."
+}

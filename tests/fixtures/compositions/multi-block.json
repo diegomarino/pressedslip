@@ -1,0 +1,20 @@
+{
+  "id": "fixture-multi",
+  "version": 1,
+  "date": "2026-05-19",
+  "status": "ready",
+  "subject": { "id": "u1", "name": "Diego" },
+  "slots": [
+    { "index": 0, "blockType": "textCell", "title": "MESSAGE", "data": { "text": "hi" } },
+    {
+      "index": 1,
+      "blockType": "list",
+      "title": "ITEMS",
+      "data": { "groups": [{ "items": [{ "value": "one" }, { "value": "two" }] }] }
+    },
+    { "index": 2, "blockType": "textCell", "data": { "text": "no title" } }
+  ],
+  "failedBlocks": [],
+  "providerOutcomes": {},
+  "timing": { "totalMs": 0, "fetchPhaseMs": 0, "renderPhaseMs": 0 }
+}

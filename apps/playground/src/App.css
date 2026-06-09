@@ -1,0 +1,492 @@
+:root {
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  min-height: 0;
+}
+
+/*
+ * react-resizable-panels' PanelGroup root div defaults to flex: 0 1 auto
+ * (natural content size), which leaves blank space below when the panels'
+ * natural content size doesn't sum to the viewport height. Force the
+ * outermost PanelGroup (the direct child of DndContext in the .app flex
+ * column) to fill remaining vertical space after the .toolbar.
+ */
+.app > div[data-panel-group-direction="horizontal"] {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.toolbar {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 8px 16px;
+  border-bottom: 1px solid #ddd;
+  background: #fafafa;
+}
+.toolbar-title {
+  font-weight: 600;
+}
+.toolbar-control {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.toolbar-loading {
+  color: #888;
+  font-size: 12px;
+}
+.toolbar-link {
+  margin-left: auto;
+  text-decoration: none;
+  color: #06c;
+}
+
+.resize-handle {
+  width: 4px;
+  background: #ddd;
+  cursor: col-resize;
+}
+.resize-handle-h {
+  height: 4px;
+  background: #ddd;
+  cursor: row-resize;
+}
+.resize-handle:hover,
+.resize-handle-h:hover {
+  background: #06c;
+}
+
+.palette {
+  padding: 8px;
+  overflow-y: auto;
+  height: 100%;
+}
+.palette-group {
+  margin-bottom: 24px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+.palette-group:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+.palette-group-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 8px;
+  letter-spacing: 0.3px;
+}
+.palette-card {
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  background: #fff;
+  margin-bottom: 3px;
+  border-radius: 3px;
+  cursor: grab;
+  user-select: none;
+}
+.palette-card:hover {
+  border-color: #06c;
+}
+.palette-card.dragging {
+  opacity: 0.5;
+}
+
+/* Transient 600ms ring on a slot card right after it's added via palette
+   double-click. Mirrors the .palette-card:hover blue (#06c) for visual
+   continuity between "I clicked the palette card" → "this is the slot
+   that got added". */
+@keyframes slot-flash {
+  0% {
+    box-shadow: 0 0 0 2px #06c;
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 102, 204, 0);
+  }
+}
+.slot-card-flash {
+  animation: slot-flash 600ms ease-out;
+}
+
+.builder {
+  padding: 8px;
+  height: 100%;
+  overflow-y: auto;
+}
+.builder.over {
+  background: #f5fbff;
+}
+.builder-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: #666;
+  margin: 4px 0;
+  letter-spacing: 0.5px;
+}
+.slot-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: #fff;
+  border: 1px dashed #aaa;
+  margin-bottom: 4px;
+  border-radius: 3px;
+}
+.slot-card:focus {
+  outline: 2px solid #06c;
+  outline-offset: -2px;
+}
+.slot-handle {
+  cursor: grab;
+  color: #888;
+}
+.slot-title {
+  flex: 1;
+  font-size: 12px;
+}
+.slot-action {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  font-size: 14px;
+}
+.slot-action:hover {
+  background: #eee;
+  border-radius: 2px;
+}
+.slot-action-delete:hover {
+  background: #fee;
+  color: #c00;
+}
+
+/*
+ * CodeMirror sizing: the wrapper is a flex column so the .cm-editor child
+ * fills available height and its internal .cm-scroller takes over vertical
+ * scrolling once content exceeds the pane. Without the explicit flex setup
+ * (and min-height: 0 to break the flex-grow=>natural-size feedback loop),
+ * CodeMirror's height="100%" prop sees no constrained parent and lets the
+ * content expand indefinitely — no scrollbar appears.
+ */
+.json-editor {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+/*
+ * @uiw/react-codemirror wraps the CodeMirror root in <div class="cm-theme-light">
+ * (or cm-theme-dark) before .cm-editor. The flex constraints below must apply
+ * to BOTH the wrapper and the editor so the height:100% chain bottoms out at
+ * cm-scroller, which is the element that actually scrolls. Without the
+ * wrapper rule, .cm-editor grew to natural content height and .json-editor's
+ * overflow:hidden silently clipped the overflow — visually invisible until
+ * the JSON content was tall enough to overflow.
+ */
+.json-editor :is(.cm-theme-light, .cm-theme-dark) {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.json-editor .cm-editor {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+}
+.json-editor .cm-scroller {
+  overflow-y: auto;
+}
+
+/*
+ * Center column wraps the Builder+JSON PanelGroup and the render-bar in a
+ * flex column so the bar gets reserved space at the bottom instead of being
+ * pushed out of view by the PanelGroup's height:100%.
+ */
+.center-column {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.center-panels {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.render-bar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 8px 12px;
+  border-top: 1px solid #ddd;
+  background: #fafafa;
+  flex: 0 0 auto;
+}
+.render-bar span {
+  font-size: 12px;
+  color: #666;
+  font-style: italic;
+}
+.render-bar button {
+  padding: 8px 20px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #fff;
+  background: #16a34a;
+  border: 1px solid #15803d;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.05);
+  transition:
+    background 0.12s ease,
+    transform 0.06s ease;
+}
+.render-bar button:hover:not(:disabled) {
+  background: #15803d;
+}
+.render-bar button:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+.render-bar button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: #94a3b8;
+  border-color: #64748b;
+}
+
+/*
+ * DragOverlay floating ghost — what the user sees following their cursor
+ * during a palette→builder or builder reorder drag. Distinct visual
+ * treatment (shadow + slight scale + cursor) so it clearly reads as
+ * "lifted" relative to the static cards beneath.
+ */
+.drag-overlay {
+  cursor: grabbing;
+  border-radius: 4px;
+  box-shadow:
+    0 8px 16px rgb(0 0 0 / 0.18),
+    0 2px 4px rgb(0 0 0 / 0.12);
+  user-select: none;
+  pointer-events: none;
+}
+.drag-overlay-palette {
+  padding: 6px 10px;
+  background: #fff;
+  border: 1px solid #06c;
+  font-size: 13px;
+  color: #06c;
+  font-weight: 600;
+}
+.drag-overlay-slot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: #fff;
+  border: 1px solid #06c;
+  font-size: 12px;
+  color: #06c;
+}
+
+.preview {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #f5f5f5;
+}
+
+/*
+ * Centered "Click to generate image" CTA shown before the first render.
+ * Replaces the previous static hero.png on-load — interactive affordance
+ * communicates "this canvas produces images on demand" more clearly than
+ * a pre-rendered static asset.
+ */
+.preview-empty {
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  gap: 14px;
+  overflow: hidden;
+}
+.preview-cta {
+  padding: 14px 28px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  background: #16a34a;
+  border: 1px solid #15803d;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow:
+    0 4px 8px rgb(22 163 74 / 0.18),
+    0 1px 0 rgb(0 0 0 / 0.05);
+  transition:
+    background 0.12s ease,
+    transform 0.06s ease;
+}
+.preview-cta:hover:not(:disabled) {
+  background: #15803d;
+}
+.preview-cta:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgb(22 163 74 / 0.18);
+}
+.preview-cta:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #94a3b8;
+  border-color: #64748b;
+  box-shadow: none;
+}
+.preview-empty-hint {
+  margin: 0;
+  max-width: 280px;
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/*
+ * Image preview pane. The .preview-scroll inner container handles the
+ * scrolling so the footer stays pinned at the bottom; the scroll-shadow
+ * trick (background-attachment: local + radial gradients) shows top/bottom
+ * shadows when content overflows, making the overflow direction visible.
+ */
+.preview-with-image .preview-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 16px;
+  /* Block layout (not flex) for reliable overflow-y: auto behavior with
+     tall images. The previous flex+align-items:flex-start arrangement
+     scrolled correctly but obscured the "scrollable" affordance because
+     macOS hides scrollbars by default. scrollbar-gutter:stable + always-
+     visible scrollbar make the overflow direction visible at a glance. */
+  display: block;
+  text-align: center;
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+  background:
+    linear-gradient(#f5f5f5 30%, rgb(245 245 245 / 0)) center top,
+    linear-gradient(rgb(245 245 245 / 0), #f5f5f5 70%) center bottom,
+    radial-gradient(farthest-side at 50% 0, rgb(0 0 0 / 0.18), rgb(0 0 0 / 0)) center top,
+    radial-gradient(farthest-side at 50% 100%, rgb(0 0 0 / 0.18), rgb(0 0 0 / 0)) center bottom;
+  background-repeat: no-repeat;
+  background-size:
+    100% 24px,
+    100% 24px,
+    100% 10px,
+    100% 10px;
+  background-attachment: local, local, scroll, scroll;
+}
+.preview-img {
+  /* Canonical size or smaller, centered. The inline maxWidth=`${canonicalWidth}px`
+     in Preview.tsx caps the image at its native receipt width (e.g., 576
+     for Thermal 80). max-width:100% lets it shrink when the pane is
+     narrower than canonical. The combination preserves the "thermal-print
+     receipt on a desk" aesthetic — gray margins on either side instead
+     of an upscaled fill that distorts the design. `image-rendering:
+     pixelated` still applies when downscaled. */
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  image-rendering: pixelated;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+}
+.preview-footer {
+  flex: 0 0 auto;
+  padding: 8px 16px;
+  font-size: 11px;
+  color: #666;
+  border-top: 1px solid #ddd;
+  background: #fafafa;
+  text-align: center;
+}
+.preview-footer-reset {
+  display: inline;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: #06c;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.preview-footer-reset:hover {
+  text-decoration: none;
+}
+.preview-loading-strip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 4px 8px;
+  background: #06c;
+  color: #fff;
+  font-size: 11px;
+  text-align: center;
+  z-index: 2;
+}
+.preview-error {
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: #fff5f5;
+}
+.preview-error pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #c00;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* .preview-with-image already has position: relative via .preview (position: relative) */
+
+.preview-stale-banner {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  right: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 200, 0, 0.95);
+  color: #422;
+  border: 1px solid #c90;
+  border-radius: 4px;
+  font-size: 0.9em;
+  z-index: 10;
+}

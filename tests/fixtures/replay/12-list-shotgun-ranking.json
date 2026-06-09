@@ -1,0 +1,56 @@
+{
+  "name": "list-shotgun-ranking",
+  "sourceMeta": {
+    "sampledFrom": "synthetic — modeled after marplanner shotgun block shape (daily seat ranking); adapted to list block shape",
+    "sampledOn": "2026-05-21",
+    "sanitization": "All member names replaced with 'Sample Name N'; date anchored to 2024-01-01",
+    "verifiedAgainst": "reference-code"
+  },
+  "input": {
+    "version": 1,
+    "date": "2024-01-01",
+    "member": {
+      "id": "mbr-0001",
+      "name": "Sample Name 1"
+    },
+    "blocks": [
+      {
+        "type": "list",
+        "id": "LST-000007",
+        "title": "Block 1",
+        "data": {
+          "groups": [
+            {
+              "items": [
+                { "id": "1", "value": "Sample Name 3" },
+                { "id": "2", "value": "Sample Name 1" },
+                { "id": "3", "value": "Sample Name 2" },
+                { "id": "4", "value": "Sample Name 4" }
+              ],
+              "separator": ". "
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "expected": {
+    "slotCount": 1,
+    "slotBlockTypes": ["list"],
+    "failedBlockTypes": [],
+    "briefingStatus": "ready",
+    "contentChecks": [
+      {
+        "slotIndex": 0,
+        "path": "data.groups.0.items.0.id",
+        "contains": "1"
+      },
+      {
+        "slotIndex": 0,
+        "path": "data.groups.0.items.0.value",
+        "contains": "Sample Name 3"
+      }
+    ]
+  },
+  "notes": "Covers: list block (ranked items with numeric id + separator); shotgun-block daily ranking pattern."
+}

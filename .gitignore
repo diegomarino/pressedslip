@@ -1,0 +1,42 @@
+# Personal / local Claude context (never commit)
+*.local.*
+*.local
+.claude/
+.remember/
+
+# Node / pnpm
+node_modules/
+*.log
+.pnpm-store/
+
+# Build output
+dist/
+coverage/
+*.tsbuildinfo
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Dev render output
+out/
+
+# Local tarballs for consumer projects (e.g. marplanner). Never committed.
+.tarballs/
+
+.superpowers/
+
+# sp6 — playground build artifacts
+apps/playground/dist/
+apps/playground/public/hero.png
+apps/playground/test-results/
+apps/playground/playwright-report/
+
+# C4 — typedoc output is regenerated locally; API overview is tracked.
+docs/api/reference/**

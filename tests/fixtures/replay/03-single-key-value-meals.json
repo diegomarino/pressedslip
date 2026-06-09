@@ -1,0 +1,47 @@
+{
+  "name": "single-key-value-meals",
+  "sourceMeta": {
+    "sampledFrom": "synthetic — modeled after marplanner meals block shape (lunch/dinner labels); adapted to key-value block shape",
+    "sampledOn": "2026-05-21",
+    "sanitization": "Recipe/meal names are generic public-domain names; date anchored to 2024-01-01",
+    "verifiedAgainst": "reference-code"
+  },
+  "input": {
+    "version": 1,
+    "date": "2024-01-01",
+    "member": {
+      "id": "mbr-0001",
+      "name": "Sample Name 1"
+    },
+    "blocks": [
+      {
+        "type": "key-value",
+        "id": "KVL-000001",
+        "title": "Block 1",
+        "data": {
+          "label": "Lunch",
+          "value": "Caesar salad"
+        }
+      }
+    ]
+  },
+  "expected": {
+    "slotCount": 1,
+    "slotBlockTypes": ["key-value"],
+    "failedBlockTypes": [],
+    "briefingStatus": "ready",
+    "contentChecks": [
+      {
+        "slotIndex": 0,
+        "path": "data.label",
+        "contains": "Lunch"
+      },
+      {
+        "slotIndex": 0,
+        "path": "data.value",
+        "contains": "Caesar salad"
+      }
+    ]
+  },
+  "notes": "Covers: key-value block; meals-block lunch-as-label-value pattern."
+}

@@ -1,0 +1,158 @@
+{
+  "name": "pressedslip",
+  "version": "0.1.0",
+  "description": "Opinionated printable content blocks for thermal-printer-friendly PNG rendering.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.11"
+  },
+  "packageManager": "pnpm@10.29.3",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./testing": {
+      "import": {
+        "types": "./dist/testing/index.d.mts",
+        "default": "./dist/testing/index.mjs"
+      },
+      "require": {
+        "types": "./dist/testing/index.d.cts",
+        "default": "./dist/testing/index.cjs"
+      }
+    },
+    "./providers": {
+      "import": {
+        "types": "./dist/providers/index.d.mts",
+        "default": "./dist/providers/index.mjs"
+      },
+      "require": {
+        "types": "./dist/providers/index.d.cts",
+        "default": "./dist/providers/index.cjs"
+      }
+    },
+    "./browser": {
+      "import": {
+        "types": "./dist/browser/index.d.mts",
+        "default": "./dist/browser/index.mjs"
+      },
+      "require": {
+        "types": "./dist/browser/index.d.cts",
+        "default": "./dist/browser/index.cjs"
+      }
+    },
+    "./transports": {
+      "import": {
+        "types": "./dist/transports/index.d.mts",
+        "default": "./dist/transports/index.mjs"
+      },
+      "require": {
+        "types": "./dist/transports/index.d.cts",
+        "default": "./dist/transports/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist",
+    "browser",
+    "providers",
+    "testing",
+    "transports",
+    "LICENSE",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "dev:render": "tsx scripts/dev-render.ts",
+    "dev:render:all": "tsx scripts/dev-render.ts --all",
+    "dev:render:watch": "tsx scripts/dev-render.ts --all --watch",
+    "docs:api": "typedoc",
+    "check-public-docs": "node scripts/check-public-docs.mjs",
+    "docs:visual-refs": "tsx scripts/docs/render-visual-refs.ts",
+    "smoke": "node scripts/ci/tarball-smoke.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
+    "check-docs": "node scripts/check-docs.mjs",
+    "check-docs:staged": "node scripts/check-docs.mjs --staged",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "prepare": "husky",
+    "release:dry": "semantic-release --dry-run",
+    "verify": "pnpm lint && node scripts/lint-replay-fixtures.mjs && pnpm build && pnpm typecheck && pnpm coverage && pnpm check-docs && pnpm check-public-docs && node scripts/verify-browser-bundle.mjs && node scripts/verify-replay-harness.mjs && pnpm --filter pressedslip-playground verify"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.15",
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^12.0.8",
+    "@semantic-release/npm": "^13.1.5",
+    "@semantic-release/release-notes-generator": "^14.1.1",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.2.15",
+    "@types/react-dom": "^19.2.3",
+    "@vitest/coverage-v8": "^4.1.7",
+    "husky": "^9.1.7",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "semantic-release": "^25.0.3",
+    "tsdown": "0.22.0",
+    "tsx": "^4.22.3",
+    "typedoc": "0.28.19",
+    "typescript": "^6.0.3",
+    "undici": "^8.3.0",
+    "vitest": "^4.1.7",
+    "zod": "^4.4.3"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/diegomarino/pressedslip.git"
+  },
+  "bugs": {
+    "url": "https://github.com/diegomarino/pressedslip/issues"
+  },
+  "homepage": "https://diegomarino.github.io/pressedslip/",
+  "keywords": [
+    "thermal-printer",
+    "receipt",
+    "satori",
+    "resvg",
+    "png",
+    "print",
+    "react"
+  ],
+  "author": "Diego Marino",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "@resvg/resvg-wasm": "^2.6.2",
+    "fast-png": "^8.0.0",
+    "jsonc-parser": "^3.3.1",
+    "satori": "^0.26.0"
+  },
+  "peerDependencies": {
+    "react": "^19",
+    "zod": "^4"
+  }
+}

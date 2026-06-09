@@ -1,0 +1,4 @@
+{
+  "main": "../dist/browser/index.cjs",
+  "types": "../dist/browser/index.d.cts"
+}

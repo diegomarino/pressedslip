@@ -1,0 +1,21 @@
+{
+  "status": "ready",
+  "failedBlocks": [],
+  "providerOutcomes": {},
+  "timing": { "totalMs": 0, "fetchPhaseMs": 0, "renderPhaseMs": 0 },
+  "slots": [
+    {
+      "blockType": "textCell",
+      "title": "01 HEADER",
+      "data": { "text": "Lun · 22 May", "align": "center" }
+    },
+    {
+      "blockType": "kpi",
+      "title": "02 REVENUE",
+      "data": { "value": "$12,300", "label": "REVENUE", "caption": "+4.2% week" }
+    }
+  ],
+  "date": "2026-05-22",
+  "subject": { "id": "demo", "name": "Daily Brief" },
+  "meta": {}
+}

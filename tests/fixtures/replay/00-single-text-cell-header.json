@@ -1,0 +1,48 @@
+{
+  "name": "single-text-cell-header",
+  "sourceMeta": {
+    "sampledFrom": "synthetic — modeled after marplanner shape; covers date-header pattern (text-cell block, large centered)",
+    "sampledOn": "2026-05-21",
+    "sanitization": "Fully synthetic; date anchored to 2024-01-01",
+    "verifiedAgainst": "reference-code"
+  },
+  "input": {
+    "version": 1,
+    "date": "2024-01-01",
+    "member": {
+      "id": "mbr-0001",
+      "name": "Sample Name 1"
+    },
+    "blocks": [
+      {
+        "type": "text-cell",
+        "id": "TXC-000001",
+        "title": "Block 1",
+        "data": {
+          "text": "Mon, Jan 01 2024",
+          "fontSize": "large",
+          "align": "center"
+        }
+      }
+    ]
+  },
+  "expected": {
+    "slotCount": 1,
+    "slotBlockTypes": ["text-cell"],
+    "failedBlockTypes": [],
+    "briefingStatus": "ready",
+    "contentChecks": [
+      {
+        "slotIndex": 0,
+        "path": "data.text",
+        "contains": "2024"
+      },
+      {
+        "slotIndex": 0,
+        "path": "data.fontSize",
+        "contains": "large"
+      }
+    ]
+  },
+  "notes": "Covers: text-cell block (large centered); minimal single-block envelope; anchor date header pattern."
+}

@@ -1,0 +1,12 @@
+NOTICE — fonts in this directory
+
+This directory contains font files redistributed under their respective
+open-source licenses, used as fixtures for the byte-identical render
+baseline regression test. Per the license terms, OFL.txt accompanies
+the font(s) in this directory.
+
+Fonts and authorship:
+- Inter (Regular, Bold) — Copyright (c) 2016 The Inter Project Authors
+  (https://github.com/rsms/inter). Licensed under SIL OFL 1.1.
+
+License text: see OFL.txt in this directory.

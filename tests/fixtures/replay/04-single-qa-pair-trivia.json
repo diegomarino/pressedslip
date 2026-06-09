@@ -1,0 +1,47 @@
+{
+  "name": "single-qa-pair-trivia",
+  "sourceMeta": {
+    "sampledFrom": "synthetic — modeled after marplanner trivia block shape (question + options); adapted to qa-pair block shape",
+    "sampledOn": "2026-05-21",
+    "sanitization": "Question content is public-domain general knowledge; no PII; date anchored to 2024-01-01",
+    "verifiedAgainst": "reference-code"
+  },
+  "input": {
+    "version": 1,
+    "date": "2024-01-01",
+    "member": {
+      "id": "mbr-0001",
+      "name": "Sample Name 1"
+    },
+    "blocks": [
+      {
+        "type": "qa-pair",
+        "id": "QAP-000001",
+        "title": "Block 1",
+        "data": {
+          "question": "What is the largest planet in our solar system?",
+          "answer": "Jupiter."
+        }
+      }
+    ]
+  },
+  "expected": {
+    "slotCount": 1,
+    "slotBlockTypes": ["qa-pair"],
+    "failedBlockTypes": [],
+    "briefingStatus": "ready",
+    "contentChecks": [
+      {
+        "slotIndex": 0,
+        "path": "data.question",
+        "contains": "largest planet"
+      },
+      {
+        "slotIndex": 0,
+        "path": "data.answer",
+        "contains": "Jupiter"
+      }
+    ]
+  },
+  "notes": "Covers: qa-pair block; trivia-block question/answer pattern."
+}

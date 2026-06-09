@@ -1,0 +1,47 @@
+{
+  "name": "single-quotation-word-of-day",
+  "sourceMeta": {
+    "sampledFrom": "synthetic — modeled after marplanner quote-of-day / word-of-day block shape; adapted to quotation block shape",
+    "sampledOn": "2026-05-21",
+    "sanitization": "Quote content is public-domain; attribution is a historical public figure; date anchored to 2024-01-01",
+    "verifiedAgainst": "reference-code"
+  },
+  "input": {
+    "version": 1,
+    "date": "2024-01-01",
+    "member": {
+      "id": "mbr-0001",
+      "name": "Sample Name 1"
+    },
+    "blocks": [
+      {
+        "type": "quotation",
+        "id": "QUO-000001",
+        "title": "Block 1",
+        "data": {
+          "text": "What we know is a drop, what we don't know is an ocean.",
+          "attribution": "Isaac Newton"
+        }
+      }
+    ]
+  },
+  "expected": {
+    "slotCount": 1,
+    "slotBlockTypes": ["quotation"],
+    "failedBlockTypes": [],
+    "briefingStatus": "ready",
+    "contentChecks": [
+      {
+        "slotIndex": 0,
+        "path": "data.text",
+        "contains": "ocean"
+      },
+      {
+        "slotIndex": 0,
+        "path": "data.attribution",
+        "contains": "Newton"
+      }
+    ]
+  },
+  "notes": "Covers: quotation block with attribution; quote-of-day / word-of-day block pattern."
+}

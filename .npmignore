@@ -1,0 +1,19 @@
+# Belt-and-braces: the primary filter is `files` in package.json.
+# This file is a secondary safety net in case `files` is ever weakened.
+src/
+tests/
+docs/
+playground/
+examples/
+.github/
+.husky/
+.editorconfig
+.nvmrc
+.gitignore
+.npmignore
+biome.json
+tsconfig.json
+tsconfig.build.json
+tsdown.config.ts
+pnpm-workspace.yaml
+CONTRIBUTING.md

@@ -1,0 +1,54 @@
+{
+  "name": "list-birthday-countdown",
+  "sourceMeta": {
+    "sampledFrom": "synthetic — modeled after marplanner birthday block shape (daysUntil countdown list); adapted to list block shape",
+    "sampledOn": "2026-05-21",
+    "sanitization": "All names replaced with 'Sample Name N'; day counts are synthetic; date anchored to 2024-01-01",
+    "verifiedAgainst": "reference-code"
+  },
+  "input": {
+    "version": 1,
+    "date": "2024-01-01",
+    "member": {
+      "id": "mbr-0001",
+      "name": "Sample Name 1"
+    },
+    "blocks": [
+      {
+        "type": "list",
+        "id": "LST-000006",
+        "title": "Block 1",
+        "data": {
+          "groups": [
+            {
+              "items": [
+                { "value": "HAPPY BIRTHDAY, Sample Name 1!" },
+                { "id": "12d", "value": "Sample Name 2" },
+                { "id": "45d", "value": "Sample Name 3" }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "expected": {
+    "slotCount": 1,
+    "slotBlockTypes": ["list"],
+    "failedBlockTypes": [],
+    "briefingStatus": "ready",
+    "contentChecks": [
+      {
+        "slotIndex": 0,
+        "path": "data.groups.0.items.0.value",
+        "contains": "HAPPY BIRTHDAY"
+      },
+      {
+        "slotIndex": 0,
+        "path": "data.groups.0.items.1.id",
+        "contains": "12d"
+      }
+    ]
+  },
+  "notes": "Covers: list block (flat with mixed id/no-id items); birthday-block countdown pattern with own-birthday + family members."
+}

@@ -1,0 +1,48 @@
+{
+  "name": "single-kpi-weather",
+  "sourceMeta": {
+    "sampledFrom": "synthetic — modeled after marplanner weather block shape; adapted to kpi block shape",
+    "sampledOn": "2026-05-21",
+    "sanitization": "Location replaced with 'Sample City'; coordinates fixed to 40.4168,-3.7038; date anchored to 2024-01-01",
+    "verifiedAgainst": "reference-code"
+  },
+  "input": {
+    "version": 1,
+    "date": "2024-01-01",
+    "member": {
+      "id": "mbr-0001",
+      "name": "Sample Name 1"
+    },
+    "blocks": [
+      {
+        "type": "kpi",
+        "id": "KPI-000001",
+        "title": "Block 1",
+        "data": {
+          "value": "14°C",
+          "label": "CLEAR",
+          "caption": "Min 9°C · Max 17°C · Rain 5%"
+        }
+      }
+    ]
+  },
+  "expected": {
+    "slotCount": 1,
+    "slotBlockTypes": ["kpi"],
+    "failedBlockTypes": [],
+    "briefingStatus": "ready",
+    "contentChecks": [
+      {
+        "slotIndex": 0,
+        "path": "data.value",
+        "contains": "°C"
+      },
+      {
+        "slotIndex": 0,
+        "path": "data.label",
+        "contains": "CLEAR"
+      }
+    ]
+  },
+  "notes": "Covers: kpi block; weather data projected as current-temp KPI with condition label and min/max caption."
+}

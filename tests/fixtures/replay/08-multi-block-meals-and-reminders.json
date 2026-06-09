@@ -1,0 +1,63 @@
+{
+  "name": "multi-block-meals-and-reminders",
+  "sourceMeta": {
+    "sampledFrom": "synthetic — modeled after marplanner meals + reminders blocks in a combined briefing",
+    "sampledOn": "2026-05-21",
+    "sanitization": "Meal names are generic; reminder text anonymized to generic task descriptions; member name anonymized",
+    "verifiedAgainst": "reference-code"
+  },
+  "input": {
+    "version": 1,
+    "date": "2024-01-01",
+    "member": {
+      "id": "mbr-0001",
+      "name": "Sample Name 1"
+    },
+    "blocks": [
+      {
+        "type": "key-value",
+        "id": "KVL-000002",
+        "title": "Block 1",
+        "data": {
+          "label": "Dinner",
+          "value": "Roasted chicken"
+        }
+      },
+      {
+        "type": "list",
+        "id": "LST-000004",
+        "title": "Block 2",
+        "data": {
+          "groups": [
+            {
+              "items": [
+                { "value": "Pick up dry cleaning" },
+                { "value": "Call the dentist" },
+                { "value": "14:00 Sample Event 1" }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "expected": {
+    "slotCount": 2,
+    "slotBlockTypes": ["key-value", "list"],
+    "failedBlockTypes": [],
+    "briefingStatus": "ready",
+    "contentChecks": [
+      {
+        "slotIndex": 0,
+        "path": "data.label",
+        "contains": "Dinner"
+      },
+      {
+        "slotIndex": 1,
+        "path": "data.groups.0.items.0.value",
+        "contains": "Pick up dry cleaning"
+      }
+    ]
+  },
+  "notes": "Covers: key-value + list multi-block; meals + reminders combined briefing pattern."
+}

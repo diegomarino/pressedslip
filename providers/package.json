@@ -1,0 +1,4 @@
+{
+  "main": "../dist/providers/index.cjs",
+  "types": "../dist/providers/index.d.cts"
+}

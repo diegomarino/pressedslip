@@ -1,0 +1,40 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "src/index.ts",
+    "src/testing/index.ts",
+    "src/providers/index.ts",
+    "src/browser/index.ts",
+    "src/transports/index.ts"
+  ],
+  "entryPointStrategy": "expand",
+  "out": "docs/api/reference",
+  "name": "pressedslip API reference",
+  "readme": "docs/api/README.md",
+  "sourceLinkTemplate": "https://github.com/diegomarino/pressedslip/blob/main/{path}#L{line}",
+  "treatWarningsAsErrors": true,
+  "validation": {
+    "notExported": false,
+    "invalidLink": true,
+    "notDocumented": true
+  },
+  "excludeInternal": true,
+  "excludePrivate": true,
+  "excludeExternals": true,
+  "blockTags": [
+    "@param",
+    "@returns",
+    "@example",
+    "@throws",
+    "@see",
+    "@deprecated",
+    "@remarks",
+    "@fileoverview",
+    "@template"
+  ],
+  "githubPages": false,
+  "navigationLinks": {
+    "Guide": "https://github.com/diegomarino/pressedslip/blob/main/docs/guide/getting-started.md",
+    "Architecture": "https://github.com/diegomarino/pressedslip/blob/main/docs/architecture/"
+  }
+}
