@@ -8,7 +8,7 @@
 
 ![Morning briefing rendered at 80mm thermal width](https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/composition-example.png)
 
-<video src="https://github.com/diegomarino/pressedslip/releases/download/v0.1.0/demo-pressedslip.mp4" controls autoplay loop muted width="100%"></video>
+<video src="https://github.com/user-attachments/assets/9df1895b-349f-410e-99cd-5cff7bf11700" controls autoplay loop muted width="100%"></video>
 
 `pressedslip` lets you describe printable content as data, render it through
 React/Satori/resvg, inspect the resulting composition, and then save the PNG or
