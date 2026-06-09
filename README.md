@@ -39,6 +39,7 @@ import {
   loadThemeFonts,
   themes,
   PAPER,
+  type Composition,
 } from "pressedslip";
 import { writeFile } from "node:fs/promises";
 
@@ -96,10 +97,7 @@ const composition = {
       data: { label: "Sunrise · Sunset", value: "06:22 · 21:04" },
     },
   ],
-  failedBlocks: [],
-  providerOutcomes: {},
-  timing: { totalMs: 0, fetchPhaseMs: 0, renderPhaseMs: 0 },
-};
+} as Composition;
 
 const { bytes } = await render(composition, {
   registry,
