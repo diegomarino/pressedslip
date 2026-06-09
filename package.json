@@ -134,11 +134,16 @@
   "keywords": [
     "thermal-printer",
     "receipt",
+    "escpos",
     "satori",
     "resvg",
     "png",
+    "render",
     "print",
-    "react"
+    "typescript",
+    "react",
+    "declarative",
+    "nodejs"
   ],
   "author": "Diego Marino",
   "publishConfig": {
