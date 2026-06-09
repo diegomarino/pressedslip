@@ -56,6 +56,9 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm build           # docs:api / check-docs resolve 'pressedslip'
+                                  # self-imports through package.json#exports
+                                  # to ./dist/ — must exist before tsc runs
       - run: pnpm check-docs
       - run: pnpm check-public-docs
       - run: pnpm docs:api
