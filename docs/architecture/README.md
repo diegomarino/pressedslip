@@ -73,18 +73,19 @@ The module map below is a supplemental source-oriented index.
 
 - **Package root (`"pressedslip"`)** — single entry surface (ADR-0011). Root exports: `render`, `compose`, `computeBriefingStatus`, `defineProvider`, `createProviderRegistry`, `createMemoryCache`, the two browser-safe provider factories, and all public types.
 - **`/providers` subpath** — provider primitives + reference providers + cache factories. Node-only `createOpenMeteoProvider` and `createFileCache` live here. Consumers can target this subpath when they need the Node features.
-- **`/browser` subpath** — strict browser-safe surface. Exports `render(composition, { ..., wasm })` backed by `@resvg/resvg-wasm` with a caller-provided wasm binary (DI; no environment sniffing). Enforced mechanically by `scripts/verify-browser-bundle.mjs` (no `node:*` builtin imports transitively reachable from `dist/index.mjs` OR `dist/browser/index.mjs`) plus the byte-identical determinism gate in `tests/integration/render-engine-parity.test.ts`. Font loader is fetch-only per ADR-0017. NOTE: the gate does NOT certify top-level browser-safety — top-level still depends on `@resvg/resvg-js` (a native Node addon).
-- **`/transports` subpath** — three reference transports (`createEscPosTransport`, `createFileTransport`, `createHttpTransport`) + `pngToEscPosRaster` helper + `PRINT_WIDTH_DOTS` / `PRINT_MAX_HEIGHT_DOTS` constants. Node-only by design; not covered by the browser-bundle gate. HTTP transport has always-on http/https scheme validation + opt-in `allowedHosts` origin matching. ESC/POS TCP is ACK-less; callers needing delivery confirmation must use application-level ACK.
-- **Replay harness** — `tests/harness/` + 15 sanitized fixtures in `tests/fixtures/replay/` + `scripts/lint-replay-fixtures.mjs` + `scripts/verify-replay-harness.mjs`. Asserts structural equivalence (NOT pixel-byte parity). Fixture `expected` values currently tagged `verifiedAgainst: "reference-code"` and may be upgraded to `marplanner-production` by a future parity harness.
+- **`/browser` subpath** — strict browser-safe surface; exports `render(composition, { ..., wasm })` backed by `@resvg/resvg-wasm` with a caller-provided wasm binary (DI).
+  - Enforced by `scripts/verify-browser-bundle.mjs` (no `node:*` transitive imports from `dist/index.mjs` or `dist/browser/index.mjs`) + byte-identical determinism gate in `tests/integration/render-engine-parity.test.ts`.
+  - Font loader is fetch-only per ADR-0017.
+  - **Note:** the gate does NOT certify top-level browser-safety — top-level still depends on `@resvg/resvg-js` (a native Node addon).
+- **`/transports` subpath** — three reference transports (`createEscPosTransport`, `createFileTransport`, `createHttpTransport`) + `pngToEscPosRaster` helper + `PRINT_WIDTH_DOTS` / `PRINT_MAX_HEIGHT_DOTS` constants. Node-only by design; not covered by the browser-bundle gate.
+  - HTTP transport: always-on http/https scheme guard + opt-in `allowedHosts` origin matching.
+  - ESC/POS TCP is ACK-less; callers needing delivery confirmation must use application-level ACK.
+- **Replay harness** — `tests/harness/` + 15 sanitized fixtures in `tests/fixtures/replay/` + `scripts/lint-replay-fixtures.mjs` + `scripts/verify-replay-harness.mjs`. Asserts structural equivalence (NOT pixel-byte parity). Fixture `expected` values are currently tagged `verifiedAgainst: "reference-code"`.
 - **`/testing` subpath** — fixture data only. Documented as NOT covered by semver for scenario-key names (additions and renames may land in patch releases). Adding or removing a shape from `builtinFixtures` IS a breaking change.
 - **Block colocation pattern** — each builtin shape is a pair `<name>.tsx` + `<name>.fixtures.ts` in `src/blocks/`. The `.tsx` owns the `BlockDefinition`; the `.fixtures.ts` owns scenario data and is re-exported through `/testing`. Tests live separately in `tests/unit/blocks/`.
 - **Pipeline** — `Composition → JSX → Satori SVG → resvg PNG → 1-bit threshold → PNG bytes`. Not configurable; determinism is required.
 - **Shape-boundary principle** — variations that introduce non-determinism or change layout grammar are new shapes; typographic variants (font size, alignment) live as optional schema fields. Canonical example: `textCell.fontSize` / `align`.
 - **`scripts/`** — local tooling only. Excluded from the published package and from coverage measurement (ADR-0016).
-
-## Deferred work
-
-Future scope includes: marplanner `BriefingEnvelope` → `Composition` adapter (lives in marplanner, not in this package).
 
 ## ADRs
 
