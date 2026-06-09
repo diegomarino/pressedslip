@@ -1,3 +1,9 @@
+## [0.1.2](https://github.com/diegomarino/pressedslip/compare/v0.1.1...v0.1.2) (2026-06-09)
+
+### Bug Fixes
+
+* **ci:** build before typedoc job runs ([1235c53](https://github.com/diegomarino/pressedslip/commit/1235c5329b7975d8b08beaec4aa89a7a39b57b04))
+
 ## [0.1.1](https://github.com/diegomarino/pressedslip/compare/v0.1.0...v0.1.1) (2026-06-09)
 
 ### Bug Fixes

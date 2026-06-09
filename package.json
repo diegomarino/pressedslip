@@ -1,6 +1,6 @@
 {
   "name": "pressedslip",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Opinionated printable content blocks for thermal-printer-friendly PNG rendering.",
   "type": "module",
   "engines": {
