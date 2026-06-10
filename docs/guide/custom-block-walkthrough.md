@@ -142,7 +142,7 @@ import {
   PAPER,
   render,
   themes,
-  type Composition,
+  type CompositionInput,
 } from "pressedslip";
 
 const registry = createRegistry([weatherBlock]);
@@ -155,7 +155,7 @@ const theme = await loadThemeFonts(themes.default);
 //   failedBlocks, providerOutcomes, timing. The cast satisfies TypeScript when
 //   building a literal; compose() fills these automatically (see Providers guide).
 //   Optional: subject ({ id, name }), generatedAt, meta.
-const composition: Composition = {
+const composition: CompositionInput = {
   id: "weather-demo",
   version: 1,
   date: "2026-05-24",
@@ -171,9 +171,6 @@ const composition: Composition = {
       },
     },
   ],
-  failedBlocks: [],
-  providerOutcomes: {},
-  timing: { totalMs: 0, fetchPhaseMs: 0, renderPhaseMs: 0 },
 };
 
 const result = await render(composition, {
@@ -200,7 +197,7 @@ import {
   PAPER,
   render,
   themes,
-  type Composition,
+  type CompositionInput,
 } from "pressedslip";
 
 // Step 1: Schema
@@ -251,7 +248,7 @@ export const temperatureBlock = defineBlock({
 const main = async () => {
   const registry = createRegistry([temperatureBlock]);
 
-  const composition: Composition = {
+  const composition: CompositionInput = {
     id: "temperature-demo",
     version: 1,
     date: "2026-05-24",
@@ -263,9 +260,6 @@ const main = async () => {
         data: { label: "Room Temperature", value: 22, unit: "C" as const }, // `as const` keeps the literal "C" type; without it TypeScript widens to `string`
       },
     ],
-    failedBlocks: [],
-    providerOutcomes: {},
-    timing: { totalMs: 0, fetchPhaseMs: 0, renderPhaseMs: 0 },
   };
 
   const theme = await loadThemeFonts(themes.default);

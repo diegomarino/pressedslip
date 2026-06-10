@@ -47,10 +47,10 @@ const { bytes } = await render(composition, { registry, wasm: fetch("/wasm/index
 ## Minimal example
 
 ```ts
-import { render, builtinBlocks, createRegistry, themes, type Composition } from "pressedslip/browser";
+import { render, builtinBlocks, createRegistry, themes, type CompositionInput } from "pressedslip/browser";
 import wasmUrl from "@resvg/resvg-wasm/index_bg.wasm?url";
 
-const browserComposition: Composition = {
+const browserComposition: CompositionInput = {
   id: "browser-demo",
   version: 1,
   date: "2026-06-08",
@@ -63,9 +63,6 @@ const browserComposition: Composition = {
       data: { label: "Today", value: "$42K", caption: "+12%" },
     },
   ],
-  failedBlocks: [],
-  providerOutcomes: {},
-  timing: { totalMs: 0, fetchPhaseMs: 0, renderPhaseMs: 0 },
 };
 
 const registry = createRegistry(builtinBlocks);

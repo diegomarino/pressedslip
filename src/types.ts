@@ -53,6 +53,19 @@ export type Composition = {
 };
 
 /**
+ * A `Composition` for `render()` input: the diagnostic fields (`failedBlocks`,
+ * `providerOutcomes`, `timing`) are optional because they are `compose()`
+ * outputs that `render()` never reads — hand-built compositions (e.g. parsed
+ * from JSON) should not have to stub them. `render()` normalizes absent
+ * fields to empty values before they reach block renderers via RenderContext.
+ *
+ * Every `Composition` is assignable to `CompositionInput`, so `compose()`
+ * results pass through unchanged.
+ */
+export type CompositionInput = Omit<Composition, "failedBlocks" | "providerOutcomes" | "timing"> &
+  Partial<Pick<Composition, "failedBlocks" | "providerOutcomes" | "timing">>;
+
+/**
  * A single rendered slot in a Composition. JSON-serializable by contract.
  * `index` is the block's registry-position at compose time.
  * `title` is an optional display title carried through from compose; the

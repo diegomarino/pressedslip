@@ -85,6 +85,7 @@ export type {
   ComposeContext,
   ComposeOptions,
   Composition,
+  CompositionInput,
   FailedBlock,
   ProviderContext,
   ProviderDefinition,

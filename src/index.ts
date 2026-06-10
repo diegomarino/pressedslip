@@ -116,6 +116,7 @@ export type {
   ComposeContext,
   ComposeOptions,
   Composition,
+  CompositionInput,
   FailedBlock,
   JsoncCompositionInput,
   LoadedFont,

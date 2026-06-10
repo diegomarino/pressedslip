@@ -18,7 +18,7 @@ import { renderReactToSvg } from "../pipeline/satori-to-svg.js";
 import { svgToRgbaWasm, type WasmInput } from "../pipeline/svg-to-bitmap-wasm.js";
 import { loadThemeFonts } from "../themes/load.js";
 import type { PreparedTheme } from "../themes/types.js";
-import type { Composition, Rendering, RenderOptions } from "../types.js";
+import type { Composition, CompositionInput, Rendering, RenderOptions } from "../types.js";
 
 /** Default: PAPER.thermal80 (576px), matching top-level render() and ESC/POS transport. */
 const DEFAULT_WIDTH = PAPER.thermal80;
@@ -67,9 +67,18 @@ export interface BrowserRenderOptions extends RenderOptions {
  * ```
  */
 export async function render(
-  composition: Composition,
+  composition: CompositionInput,
   options: BrowserRenderOptions,
 ): Promise<Rendering> {
+  // Normalize diagnostics before composeTree — keep in sync with src/render.tsx.
+  // Nullish coalescing (not spread defaults): an explicit `undefined` in the
+  // input must not survive normalization.
+  const full: Composition = {
+    ...composition,
+    failedBlocks: composition.failedBlocks ?? [],
+    providerOutcomes: composition.providerOutcomes ?? {},
+    timing: composition.timing ?? { totalMs: 0, fetchPhaseMs: 0, renderPhaseMs: 0 },
+  };
   const logger = options.logger ?? noopLogger;
   const widthPx = resolveWidth(options.width ?? DEFAULT_WIDTH, logger);
   const threshold = options.threshold ?? DEFAULT_THRESHOLD;
@@ -86,7 +95,7 @@ export async function render(
 
   const fonts = prepared?.fonts ?? options.fonts ?? [];
 
-  const { element, failedBlocks } = composeTree(composition, {
+  const { element, failedBlocks } = composeTree(full, {
     registry: options.registry,
     logger,
     onUnknownType,

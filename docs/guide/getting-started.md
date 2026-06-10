@@ -23,13 +23,13 @@ import {
   loadThemeFonts,
   render,
   themes,
-  type Composition,
+  type CompositionInput,
 } from "pressedslip";
 
 const registry = createRegistry(builtinBlocks);
 const theme = await loadThemeFonts(themes.default);
 
-const composition: Composition = {
+const composition: CompositionInput = {
   id: "morning-brief",
   version: 1,
   date: new Date().toISOString().slice(0, 10),
@@ -80,9 +80,6 @@ const composition: Composition = {
       data: { label: "Sunrise · Sunset", value: "06:22 · 21:04" },
     },
   ],
-  failedBlocks: [],
-  providerOutcomes: {},
-  timing: { totalMs: 0, fetchPhaseMs: 0, renderPhaseMs: 0 },
 };
 
 const { bytes } = await render(composition, {
