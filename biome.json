@@ -64,6 +64,15 @@
       }
     },
     {
+      "includes": ["scripts/doc-snippets-context.d.ts", "scripts/doc-snippets-shims.d.ts"],
+      "linter": {
+        "rules": {
+          "correctness": { "noUnusedImports": "off" },
+          "style": { "noDefaultExport": "off" }
+        }
+      }
+    },
+    {
       "includes": ["**/*.config.ts", "**/*.config.js"],
       "linter": {
         "rules": {

@@ -89,12 +89,13 @@
     "coverage": "vitest run --coverage",
     "check-docs": "node scripts/check-docs.mjs",
     "check-docs:staged": "node scripts/check-docs.mjs --staged",
+    "check-doc-snippets": "node scripts/check-doc-snippets.mjs",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
     "prepare": "husky",
     "release:dry": "semantic-release --dry-run",
-    "verify": "pnpm lint && node scripts/lint-replay-fixtures.mjs && pnpm build && pnpm typecheck && pnpm coverage && pnpm check-docs && pnpm check-public-docs && node scripts/verify-browser-bundle.mjs && node scripts/verify-replay-harness.mjs && pnpm --filter pressedslip-playground verify"
+    "verify": "pnpm lint && node scripts/lint-replay-fixtures.mjs && pnpm build && pnpm typecheck && pnpm coverage && pnpm check-docs && pnpm check-public-docs && node scripts/check-doc-snippets.mjs && node scripts/verify-browser-bundle.mjs && node scripts/verify-replay-harness.mjs && pnpm --filter pressedslip-playground verify"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.15",
