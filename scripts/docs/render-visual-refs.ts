@@ -67,7 +67,15 @@ async function renderToPng(
 }
 
 // 1. Per-builtin block (individual fixtures, unchanged).
-const blockTypes = ["textCell", "list", "keyValue", "qaPair", "kpi", "quotation"] as const;
+const blockTypes = [
+  "textCell",
+  "list",
+  "keyValue",
+  "qaPair",
+  "kpi",
+  "quotation",
+  "wordSearch",
+] as const;
 
 for (const blockType of blockTypes) {
   const fixtures = builtinFixtures[blockType as keyof typeof builtinFixtures];
