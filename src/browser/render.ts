@@ -33,7 +33,7 @@ const DEFAULT_THRESHOLD = 128;
  * import wasmUrl from "@resvg/resvg-wasm/index_bg.wasm?url";
  *
  * const registry = createRegistry(builtinBlocks);
- * const options: BrowserRenderOptions = { registry, wasm: wasmUrl };
+ * const options: BrowserRenderOptions = { registry, wasm: fetch(wasmUrl) };
  * const result = await render(composition, options);
  * ```
  */
@@ -62,7 +62,7 @@ export interface BrowserRenderOptions extends RenderOptions {
  * import wasmUrl from "@resvg/resvg-wasm/index_bg.wasm?url";
  *
  * const registry = createRegistry(builtinBlocks);
- * const rendering = await render(composition, { registry, wasm: wasmUrl });
+ * const rendering = await render(composition, { registry, wasm: fetch(wasmUrl) });
  * console.log(rendering.bytes); // Uint8Array — 1-bit PNG
  * ```
  */
