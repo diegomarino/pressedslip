@@ -2,7 +2,7 @@
  * @fileoverview Top-level render() orchestration: composeTree → Satori → resvg → 1-bit threshold → PNG encoding.
  */
 import { noopLogger } from "./logger.js";
-import { PAPER, resolveWidth } from "./paper.js";
+import { PAPER, resolveDpi, resolveWidth } from "./paper.js";
 import { composeTree } from "./pipeline/compose-tree.js";
 import { rgbaToOneBit } from "./pipeline/one-bit.js";
 import { encodeOneBitPng } from "./pipeline/png-encode.js";
@@ -57,6 +57,7 @@ export async function render(
   };
   const logger = options.logger ?? noopLogger;
   const widthPx = resolveWidth(options.width ?? DEFAULT_WIDTH, logger);
+  const dpi = resolveDpi(options.width ?? DEFAULT_WIDTH);
   const threshold = options.threshold ?? DEFAULT_THRESHOLD;
   const onUnknownType = options.onUnknownType ?? "warn";
   const onBlockError = options.onBlockError ?? "skip";
@@ -77,6 +78,8 @@ export async function render(
     onUnknownType,
     onBlockError,
     prepared,
+    width: widthPx,
+    dpi,
   });
 
   const svg = await renderReactToSvg(element, {

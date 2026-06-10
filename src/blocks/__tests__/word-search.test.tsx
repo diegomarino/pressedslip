@@ -28,6 +28,7 @@ function makeCtx(themeOverrides: Partial<typeof SHELL_DEFAULTS> = {}): RenderCon
     logger: { debug: noop, info: noop, warn: noop, error: noop },
     theme: { ...SHELL_DEFAULTS, ...themeOverrides },
     fontRoles: {},
+    contentWidth: 528, // thermal-80 (576) minus 2×24px shell padding; cells size against this
   } as unknown as RenderContext;
 }
 
@@ -98,16 +99,41 @@ describe("wordSearchBlock — schema validation", () => {
 });
 
 describe("wordSearchBlock — render", () => {
-  it("renders one cell per grid position (6×6 = 36 cells with width:24px)", () => {
+  it("renders one cell per grid position at the NORMAL cell size when it fits (6 cols → 36px)", () => {
     const ctx = makeCtx();
     const data: WordSearchData = { grid: basicGrid, words: ["DART"] };
     const element = wordSearchBlock.render({ data, ctx });
     expect(element).not.toBeNull();
+    // biome-ignore lint/style/noNonNullAssertion: basicGrid is a non-empty literal defined above
+    const cols = basicGrid[0]!.length;
+    // Mirror the block's sizing: NORMAL 36px, shrinking only if it overflows
+    // (availableWidth = ctx.contentWidth − 16 own wrapper). 6 cols on 528 stays 36px.
+    const cellSize = Math.max(16, Math.min(36, Math.floor((ctx.contentWidth - 16) / cols)));
+    expect(cellSize).toBe(36);
     // biome-ignore lint/style/noNonNullAssertion: null checked above
     const html = renderToStaticMarkup(element!);
-    const cellCount = (html.match(/width:24px/g) ?? []).length;
-    // biome-ignore lint/style/noNonNullAssertion: basicGrid is a non-empty literal defined above
-    expect(cellCount).toBe(basicGrid.length * basicGrid[0]!.length);
+    const cellCount = (html.match(new RegExp(`width:${cellSize}px`, "g")) ?? []).length;
+    expect(cellCount).toBe(basicGrid.length * cols);
+  });
+
+  it("shrinks cells below NORMAL when the grid would overflow a narrow paper width", () => {
+    // 12 cols on a 58mm-class paper (384px): contentWidth = 384−48 = 336;
+    // availableWidth = 336−16 = 320; floor(320/12) = 26px.
+    const ctx = makeCtx();
+    (ctx as { contentWidth: number }).contentWidth = 384 - 48;
+    const wideGrid: string[][] = Array.from({ length: 6 }, () =>
+      Array.from({ length: 12 }, () => "A"),
+    );
+    const data: WordSearchData = { grid: wideGrid, words: ["AA"] };
+    const element = wordSearchBlock.render({ data, ctx });
+    // biome-ignore lint/style/noNonNullAssertion: null checked above
+    const html = renderToStaticMarkup(element!);
+    const availableWidth = ctx.contentWidth - 16;
+    const expected = Math.max(16, Math.min(36, Math.floor(availableWidth / 12)));
+    expect(expected).toBe(26);
+    expect(html).toContain(`width:${expected}px`);
+    // And the grid must fit inside the available content width.
+    expect(expected * 12).toBeLessThanOrEqual(availableWidth);
   });
 
   it("renders grid cells with JetBrains Mono font family (identity intent)", () => {
@@ -136,14 +162,28 @@ describe("wordSearchBlock — render", () => {
     expect(html.indexOf("DOG")).toBeLessThan(html.indexOf("SUN"));
   });
 
-  it("renders grid container with explicit border-style:solid (Satori-safe, no shorthand)", () => {
+  it("renders ruled gridlines via per-side borders (Satori-safe, no shorthand)", () => {
     const ctx = makeCtx();
     const data: WordSearchData = { grid: basicGrid, words: ["DART"] };
     const element = wordSearchBlock.render({ data, ctx });
     // biome-ignore lint/style/noNonNullAssertion: null checked above
     const html = renderToStaticMarkup(element!);
-    // Satori does not support the `border` shorthand; individual properties are used.
-    expect(html).toContain("border-style:solid");
-    expect(html).toContain("border-width:1px");
+    // Satori has no `border` shorthand: container draws top+left, cells draw right+bottom.
+    expect(html).toContain("border-top-style:solid");
+    expect(html).toContain("border-left-width:1px");
+    expect(html).toContain("border-right-style:solid");
+    expect(html).toContain("border-bottom-width:1px");
+  });
+
+  it("draws an inter-cell gridline on every cell (right + bottom edge)", () => {
+    const ctx = makeCtx();
+    const data: WordSearchData = { grid: basicGrid, words: ["DART"] };
+    const element = wordSearchBlock.render({ data, ctx });
+    // biome-ignore lint/style/noNonNullAssertion: null checked above
+    const html = renderToStaticMarkup(element!);
+    // biome-ignore lint/style/noNonNullAssertion: basicGrid is a non-empty literal defined above
+    const cellCount = basicGrid.length * basicGrid[0]!.length;
+    expect((html.match(/border-right-width:1px/g) ?? []).length).toBe(cellCount);
+    expect((html.match(/border-bottom-width:1px/g) ?? []).length).toBe(cellCount);
   });
 });

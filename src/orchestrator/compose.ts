@@ -367,6 +367,14 @@ export function renderEnabledBlocks(args: RenderArgs): RenderResult {
         logger: noopLogger,
         theme: SHELL_DEFAULTS,
         fontRoles: {},
+        // Nominal content width (thermal-80 paper 576px minus 2×24px shell
+        // padding). This probe only runs render to surface render-phase throws
+        // and discards the JSX, so the exact value is immaterial — the real
+        // width is applied later by render(). NOTE: width-dependent render
+        // failures are therefore NOT caught here; they surface at render() time
+        // with the caller's actual paper width. See compose() @remarks.
+        contentWidth: 576 - 48,
+        dpi: 203,
       };
       block.render({ data, ctx: renderCtx });
       slots.push({ index, blockType: block.type, data });
@@ -439,6 +447,12 @@ export function retainPreviousSlots(args: RetainArgs): Slot[] {
  *
  * @param options - Providers, blocks registry, date, context, cache, and policy options.
  * @returns A JSON-serializable `Composition` with slots, status, timing, and diagnostics.
+ * @remarks
+ * The render-phase probe runs each block at a NOMINAL content width (thermal-80
+ * paper). Width-dependent render failures are therefore NOT surfaced by
+ * `compose()`; they appear only when `render()` runs with the caller's actual
+ * paper width. An empty `failedBlocks` from `compose()` does not guarantee a
+ * width-sensitive block will render without error at every paper size.
  * @example
  * ```ts
  * import { compose, createRegistry, builtinBlocks, createProviderRegistry } from "pressedslip";

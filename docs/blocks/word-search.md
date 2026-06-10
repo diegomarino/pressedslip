@@ -50,16 +50,22 @@ independently constrained to 6–12 by Zod's `.min(6).max(12)`.
 The block renders a column-flex wrapper (`alignItems: "center"`) so small grids
 are centered on the full paper width. Inside it:
 
-1. **Grid container** — a column-flex `<div>` with a 1px solid border colored
-   by `ctx.theme.separatorColor`. Each row is a row-flex `<div>` containing
-   one 24×24px cell per character.
+1. **Grid container** — a column-flex `<div>` that draws the top + left edges in
+   `ctx.theme.separatorColor`. Each row is a row-flex `<div>` of square cells
+   sized to a NORMAL target (so the grid *grows* with the column count rather than
+   filling a fixed width), shrinking only when the grid would overflow the available
+   content width — see [Block-local intent](#block-local-intent). Every cell draws
+   its own right + bottom edge, so shared edges render as a single 1px ruled line,
+   separating every row and column.
 2. **Word list** — a row-flex `<div>` with `marginTop: 8` and two `flex: 1`
    column children. Words are split left-heavy: the left column receives
    `Math.ceil(words.length / 2)` words, the right column the remainder.
    A 5-word list → 3 left + 2 right.
 
-Cells have no inter-cell borders or gaps — uniform adjacency is required for
-diagonal word tracing.
+Cells are ruled by 1px gridlines (drawn via the container's top/left edges and
+each cell's right/bottom edge) with no gaps. Because Satori defaults to
+`box-sizing: border-box`, the inset borders do not change cell dimensions, so
+uniform adjacency — required for diagonal word tracing — is preserved.
 
 ## See also
 
@@ -82,5 +88,5 @@ puzzle. Theme font roles do not apply to cells.
 | Element | Property | Value | Why |
 |---|---|---|---|
 | Grid cells | `fontFamily` | `"JetBrains Mono"` | Identity: monospace required for diagonal word tracing |
-| Grid cells | `fontSize` | `20` | Identity: fixed cell size (24px) calibrated for 20px mono |
-| Grid cells | `width` / `height` | `24` / `24` | Identity: fixed pixel cells prevent stretch on small grids |
+| Grid cells | `width` / `height` | `clamp(floor((ctx.contentWidth − 16) / cols), 16, 36)` | Identity: square cells at a NORMAL 36px target; the grid grows with column count and only shrinks (to a 16px floor) if it would overflow `ctx.contentWidth` (usable width inside shell padding) minus this block's own 16px wrapper padding |
+| Grid cells | `fontSize` | `Math.round(cellSize * 21 / 24)` | Identity: font tracks cell size at the calibrated 21/24 ratio (≈0.875) to preserve glyph fit |

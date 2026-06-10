@@ -25,6 +25,16 @@ const SEPARATOR_HEIGHTS = { thin: 1, thick: 3, none: 0 } as const;
 const PADDING_VERTICAL = { compact: 8, normal: 16, loose: 24 } as const;
 
 /**
+ * Horizontal padding (per side, px) applied by the shell to every block's
+ * content area and title strip. Constant across padding presets — only the
+ * vertical padding varies. Exported so the render pipeline can derive each
+ * block's usable content width (`RenderContext.contentWidth = width − 2×this`)
+ * from a single source of truth rather than a hardcoded offset.
+ * @internal
+ */
+export const SHELL_CONTENT_PADDING_X = 24;
+
+/**
  * Module-level sentinel for the one-time body fontRole warning. Exported for
  * testability only — do not set externally.
  * @internal
@@ -90,7 +100,7 @@ export function BlockShell({
         style={{
           display: "flex",
           flexDirection: "column",
-          padding: `${padY}px 24px`,
+          padding: `${padY}px ${SHELL_CONTENT_PADDING_X}px`,
           width: "100%",
           color: "black",
           ...bodyCascade(styles, fontRoles),
@@ -137,7 +147,7 @@ function renderTitleStrip(
           display: "flex",
           flexDirection: "row",
           width: "100%",
-          padding: "8px 24px",
+          padding: `8px ${SHELL_CONTENT_PADDING_X}px`,
           backgroundColor: "#fff",
           color: "#000",
           fontSize,
@@ -157,7 +167,7 @@ function renderTitleStrip(
       <div
         style={{
           display: "flex",
-          padding: "8px 24px",
+          padding: `8px ${SHELL_CONTENT_PADDING_X}px`,
           width: "100%",
           backgroundColor: "#fff",
           color: "#000",
@@ -176,7 +186,7 @@ function renderTitleStrip(
     <div
       style={{
         display: "flex",
-        padding: "8px 24px",
+        padding: `8px ${SHELL_CONTENT_PADDING_X}px`,
         width: "100%",
         backgroundColor: t.titleBg,
         color: t.titleFg,
