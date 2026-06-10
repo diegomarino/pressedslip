@@ -1,6 +1,6 @@
 /**
+ * @module pressedslip
  * @fileoverview Root Node entrypoint for `pressedslip`.
- * @packageDocumentation
  *
  * Root Node entrypoint. Re-exports block definitions, registry helpers,
  * composition orchestration, Node rendering, theme/font helpers, logger
@@ -116,6 +116,7 @@ export type {
   ComposeContext,
   ComposeOptions,
   Composition,
+  CompositionInput,
   FailedBlock,
   JsoncCompositionInput,
   LoadedFont,

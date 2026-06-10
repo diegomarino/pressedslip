@@ -30,8 +30,13 @@
     "@deprecated",
     "@remarks",
     "@fileoverview",
+    "@module",
     "@template"
   ],
+  "groupOrder": ["Modules", "Functions", "Variables", "Type Aliases", "Interfaces", "References"],
+  "navigation": {
+    "includeGroups": true
+  },
   "githubPages": false,
   "navigationLinks": {
     "Guide": "https://github.com/diegomarino/pressedslip/blob/main/docs/guide/getting-started.md",

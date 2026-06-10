@@ -14,7 +14,7 @@ The package bundles test fixtures that include **JetBrains Mono Regular**, licen
 
 ## Semantic versioning posture
 
-`pressedslip` is currently prepared as **v0.1.0** and remains pre-1.0. Treat
+`pressedslip` is currently in the **0.1.x pre-1.0 series** and remains pre-1.0. Treat
 minor versions as potentially breaking until `1.0.0`.
 
 ### Pre-1.0 policy
@@ -161,7 +161,7 @@ TypeScript builds will auto-detect the correct shape (`.d.mts` for ESM, `.d.cts`
 
 ### Render throughput
 
-Benchmarks against the reference marplanner use case (daily-print briefing):
+Benchmarks against the reference daily-briefing scenario (multi-block daily print composition):
 
 - **Node.js render:** ~500 ms for a 6-block composition on M1 (deterministic across runs).
 - **Browser render:** ~400 ms cold (wasm bootstrap) + ~50 ms subsequent renders (cached wasm instance).

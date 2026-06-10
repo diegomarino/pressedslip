@@ -56,7 +56,7 @@ The pre-condition gate (Decision #9 obligation) validates that all 18 blocks are
 
 ## Links
 
-- [ADR-0009: Bounded-hybrid migration strategy](0009-bounded-hybrid-migration.md)
+- Bounded-hybrid migration strategy (the strategy adopted during extraction from the source app)
 - [ADR-0011: Public API shape](0011-public-api-shape.md)
 
 ---

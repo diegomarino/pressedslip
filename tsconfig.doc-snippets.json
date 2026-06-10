@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // Snippets are fragments: top-level await requires ESNext module
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    // Allow top-level await
+    "target": "ES2022",
+    // Include DOM + node types so fetch, fs, etc. resolve without errors
+    "lib": ["ES2022", "DOM"],
+    "types": ["node"],
+    // The dynamic tsconfig extending this file lives in the OS temp dir,
+    // outside the repo — pin type resolution to the repo's node_modules.
+    "typeRoots": ["./node_modules/@types"],
+    // Snippets are fragments — unused variables are not bugs in examples
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    // Don't require explicit return types in example code
+    "noImplicitReturns": false,
+    // snippets use JSX (some blocks show React renderers)
+    "jsx": "react-jsx",
+    // Relaxed for doc fragments: snippets can have verbatim re-exports
+    "verbatimModuleSyntax": false,
+    // Map package self-imports to the BUILT public declarations (dist/),
+    // not src/: snippets must validate against exactly what consumers get,
+    // and pulling src into the program would type-check Node-targeted source
+    // (e.g. src/transports/http.ts) under this config's DOM lib and produce
+    // false fetch/BodyInit conflicts. `pnpm verify` builds before this gate runs.
+    "paths": {
+      "pressedslip": ["./dist/index.d.mts"],
+      "pressedslip/testing": ["./dist/testing/index.d.mts"],
+      "pressedslip/providers": ["./dist/providers/index.d.mts"],
+      "pressedslip/browser": ["./dist/browser/index.d.mts"],
+      "pressedslip/transports": ["./dist/transports/index.d.mts"],
+      "zod": ["./node_modules/zod/index.d.ts"],
+      "react": ["./node_modules/@types/react/index.d.ts"]
+    }
+  },
+  // Include is overridden at CLI invocation time (explicit file list).
+  // This include exists as a fallback if the tsconfig is used standalone.
+  "include": [],
+  "exclude": ["node_modules", "dist", ".attic"]
+}

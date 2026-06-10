@@ -251,7 +251,7 @@ rationale).
 | [ADR-0014](../adrs/0014-error-handling-and-no-silent-failures.md) | Establishes the "mode + always-record" principle. `Composition.failedBlocks` is a required field; failure records are never silently dropped regardless of error mode. The no-silent-drop invariant (I1 above) is the compose-layer enforcement of this rule. |
 | [ADR-0022](../adrs/0022-blockdefinition-hints.md) | Defines `BlockDefinition.hints` and `composeJsoncWithHints`. Documents the four-prefix hint convention (`Required:`, `Values of`, `Tip:`, `Docs:`), the `normalizeHintLine` defense, and the rationale for hand-rolled JSONC emission over `jsonc-parser.modify`. |
 | [ADR-0008](../adrs/0008-quality-bar-never-rules.md) | "No silent failures" quality rule that motivated always-record. Provider errors and render throws surface in `failedBlocks`; no block is dropped with no signal. |
-| [ADR-0009](../adrs/0009-bounded-hybrid-migration.md) | Bounded-hybrid migration strategy; M4 parity obligation drives the `retainPreviousSlots` step (step 6). |
+| Bounded-hybrid migration strategy | The bounded-hybrid migration strategy adopted during extraction drives the M4 parity obligation behind the `retainPreviousSlots` step (step 6). |
 | [ADR-0011](../adrs/0011-public-api-shape.md) | Public API shape; `compose()`, `Composition`, `FailedBlock`, `ProviderOutcome`, and `composeJsoncWithHints` are all part of the public surface. |
 
 ---

@@ -8,7 +8,7 @@ import { textCellBlock } from "../../src/blocks/text-cell.js";
 import { loadFontFromBuffer } from "../../src/fonts.js";
 import { createRegistry } from "../../src/registry.js";
 import { render } from "../../src/render.js";
-import type { BlockDefinition, Composition } from "../../src/types.js";
+import type { BlockDefinition, Composition, CompositionInput } from "../../src/types.js";
 
 // Keep listBlock imported per plan (forward-use); reference to satisfy lints.
 void listBlock;
@@ -49,6 +49,43 @@ describe("render — smoke", () => {
     const png = decode(new Uint8Array(r.bytes));
     expect(png.width).toBe(r.width);
     expect(png.height).toBe(r.height);
+  });
+});
+
+describe("render — CompositionInput (diagnostic fields optional)", () => {
+  it("accepts a hand-built composition without diagnostics, byte-identical to stubbed", async () => {
+    const fonts = await getFonts();
+    const registry = createRegistry([textCellBlock] as BlockDefinition[]);
+    const bare: CompositionInput = {
+      id: "c1",
+      version: 1,
+      date: "2026-05-19",
+      status: "ready",
+      slots: [{ index: 0, blockType: "textCell", title: "HELLO", data: { text: "world" } }],
+    };
+    const stubbed: Composition = { ...BASE, ...bare };
+    const a = await render(bare, { registry, fonts });
+    const b = await render(stubbed, { registry, fonts });
+    expect(a.failedBlocks).toEqual([]);
+    expect(Buffer.from(a.bytes).equals(Buffer.from(b.bytes))).toBe(true);
+  });
+
+  it("normalizes explicit undefined diagnostics (no TypeError in renderers)", async () => {
+    const fonts = await getFonts();
+    const registry = createRegistry([textCellBlock] as BlockDefinition[]);
+    const withUndefined: CompositionInput = {
+      id: "c1",
+      version: 1,
+      date: "2026-05-19",
+      status: "ready",
+      slots: [{ index: 0, blockType: "textCell", data: { text: "ok" } }],
+      failedBlocks: undefined,
+      providerOutcomes: undefined,
+      timing: undefined,
+    };
+    const r = await render(withUndefined, { registry, fonts });
+    expect(r.format).toBe("png-1bit");
+    expect(r.failedBlocks).toEqual([]);
   });
 });
 

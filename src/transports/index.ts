@@ -1,6 +1,6 @@
 /**
+ * @module pressedslip/transports
  * @fileoverview Transport entrypoint for `pressedslip/transports`.
- * @packageDocumentation
  *
  * Transport entrypoint. Re-exports the `Transport` interface, the
  * `TransportPayload` type, reference transport factories, the pure ESC/POS

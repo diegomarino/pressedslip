@@ -21,33 +21,36 @@ Browser rendering requires `@resvg/resvg-wasm`, which ships as a `.wasm` file. Y
 #### Vite projects
 
 ```ts
+import { render } from "pressedslip/browser";
 import wasmUrl from "@resvg/resvg-wasm/index_bg.wasm?url";
 
 const registry = createRegistry(builtinBlocks);
-const { bytes } = await render(composition, { registry, wasm: wasmUrl });
+const { bytes } = await render(composition, { registry, wasm: fetch(wasmUrl) });
 ```
 
-The `?url` query imports the wasm file as a public asset and returns its URL at runtime.
+The `?url` query imports the wasm file as a public asset and returns its URL at runtime. Wrap it in `fetch()` to get a `Promise<Response>`, which is what `wasm` accepts.
 
 #### Create React App
 
 Create React App does not support `?url` imports natively. Instead:
 
 1. Copy `node_modules/@resvg/resvg-wasm/index_bg.wasm` into `public/wasm/index_bg.wasm`.
-2. Pass the URL directly:
+2. Pass the URL via `fetch()`:
 
 ```ts
+import { render } from "pressedslip/browser";
+
 const registry = createRegistry(builtinBlocks);
-const { bytes } = await render(composition, { registry, wasm: "/wasm/index_bg.wasm" });
+const { bytes } = await render(composition, { registry, wasm: fetch("/wasm/index_bg.wasm") });
 ```
 
 ## Minimal example
 
 ```ts
-import { render, builtinBlocks, createRegistry, themes } from "pressedslip/browser";
+import { render, builtinBlocks, createRegistry, themes, type CompositionInput } from "pressedslip/browser";
 import wasmUrl from "@resvg/resvg-wasm/index_bg.wasm?url";
 
-const composition = {
+const browserComposition: CompositionInput = {
   id: "browser-demo",
   version: 1,
   date: "2026-06-08",
@@ -60,22 +63,20 @@ const composition = {
       data: { label: "Today", value: "$42K", caption: "+12%" },
     },
   ],
-  failedBlocks: [],
-  providerOutcomes: {},
-  timing: { totalMs: 0, fetchPhaseMs: 0, renderPhaseMs: 0 },
 };
 
 const registry = createRegistry(builtinBlocks);
-const { bytes, width, height } = await render(composition, {
+const { bytes, width, height } = await render(browserComposition, {
   registry,
   theme: themes.default,
-  wasm: wasmUrl,
+  wasm: fetch(wasmUrl),
 });
 
 // bytes is Uint8Array — 1-bit PNG
-// Display it: new Blob([bytes], { type: "image/png" })
-const url = URL.createObjectURL(new Blob([bytes], { type: "image/png" }));
-document.getElementById("preview").src = url;
+// Display it: new Blob([bytes.buffer], { type: "image/png" })
+const pngBuffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+const url = URL.createObjectURL(new Blob([pngBuffer], { type: "image/png" }));
+(document.getElementById("preview") as HTMLImageElement).src = url;
 ```
 
 ## Font loading
@@ -88,7 +89,7 @@ import { builtinBlocks, createRegistry, render, themes } from "pressedslip/brows
 const { bytes } = await render(composition, {
   registry: createRegistry(builtinBlocks),
   theme: themes.default,
-  wasm: wasmUrl,
+  wasm: fetch(wasmUrl),
 });
 ```
 
@@ -131,8 +132,9 @@ const customTheme: ThemeTemplate = {
     titleFg: "#fff",
   },
   header: {
-    enabled: true,
-    showDate: true,
+    nameFontSize: 32,
+    nameFontWeight: 700,
+    dateFontSize: 14,
   },
 };
 
@@ -140,7 +142,7 @@ const preparedTheme = await loadThemeFonts(customTheme);
 const { bytes } = await render(composition, {
   registry,
   theme: preparedTheme,
-  wasm: wasmUrl,
+  wasm: fetch(wasmUrl),
 });
 ```
 
@@ -151,10 +153,12 @@ Theme resolution is identical to the Node entry point. See [Themes](./themes.md)
 Render returns a `Rendering` object with a `failedBlocks` array. Failed blocks are included in output as a fallback, but their data or formatting may be degraded.
 
 ```ts
+import { render, themes } from "pressedslip/browser";
+
 const { bytes, failedBlocks } = await render(composition, {
   registry,
   theme: themes.default,
-  wasm: wasmUrl,
+  wasm: fetch(wasmUrl),
 });
 
 if (failedBlocks.length > 0) {
@@ -166,7 +170,7 @@ if (failedBlocks.length > 0) {
 
 - **Fonts** must be fetched from `http(s)://` URLs or provided as byte buffers. File paths and `file://` URLs are not supported.
 - **No file I/O** — all data flows through composition objects and runtime APIs.
-- **WebAssembly** — a `BrowserRenderOptions.wasm` binary (URL string or fetch response) must be supplied. There is no fallback.
+- **WebAssembly** — a `BrowserRenderOptions.wasm` binary (buffer, `Response`, or `Promise<Response>` — e.g., `fetch(wasmUrl)`) must be supplied. There is no fallback.
 - **Async render** — both browser and Node render entry points are async.
 
 ## Font format
@@ -197,27 +201,30 @@ PNG bytes are identical across operating systems or runtime versions.
 Once you have the PNG bytes:
 
 ```ts
-const { bytes } = await render(composition, { registry, theme: themes.default, wasm: wasmUrl });
+import { render, themes } from "pressedslip/browser";
+
+const { bytes } = await render(composition, { registry, theme: themes.default, wasm: fetch(wasmUrl) });
+const pngBytes = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
 
 // Option 1: Object URL + <img>
-const blob = new Blob([bytes], { type: "image/png" });
+const blob = new Blob([pngBytes], { type: "image/png" });
 const url = URL.createObjectURL(blob);
-document.getElementById("preview").src = url;
+(document.getElementById("preview") as HTMLImageElement).src = url;
 
 // Option 2: Data URL
 const dataUrl = `data:image/png;base64,${btoa(String.fromCharCode(...bytes))}`;
-document.getElementById("preview").src = dataUrl;
+(document.getElementById("preview") as HTMLImageElement).src = dataUrl;
 
 // Option 3: Canvas (requires additional canvas-to-png library if you need to further process)
-const blob = new Blob([bytes], { type: "image/png" });
-const url = URL.createObjectURL(blob);
+const blob2 = new Blob([pngBytes], { type: "image/png" });
+const url2 = URL.createObjectURL(blob2);
 const img = new Image();
 img.onload = () => {
-  const canvas = document.getElementById("canvas");
-  const ctx = canvas.getContext("2d");
-  ctx.drawImage(img, 0, 0);
+  const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+  const ctx2 = canvas.getContext("2d");
+  ctx2?.drawImage(img, 0, 0);
 };
-img.src = url;
+img.src = url2;
 ```
 
 ## Debugging

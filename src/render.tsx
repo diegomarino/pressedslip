@@ -10,7 +10,7 @@ import { renderReactToSvg } from "./pipeline/satori-to-svg.js";
 import { svgToRgba } from "./pipeline/svg-to-bitmap.js";
 import { loadThemeFonts } from "./themes/load.js";
 import type { PreparedTheme } from "./themes/types.js";
-import type { Composition, Rendering, RenderOptions } from "./types.js";
+import type { Composition, CompositionInput, Rendering, RenderOptions } from "./types.js";
 
 /** Default: PAPER.thermal80 (576px) — printable area for an 80mm thermal printer @ 203dpi. */
 const DEFAULT_WIDTH = PAPER.thermal80;
@@ -28,7 +28,8 @@ const DEFAULT_THRESHOLD = 128;
  * a PreparedTheme the render is synchronous apart from satori/resvg. When
  * neither is supplied, satori uses whatever fonts the host provides.
  *
- * @param composition - The Composition produced by `compose()` to render.
+ * @param composition - The composition to render: a `compose()` result or a
+ *   hand-built `CompositionInput` (diagnostic fields optional).
  * @param options - Width, threshold, theme/fonts, registry, and error policies.
  * @returns A Rendering with a 1-bit PNG buffer, pixel dimensions, and any failed blocks.
  * @example
@@ -41,7 +42,19 @@ const DEFAULT_THRESHOLD = 128;
  * const { bytes, width, height } = await render(composition, { registry, theme: prepared });
  * ```
  */
-export async function render(composition: Composition, options: RenderOptions): Promise<Rendering> {
+export async function render(
+  composition: CompositionInput,
+  options: RenderOptions,
+): Promise<Rendering> {
+  // Normalize diagnostics before composeTree: block renderers may read them
+  // via RenderContext.composition. Nullish coalescing (not spread defaults) —
+  // an explicit `undefined` in the input must not survive normalization.
+  const full: Composition = {
+    ...composition,
+    failedBlocks: composition.failedBlocks ?? [],
+    providerOutcomes: composition.providerOutcomes ?? {},
+    timing: composition.timing ?? { totalMs: 0, fetchPhaseMs: 0, renderPhaseMs: 0 },
+  };
   const logger = options.logger ?? noopLogger;
   const widthPx = resolveWidth(options.width ?? DEFAULT_WIDTH, logger);
   const threshold = options.threshold ?? DEFAULT_THRESHOLD;
@@ -58,7 +71,7 @@ export async function render(composition: Composition, options: RenderOptions): 
 
   const fonts = prepared?.fonts ?? options.fonts ?? [];
 
-  const { element, failedBlocks } = composeTree(composition, {
+  const { element, failedBlocks } = composeTree(full, {
     registry: options.registry,
     logger,
     onUnknownType,

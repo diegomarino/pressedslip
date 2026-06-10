@@ -11,7 +11,7 @@
  */
 import wasmUrl from "@resvg/resvg-wasm/index_bg.wasm?url";
 import {
-  type Composition,
+  type CompositionInput,
   createRegistry,
   keyValueBlock,
   kpiBlock,
@@ -42,12 +42,12 @@ const registry = createRegistry([
   ...showcaseBlocks,
 ]);
 
-/** Map a DraftComposition to a renderable Composition envelope. */
-function buildComposition(draft: DraftComposition): Composition {
+/** Map a DraftComposition to a renderable CompositionInput envelope. */
+function buildComposition(draft: DraftComposition): CompositionInput {
   return {
-    // Stubs — Composition.id/version/status/failedBlocks/providerOutcomes/timing
-    // are required by the type but ignored by composeTree on the render path.
-    // Only `slots`, `date`, `subject`, and `meta` are actually consumed.
+    // id/version/status are required identity fields; the diagnostic fields
+    // (failedBlocks/providerOutcomes/timing) are optional on CompositionInput
+    // and normalized by render(). Only slots/date/subject/meta are consumed.
     id: "playground-draft",
     version: 1,
     date: draft.date,
@@ -59,9 +59,6 @@ function buildComposition(draft: DraftComposition): Composition {
       data: s.data,
       ...(s.title !== undefined ? { title: s.title } : {}),
     })),
-    failedBlocks: [],
-    providerOutcomes: {},
-    timing: { totalMs: 0, fetchPhaseMs: 0, renderPhaseMs: 0 },
     meta: draft.meta,
   };
 }

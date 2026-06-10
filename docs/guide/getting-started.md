@@ -23,13 +23,13 @@ import {
   loadThemeFonts,
   render,
   themes,
-  type Composition,
+  type CompositionInput,
 } from "pressedslip";
 
 const registry = createRegistry(builtinBlocks);
 const theme = await loadThemeFonts(themes.default);
 
-const composition = {
+const composition: CompositionInput = {
   id: "morning-brief",
   version: 1,
   date: new Date().toISOString().slice(0, 10),
@@ -80,7 +80,7 @@ const composition = {
       data: { label: "Sunrise · Sunset", value: "06:22 · 21:04" },
     },
   ],
-} as Composition;
+};
 
 const { bytes } = await render(composition, {
   registry,
@@ -141,7 +141,7 @@ PNG output is not byte-identical across operating systems, Node versions, or Bun
 import { assertNoFailedBlocks } from "pressedslip/testing";
 
 const rendering = await render(composition, { registry, theme: themes.default });
-assertNoFailedBlocks(rendering, { expect });
+assertNoFailedBlocks(rendering);
 ```
 
 ## API Reference

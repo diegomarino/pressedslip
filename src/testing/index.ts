@@ -1,6 +1,6 @@
 /**
+ * @module pressedslip/testing
  * @fileoverview Testing entrypoint for `pressedslip/testing`.
- * @packageDocumentation
  *
  * Testing entrypoint: aggregated builtin fixtures and assertion helpers for
  * downstream playgrounds, regression tests, and dev tooling.

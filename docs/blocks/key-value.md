@@ -10,8 +10,8 @@ no groups.
 
 ```ts
 {
-  label: string;   // required — bold label rendered at 14 px above value
-  value: string;   // required — body value rendered at 18 px regular weight below
+  label: string;   // required — bold label rendered at 16 px above value
+  value: string;   // required — body value rendered at 20 px regular weight below
 }
 ```
 
@@ -48,7 +48,7 @@ Both fields are required. Validated by Zod. No optional fields.
   "blockType": "keyValue",
   "data": {
     "label": "Today's focus",
-    "value": "Finish sp7 implementation plan, review Codex peer-review output, and prepare branch for merge"
+    "value": "Finish the quarterly report draft, review the design feedback, and prepare the slides for Monday"
   }
 }
 ```

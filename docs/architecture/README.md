@@ -35,7 +35,7 @@ The module map below is a supplemental source-oriented index.
 | `src/blocks/<name>.fixtures.ts` | Sibling fixture data for each builtin shape (≥3 scenarios) | No (re-exported via `/testing`) |
 | `src/define-block.ts` | `defineBlock<TData>()` factory (typed identity narrowing); accepts optional `dependencies` | No |
 | `src/registry.ts` | `createRegistry()` — builds `type → BlockDefinition` lookup; accepts `readonly AnyBlockDefinition[]` | No |
-| `src/render.ts` | `render(composition, options) → Rendering` — drives the Pipeline | No |
+| `src/render.tsx` | `render(composition, options) → Rendering` — drives the Pipeline | No |
 | `src/types.ts` | All public TypeScript types (excluded from coverage measurement per ADR-0016) | No |
 | `src/fonts.ts` | `loadFontFromBuffer`, `loadFontFromUrl` — fetch-only (ADR-0017); zero `node:*` imports, browser-safe | No |
 | `src/logger.ts` | `createConsoleLogger` (plus a no-op default used internally) | No |
@@ -93,7 +93,6 @@ Architecture Decision Records live in [`../adrs/`](../adrs/). Start with
 [ADR-0001](../adrs/0001-build-tool-tsdown.md) and follow the numeric sequence.
 Key ADRs for understanding the architecture:
 
-- **ADR-0009** Bounded-hybrid migration strategy.
 - **ADR-0011** Public API shape — root-only entry.
 - **ADR-0012** Block taxonomy — visual shapes only, no content sources.
 - **ADR-0015** JSDoc enforcement via custom script.

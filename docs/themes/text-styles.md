@@ -7,12 +7,12 @@ built-in and showcase blocks. Pass it as part of a custom `theme` to `render()`.
 
 | Slot | Default | Blocks that use it |
 |---|---|---|
-| `body` | `{ fontSize: 16 }` | textCell (text), keyValue (value), list (item.value) |
+| `body` | `{ fontSize: 20 }` | textCell (text), keyValue (value), list (item.value) |
 | `emphasis` | `{}` | list (group.title, item.id), quotation (text) |
 | `display` | `{ fontSize: 36, lineHeight: 1.1 }` | kpi (value) |
-| `label` | `{ fontSize: 14 }` | kpi (label, caption), keyValue (label), quotation (attribution) |
-| `question` | `{ fontSize: 18 }` | qaPair (question) |
-| `answer` | `{ fontSize: 18 }` | qaPair (answer) |
+| `label` | `{ fontSize: 16 }` | kpi (label, caption), keyValue (label), quotation (attribution) |
+| `question` | `{ fontSize: 20 }` | qaPair (question) |
+| `answer` | `{ fontSize: 20 }` | qaPair (answer) |
 | `extras` | `{}` | Showcase blocks (word-of-day, etc.) |
 
 ## Built-in block → slot mapping
@@ -41,18 +41,28 @@ A theme cannot suppress them — see `intent-inviolability.test.tsx`.
 ## Example: custom theme
 
 ```ts
-import { render } from "pressedslip";
+import { render, themes } from "pressedslip";
 
-const result = await render(composition, {
-  theme: {
+// Spread a builtin ThemeTemplate and override only the textStyles you want.
+// Bare `{ textStyles: {...} }` is not a valid ThemeInput — it fails the
+// ThemeTemplate | PreparedTheme union check. Always start from a template.
+const customTheme = {
+  ...themes.default,
+  shell: {
+    ...themes.default.shell,
     textStyles: {
       body:    { fontSize: 18 },
       display: { fontSize: 48, lineHeight: 1.0 },
       label:   { fontSize: 12 },
     },
   },
+};
+
+const result = await render(composition, {
+  registry,
+  theme: customTheme,
 });
 ```
 
-`pressedslip-theme` and `marplanner-theme` provide fully-tuned typographic stacks
-that override all slots. See their respective packages for details.
+A downstream theme package can provide a fully-tuned typographic stack overriding
+all slots (see the BYO-bytes pattern, ADR-0024).

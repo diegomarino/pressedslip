@@ -97,7 +97,7 @@ The implementation must preserve all of the following properties. Any fix that w
 
 | ADR | Relevance |
 |---|---|
-| [ADR-0009: Bounded-hybrid migration strategy](../adrs/0009-bounded-hybrid-migration.md) | Establishes that `Composition` must support a replay harness (M4, M7 parity obligations) without requiring the orchestrator to be live. |
+| Bounded-hybrid migration strategy | The bounded-hybrid migration strategy adopted during extraction establishes that `Composition` must support a replay harness (M4, M7 parity obligations) without requiring the orchestrator to be live. |
 | [ADR-0011: Public API shape](../adrs/0011-public-api-shape.md) | Lists `Composition` as a named public export from the root barrel; governs its place in the public surface. |
 | [ADR-0012: Block taxonomy — visual shapes, not content sources](../adrs/0012-visual-shape-block-taxonomy.md) | Explains why `slots[].data` is typed `unknown` rather than a domain-specific type: the library owns visual shapes; consumers own content. |
 | [ADR-0014: Error handling and no-silent-failures](../adrs/0014-error-handling-and-no-silent-failures.md) | Mandates that `failedBlocks` is always present and always complete. Governs the `onUnknownType` and `onBlockError` mode semantics. |

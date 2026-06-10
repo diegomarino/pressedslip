@@ -16,7 +16,7 @@ Your font URL returned a non-2xx HTTP status code (e.g., 404, 403, 500).
 2. Check CORS headers if loading from a CDN in a browser context.
 3. If using Google Fonts, ensure the full URL is correct — copy the exact link from [fonts.google.com](https://fonts.google.com).
 
-**See also:** [Themes guide](./themes.md) § "Font loading and caching"
+**See also:** [Themes guide](./themes.md) § "Font caching strategies"
 
 ---
 
@@ -31,6 +31,7 @@ You called `nodeFontCache()` in a browser environment.
 - In Node (backend): use `nodeFontCache()` normally.
 - In browser: use `memoryFontCache()` instead, or omit the cache argument (defaults to memory).
 
+<!-- check-doc-snippets: skip -->
 ```ts
 import { memoryFontCache, loadThemeFonts } from "pressedslip";
 
@@ -51,7 +52,7 @@ Your font loaded successfully, but output doesn't use it.
 2. Check that your font file is a valid TTF or OTF (not WOFF, WOFF2, or web fonts).
 3. Verify the font family name matches what your CSS references (case-sensitive).
 
-**See also:** [Themes guide](./themes.md) § "Font format and compatibility"
+**See also:** [Themes guide](./themes.md) § "Font format"
 
 ---
 
@@ -86,6 +87,7 @@ You passed two block definitions with the same `type` string to `createRegistry(
 
 **Fix:**
 
+<!-- check-doc-snippets: skip -->
 ```ts
 // ❌ Wrong — kpi is in builtinBlocks AND myKpiBlock
 const registry = createRegistry([...builtinBlocks, myKpiBlock]);
@@ -112,6 +114,7 @@ Block data didn't match the registered block's Zod schema.
 1. Check the error message for which field failed (e.g., `"title" is required`).
 2. Verify your slot data matches the block's schema:
 
+   <!-- check-doc-snippets: skip -->
    ```ts
    import { z } from "zod";
    import { builtinBlocks } from "pressedslip";
@@ -120,12 +123,13 @@ Block data didn't match the registered block's Zod schema.
    console.log(kpiBlock.schema);  // inspect the shape
    ```
 
-3. Use TypeScript inference to catch mismatches at compile time:
+3. Use TypeScript structural typing to catch mismatches at compile time. Block data
+   types are not exported from the package — declare the shape locally and TypeScript
+   will check it against your slot data:
 
    ```ts
-   import type { KpiData } from "pressedslip";
-   
-   const data: KpiData = { label: "Uptime", value: "99.9%" };  // TS checks this
+   // Declare only the fields you need; TypeScript checks the shape structurally
+   const data: { label: string; value: string } = { label: "Uptime", value: "99.9%" };
    ```
 
 **See also:** [Custom Block Walkthrough](./custom-block-walkthrough.md) § "Defining the schema"
@@ -143,12 +147,13 @@ Your block's render function (React component) threw an error.
 1. Check the stack trace in your logs to find the line number.
 2. Add defensive checks for optional fields:
 
+   <!-- check-doc-snippets: skip -->
    ```ts
    const render = ({ data, ctx }: { data: MyBlockData; ctx: RenderContext }) => {
      if (!data.items || data.items.length === 0) {
        return <div>No data</div>;  // graceful fallback
      }
-     return <div>{data.items.map(...)}</div>;
+     return <div>{data.items.map((item) => <span>{item}</span>)}</div>;
    };
    ```
 
@@ -169,6 +174,7 @@ Your width in pixels is not a multiple of 8.
 - Use an 8-divisible value: 384, 576, 832, or a value you compute with `Math.ceil(n / 8) * 8`.
 - If using `PAPER` presets, they are pre-aligned: `PAPER.thermal58.px = 384`, etc.
 
+<!-- check-doc-snippets: skip -->
 ```ts
 import { PAPER } from "pressedslip";
 
@@ -197,14 +203,15 @@ Your PNG has wrong dimensions for ESC/POS printing.
 3. If you need a different width, either use a different PAPER preset or adjust your theme.
 
 ```ts
-import { PAPER } from "pressedslip";
+import { render, PAPER } from "pressedslip";
+import { pngToEscPosRaster } from "pressedslip/transports";
 
-const { bytes: png } = await render(composition, { width: PAPER.thermal80 });
+const { bytes: png } = await render(composition, { registry, width: PAPER.thermal80 });
 // Now png is guaranteed 576 × (1..4096) pixels
 const raster = await pngToEscPosRaster(new Uint8Array(png));
 ```
 
-**See also:** [Getting Started](./getting-started.md) § "Paper sizes and widths"
+**See also:** [README](../../README.md) § "Output format" — paper preset table with pixel widths for all supported roll sizes.
 
 ---
 
@@ -233,20 +240,24 @@ You forgot to provide the WebAssembly binary, or it resolved to `undefined` or `
 **Fix:**
 
 ```ts
-import { render } from "pressedslip/browser";
+import { render, builtinBlocks, createRegistry } from "pressedslip/browser";
 import wasmUrl from "@resvg/resvg-wasm/index_bg.wasm?url";
 
 const { bytes } = await render(composition, {
-  wasm: wasmUrl,  // required for browser render
+  registry: createRegistry(builtinBlocks),
+  wasm: fetch(wasmUrl),  // required for browser render
 });
 ```
 
 If using Create React App (no `?url` support):
 
 ```ts
+import { render, builtinBlocks, createRegistry } from "pressedslip/browser";
+
 // Copy node_modules/@resvg/resvg-wasm/index_bg.wasm to public/wasm/
 const { bytes } = await render(composition, {
-  wasm: "/wasm/index_bg.wasm",
+  registry: createRegistry(builtinBlocks),
+  wasm: fetch("/wasm/index_bg.wasm"),
 });
 ```
 
@@ -267,7 +278,7 @@ Browser and Node rendering paths have subtle differences.
 3. Use the same PAPER width preset in both paths.
 4. Test with a known composition in both environments to catch divergences early.
 
-**See also:** [Browser Rendering](./browser-rendering.md) § "Known differences from Node rendering"
+**See also:** [Browser Rendering](./browser-rendering.md) § "Differences from Node rendering"
 
 ---
 
@@ -351,7 +362,7 @@ You registered two providers with the same `key` in your provider registry.
 ```ts
 const registry = createProviderRegistry({
   weather: createOpenMeteoProvider({ key: "weather" }),
-  quote: createFixturePoolProvider({ key: "quote", pool: [...] }),
+  quote: createFixturePoolProvider({ key: "quote", pool: ["Stay curious."] }),
   // ❌ Wrong — "weather" is used twice
   // weather2: createOpenMeteoProvider({ key: "weather" }),
 });
@@ -391,6 +402,7 @@ The URL failed to parse (syntax error or unsupported scheme).
 
 **Fix:**
 
+<!-- check-doc-snippets: skip -->
 ```ts
 import { createHttpTransport } from "pressedslip/transports";
 
@@ -454,6 +466,7 @@ Your `compose()` call passed a date string in the wrong format.
 
 **Fix:**
 
+<!-- check-doc-snippets: skip -->
 ```ts
 const composition = await compose({
   providers,
@@ -474,6 +487,7 @@ A block requires a provider that isn't in your registry.
 
 1. Check the block's `dependencies` array:
 
+   <!-- check-doc-snippets: skip -->
    ```ts
    const myBlock = builtinBlocks.find(b => b.type === "weather");
    console.log(myBlock.dependencies);  // ["weather"]
@@ -500,12 +514,15 @@ Your rendering produced a different number of blocks than expected.
 **Fix:**
 
 ```ts
-import { assertBlockCount } from "pressedslip/testing";
+import { assertBlockCount, assertNoFailedBlocks } from "pressedslip/testing";
 
+// render() returns a Rendering — check failedBlocks for render-time errors
 const result = await render(composition, options);
-// Check which blocks were rendered vs failed
-console.log(result.blocks.length, result.failedBlocks);
-assertBlockCount(result, expectedCount);
+assertNoFailedBlocks(result);
+
+// assertBlockCount works on objects with a `blocks` array (e.g. fixture/replay data)
+const fixture = { blocks: composition.slots.map((s) => ({ type: s.blockType })) };
+assertBlockCount(fixture, expectedCount);
 ```
 
 ---
@@ -550,7 +567,7 @@ Two renderings differ structurally (a block's data shape changed).
 import { assertStructurallyEqual } from "pressedslip/testing";
 
 const currentResult = await render(composition, options);
-const expectedResult = { /* baseline from marplanner or file */ };
+const expectedResult = { /* baseline from file or previous run */ };
 assertStructurallyEqual(currentResult, expectedResult);
 ```
 
@@ -564,6 +581,6 @@ If your error isn't listed here:
 
 1. **Read the error message carefully** — most include the problem (e.g., `"Unknown block type"`, `"HTTP 403"`) and a hint.
 2. **Check the stack trace** — it points to the line of code that failed.
-3. **Search the source code** for the error message in [src/](../../../src/) to find the check that triggered it.
+3. **Search the source code** for the error message in [src/](../../src/) to find the check that triggered it.
 4. **Review the relevant guide** — [Themes](./themes.md), [Custom Blocks](./custom-block-walkthrough.md), [Providers](./providers.md), or [Browser Rendering](./browser-rendering.md).
 5. **Check the TSDoc on public exports** — `pressedslip` includes inline `@param`, `@returns`, and `@throws` documentation on all APIs.
