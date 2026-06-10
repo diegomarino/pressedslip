@@ -46,7 +46,7 @@ import { writeFile } from "node:fs/promises";
 const registry = createRegistry(builtinBlocks);
 const theme = await loadThemeFonts(themes.default);
 
-const composition = {
+const composition: Composition = {
   id: "morning-brief",
   version: 1,
   date: new Date().toISOString().slice(0, 10),
@@ -97,7 +97,10 @@ const composition = {
       data: { label: "Sunrise · Sunset", value: "06:22 · 21:04" },
     },
   ],
-} as Composition;
+  failedBlocks: [],
+  providerOutcomes: {},
+  timing: { totalMs: 0, fetchPhaseMs: 0, renderPhaseMs: 0 },
+};
 
 const { bytes } = await render(composition, {
   registry,
@@ -145,7 +148,7 @@ await transport.send({ bytes });
   output.
 - **Interactive playground** - try real compositions before writing code:
   <https://diegomarino.github.io/pressedslip/>.
-- **Pre-built themes** - three printable themes (warm, cool, mono) with
+- **Pre-built themes** - three printable themes (default, compact, mono) with
   deterministic font and layout roles.
 - **Provider lifecycle** - async data fetchers with parallel fetch, timeout,
   cache, and fail-soft. Plug in OpenMeteo, a static-text source, or your own.

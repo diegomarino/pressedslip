@@ -86,6 +86,33 @@ include ESC/POS, file, and HTTP.
 `pressedslip/browser`, the browser-safe entrypoint. It uses `@resvg/resvg-wasm`
 and requires a wasm URL or response in `BrowserRenderOptions.wasm`.
 
+## Font Role
+
+The named font slot a theme assigns font files to. Canonical roles are `"body"`
+(default serif/sans-serif), `"display"` (large heading numerics), and `"mono"`
+(code/data). Themes define which font families load into each role; blocks use
+role names to select fonts without hardcoding family names. See `FontRole` in
+`src/themes/types.ts`.
+
+## Text Style
+
+A per-slot typographic override containing optional properties: `fontSize`,
+`lineHeight`, `fontRole`, `fontWeight`, `fontStyle`, `color`, `textAlign`,
+`textTransform`, and `rotate`. Individual block elements apply text styles via
+`applyTextStyle` to inherit baseline typography from the theme while layering
+semantic overrides. See `TextStyle` in `src/themes/types.ts`.
+
+## Text Styles
+
+The map of canonical text slots on a theme's shell configuration:
+`body` (default reading text), `emphasis` (featured/lead text), `display` (hero
+numerics), `label` (captions and metadata), `question` (riddle prompts), `answer`
+(hidden-answer patterns), plus `extras` for theme-specific slots. Themes assign
+typographic rules (font size, line height, font role) to each slot; blocks read
+values from `ctx.theme.textStyles[slotName]` to compose semantic text. See
+`TextStyles` in `src/themes/types.ts` and
+`docs/themes/text-styles.md` for configuration examples.
+
 ## Public API Reference
 
 The committed API overview lives at `docs/api/README.md`. The complete

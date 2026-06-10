@@ -43,8 +43,8 @@ const headerProvider = createStaticTextProvider({
   value: "Daily Briefing — May 24, 2026",
 });
 
-const result = await headerProvider.fetch(ctx);
-// { ok: "data", value: "Daily Briefing — May 24, 2026" }
+// headerProvider is passed to compose(); the orchestrator calls fetch() internally.
+// compose() resolves to { ok: "data", value: "Daily Briefing — May 24, 2026" }
 ```
 
 ### Fixture pool provider
@@ -65,9 +65,9 @@ const quotesProvider = createFixturePoolProvider({
   freshness: "per-day",
 });
 
-const result = await quotesProvider.fetch(ctx);
-// { ok: "data", value: "The only way to do great work is to love what you do." }
-// (deterministic per date; different user = same index, different date = different index)
+// quotesProvider is passed to compose(); the orchestrator calls fetch() internally.
+// compose() resolves to { ok: "data", value: "The only way to do great work is to love what you do." }
+// (deterministic per date; different date = different index)
 ```
 
 ## Fetching from HTTP
@@ -150,6 +150,7 @@ Create a registry and pass it to `compose()`:
 
 ```ts
 import {
+  createFixturePoolProvider,
   createProviderRegistry,
   createStaticTextProvider,
 } from "pressedslip/providers";
@@ -222,14 +223,16 @@ console.log(composition.slots);  // array of rendered blocks
 A block declares its dependencies via the `dependencies` field:
 
 ```ts
+import { z } from "zod";
 import { defineBlock } from "pressedslip";
 
 const statsBlock = defineBlock({
   type: "stats",
+  schema: z.object({ weather: z.any(), greeting: z.string() }),
   dependencies: ["weather", "greeting"], // providers required for this block
   render(args) {
     const { weather, greeting } = args.data;
-    return <div>{greeting}: {weather.temp}°C</div>;
+    return <div>{greeting}: {(weather as { temp: number }).temp}°C</div>;
   },
 });
 ```

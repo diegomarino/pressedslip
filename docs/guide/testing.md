@@ -24,11 +24,11 @@ assertions against a current `Composition`, derive a small block-list view from
 ## Render smoke test
 
 ```ts
-import { builtinBlocks, createRegistry, render, themes } from "pressedslip";
+import { builtinBlocks, createRegistry, render, themes, type Composition } from "pressedslip";
 import { assertNoFailedBlocks, assertStructurallyEqual } from "pressedslip/testing";
 
 const registry = createRegistry(builtinBlocks);
-const composition = {
+const composition: Composition = {
   id: "test-render",
   version: 1,
   date: "2026-06-08",

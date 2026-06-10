@@ -51,8 +51,8 @@ const customized = {
   ...themes.default,
   shell: {
     ...themes.default.shell,
-    titleAlignment: "left",
-    contentPadding: "loose",
+    titleAlignment: "left" as const,
+    contentPadding: "loose" as const,
   },
   header: {
     ...themes.default.header,

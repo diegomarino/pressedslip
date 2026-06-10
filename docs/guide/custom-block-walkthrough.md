@@ -133,32 +133,36 @@ The `hints` array provides hints to the JSONC playground—they render as `//` c
 Create a registry with your new block and pass it to `render()`. Two ingredients are new here:
 
 - **`createRegistry([...blocks])`** — collects your block definitions so `render()` can dispatch each `slot.blockType` to the matching renderer.
-- **`memoryFontCache()`** — an optional process-lifetime cache for fetched font bytes. You hand it to font loaders (typically `loadThemeFonts()` — see [`docs/guide/themes.md`](./themes.md)) so the second render of the same composition does not re-fetch fonts. In the snippet below it is imported for reference; the actual fonts array is left empty for brevity. See [`docs/guide/themes.md`](./themes.md) for the full font setup walkthrough.
+- **`loadThemeFonts(themes.default)`** — fetches font bytes from CDN and returns a `PreparedTheme`. Pass the result to `render()` so the pipeline has fonts. See [`docs/guide/themes.md`](./themes.md) for the full font setup walkthrough, including disk caching for batch renders.
 
 ```ts
 import {
   createRegistry,
-  render,
+  loadThemeFonts,
   PAPER,
-  memoryFontCache,
+  render,
+  themes,
+  type Composition,
 } from "pressedslip";
 
 const registry = createRegistry([weatherBlock]);
 
-// Composition shape — required vs optional fields:
-//   date        (required) — freeform string; "YYYY-MM-DD" is the convention
-//   slots       (required) — array of { blockType, data } objects; blockType
-//                            must match a registered block's `type` key
-//   meta        (required) — open bag for consumer data; use {} if unused
-//   subject     (optional) — { id: string; name: string }; shown in the shell
-//                            header when present and showTitle is true
-//   slots[].title (optional) — display label for an individual slot
-const composition = {
+// Load fonts once; pass the PreparedTheme to render() for fast repeated renders.
+// See docs/guide/themes.md for the full theme setup walkthrough.
+const theme = await loadThemeFonts(themes.default);
+
+// Composition shape — required fields: id, version, date, status, slots,
+//   failedBlocks, providerOutcomes, timing. The cast satisfies TypeScript when
+//   building a literal; compose() fills these automatically (see Providers guide).
+//   Optional: subject ({ id, name }), generatedAt, meta.
+const composition: Composition = {
+  id: "weather-demo",
+  version: 1,
   date: "2026-05-24",
-  subject: { id: "user1", name: "Alice" },
-  meta: {},
+  status: "ready",
   slots: [
     {
+      index: 0,
       blockType: "weather",
       data: {
         temperature: 22,
@@ -167,21 +171,15 @@ const composition = {
       },
     },
   ],
+  failedBlocks: [],
+  providerOutcomes: {},
+  timing: { totalMs: 0, fetchPhaseMs: 0, renderPhaseMs: 0 },
 };
 
 const result = await render(composition, {
   registry,
   width: PAPER.thermal80,
-  theme: {
-    _kind: "prepared",
-    fonts: [
-      // LoadedFont objects go here. Each has { name, data, weight, style }
-      // where data is a Uint8Array of TTF/OTF bytes. Use loadFontFromUrl() or
-      // loadFontFromBuffer() to produce them; see docs/guide/themes.md for the
-      // full workflow. Pass a memoryFontCache() instance to loadThemeFonts() so
-      // repeated renders re-use already-fetched bytes instead of re-fetching.
-    ],
-  },
+  theme,
 });
 
 // result.bytes is a Uint8Array containing the 1-bit PNG
@@ -198,8 +196,11 @@ import type { ReactElement } from "react";
 import {
   defineBlock,
   createRegistry,
-  render,
+  loadThemeFonts,
   PAPER,
+  render,
+  themes,
+  type Composition,
 } from "pressedslip";
 
 // Step 1: Schema
@@ -250,21 +251,29 @@ export const temperatureBlock = defineBlock({
 const main = async () => {
   const registry = createRegistry([temperatureBlock]);
 
-  const composition = {
+  const composition: Composition = {
+    id: "temperature-demo",
+    version: 1,
     date: "2026-05-24",
-    subject: { id: "test", name: "Test" },
-    meta: {},
+    status: "ready",
     slots: [
       {
+        index: 0,
         blockType: "temperature",
         data: { label: "Room Temperature", value: 22, unit: "C" as const }, // `as const` keeps the literal "C" type; without it TypeScript widens to `string`
       },
     ],
+    failedBlocks: [],
+    providerOutcomes: {},
+    timing: { totalMs: 0, fetchPhaseMs: 0, renderPhaseMs: 0 },
   };
+
+  const theme = await loadThemeFonts(themes.default);
 
   const result = await render(composition, {
     registry,
     width: PAPER.thermal80,
+    theme,
   });
 
   console.log(`Rendered: ${result.width}x${result.height}`);
@@ -278,6 +287,7 @@ main().catch(console.error);
 
 Zod's `.default()` works directly with `defineBlock`. Because `BlockDefinitionSpec.schema` is typed as `ZodType<TData>` (the *output* type only), the schema coerces input at validation time and your renderer always receives the fully-resolved output — including filled-in defaults:
 
+<!-- check-doc-snippets: skip -->
 ```ts
 const blockSchema = z.object({
   name: z.string(),
@@ -304,6 +314,7 @@ The `as const` cast in slot data (e.g., `"C" as const`) is only needed at the **
 
 The `render` function signature defined in `BlockDefinitionSpec` is always:
 
+<!-- check-doc-snippets: skip -->
 ```ts
 render: (props: { data: TData; ctx: RenderContext }) => ReactElement | null
 ```
