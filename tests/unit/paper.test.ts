@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { noopLogger } from "../../src/logger.js";
-import { PAPER, resolveWidth } from "../../src/paper.js";
+import { PAPER, resolveDpi, resolveWidth } from "../../src/paper.js";
 
 describe("PAPER constants", () => {
   it("ships the expected presets", () => {
@@ -53,5 +53,24 @@ describe("resolveWidth", () => {
     const logger = { ...noopLogger, warn };
     resolveWidth({ px: 576 }, logger);
     expect(warn).not.toHaveBeenCalled();
+  });
+});
+
+describe("resolveDpi", () => {
+  it("uses the explicit dpi on a millimeter-based spec", () => {
+    expect(resolveDpi({ mm: 210, dpi: 300 })).toBe(300);
+  });
+
+  it("uses a PaperPreset's nativeDpi", () => {
+    expect(resolveDpi(PAPER.thermal80)).toBe(203);
+    expect(resolveDpi(PAPER.thermal110)).toBe(203);
+  });
+
+  it("falls back to 203 for a context-free pixel spec", () => {
+    expect(resolveDpi({ px: 576 })).toBe(203);
+  });
+
+  it("falls back to 203 for a millimeter spec without dpi", () => {
+    expect(resolveDpi({ mm: 80 })).toBe(203);
   });
 });

@@ -45,6 +45,8 @@ describe("composeTree — RenderContext.theme + fontRoles", () => {
       logger: noopLogger,
       onUnknownType: "skip",
       onBlockError: "skip",
+      width: 576,
+      dpi: 203,
     });
 
     expect(spy).toHaveBeenCalledOnce();
@@ -52,5 +54,8 @@ describe("composeTree — RenderContext.theme + fontRoles", () => {
     expect(ctx.theme).toBeDefined();
     expect(ctx.theme.textStyles.body).toEqual({ fontSize: 20 });
     expect(ctx.fontRoles).toEqual({});
+    // contentWidth = paper width (576) minus 2×24px shell horizontal padding.
+    expect(ctx.contentWidth).toBe(528);
+    expect(ctx.dpi).toBe(203);
   });
 });

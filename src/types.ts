@@ -325,6 +325,18 @@ export type RenderContext = {
   /** Font-roles registry from PreparedTheme. Empty object when render() was
    *  called without a theme. Required by `applyTextStyle` for fontRole resolution. */
   fontRoles: Record<string, LoadedFont[]>;
+  /** Usable content width in pixels available to this block's render output —
+   *  the resolved paper width minus the shell's horizontal padding (both sides).
+   *  Always present. Width-sensitive blocks (e.g. wordSearch) size against this;
+   *  if the block adds its own inner padding, subtract that too. In the compose()
+   *  render-probe this carries a nominal default, since that probe discards its
+   *  output and the real width is applied later by render(). */
+  contentWidth: number;
+  /** Resolved output DPI (dots per inch). Lets blocks convert between pixels and
+   *  physical millimeters: `px = mm × dpi / 25.4`. Derived from the width spec —
+   *  an explicit mm-spec `dpi`, else a `PaperPreset.nativeDpi`, else 203 (the
+   *  thermal-native fallback for a context-free pixel width). Always present. */
+  dpi: number;
 };
 
 /**

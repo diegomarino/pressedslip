@@ -31,6 +31,8 @@ describe("composeTree — happy path", () => {
       logger: noopLogger,
       onUnknownType: "warn",
       onBlockError: "skip",
+      width: 576,
+      dpi: 203,
     });
     expect(failedBlocks).toEqual([]);
     const html = renderToStaticMarkup(element);
@@ -56,6 +58,8 @@ describe("composeTree — unknown type", () => {
       logger,
       onUnknownType: "warn",
       onBlockError: "skip",
+      width: 576,
+      dpi: 203,
     });
     expect(failedBlocks).toHaveLength(1);
     expect(failedBlocks[0]?.blockType).toBe("wheather");
@@ -78,6 +82,8 @@ describe("composeTree — unknown type", () => {
       logger,
       onUnknownType: "skip",
       onBlockError: "skip",
+      width: 576,
+      dpi: 203,
     });
     expect(failedBlocks).toHaveLength(1); // ALWAYS recorded
     expect(warn).not.toHaveBeenCalled();
@@ -97,6 +103,8 @@ describe("composeTree — unknown type", () => {
         logger: noopLogger,
         onUnknownType: "throw",
         onBlockError: "skip",
+        width: 576,
+        dpi: 203,
       }),
     ).toThrow(/unknown block type/i);
   });
@@ -116,6 +124,8 @@ describe("composeTree — schema validation failure", () => {
       logger: noopLogger,
       onUnknownType: "warn",
       onBlockError: "skip",
+      width: 576,
+      dpi: 203,
     });
     expect(failedBlocks).toHaveLength(1);
     expect(failedBlocks[0]?.reason.message).toMatch(/schema validation failed/i);
@@ -145,6 +155,8 @@ describe("composeTree — render exception", () => {
       logger: noopLogger,
       onUnknownType: "warn",
       onBlockError: "skip",
+      width: 576,
+      dpi: 203,
     });
     expect(failedBlocks).toHaveLength(1);
     expect(failedBlocks[0]?.reason.message).toContain("boom");

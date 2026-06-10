@@ -3,7 +3,7 @@
  */
 import type { ReactElement } from "react";
 import { toSerializableError } from "../orchestrator/serializable-error.js";
-import { BlockShell } from "../shell/BlockShell.js";
+import { BlockShell, SHELL_CONTENT_PADDING_X } from "../shell/BlockShell.js";
 import { ShellBottom } from "../shell/ShellBottom.js";
 import { ShellTop } from "../shell/ShellTop.js";
 import { SHELL_DEFAULTS } from "../themes/apply-defaults.js";
@@ -23,6 +23,11 @@ export type ComposeTreeOptions = {
    * the theme rather than package hardcoded values. Thread via explicit props
    * (NOT React Context — satori does not run hooks, codex F1). */
   prepared?: PreparedTheme;
+  /** Resolved output (paper) width in pixels. Used to derive each block's
+   * `RenderContext.contentWidth` (this minus the shell's horizontal padding). */
+  width: number;
+  /** Resolved output DPI, forwarded verbatim onto every RenderContext.dpi. */
+  dpi: number;
 };
 
 /**
@@ -41,7 +46,7 @@ export type ComposeTreeResult = {
  * in the returned `failedBlocks` array regardless of the chosen policy.
  */
 export function composeTree(composition: Composition, opts: ComposeTreeOptions): ComposeTreeResult {
-  const { registry, logger, onUnknownType, onBlockError, prepared } = opts;
+  const { registry, logger, onUnknownType, onBlockError, prepared, width, dpi } = opts;
   const failedBlocks: FailedBlock[] = [];
   const blockElements: ReactElement[] = [];
 
@@ -95,6 +100,10 @@ export function composeTree(composition: Composition, opts: ComposeTreeOptions):
       logger,
       theme: prepared?.shell ?? SHELL_DEFAULTS,
       fontRoles: prepared?.fontRoles ?? {},
+      // Derive usable content width from the paper width and the shell's
+      // (constant) horizontal padding — single source of truth, no magic offset.
+      contentWidth: width - 2 * SHELL_CONTENT_PADDING_X,
+      dpi,
     };
 
     try {
