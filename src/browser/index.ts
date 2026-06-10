@@ -1,6 +1,6 @@
 /**
+ * @module pressedslip/browser
  * @fileoverview Browser-safe entrypoint for `pressedslip/browser`.
- * @packageDocumentation
  *
  * Browser-safe entrypoint. Re-exports blocks, registry helpers, themes,
  * provider primitives, and the resvg-wasm render path without importing Node

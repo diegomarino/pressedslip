@@ -30,6 +30,7 @@
     "@deprecated",
     "@remarks",
     "@fileoverview",
+    "@module",
     "@template"
   ],
   "githubPages": false,

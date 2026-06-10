@@ -1,6 +1,6 @@
 /**
+ * @module pressedslip/providers
  * @fileoverview Provider entrypoint for `pressedslip/providers`.
- * @packageDocumentation
  *
  * Provider entrypoint. Contains all provider primitives plus Node-only
  * factories such as OpenMeteo, file cache, and node font cache.
