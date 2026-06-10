@@ -133,7 +133,7 @@ Both violations throw synchronously before any `compose()` call can succeed.
 |---|---|
 | [ADR-0014](../adrs/0014-error-handling-and-no-silent-failures.md) | Establishes the "mode + always-record" principle: `failedBlocks` is always populated regardless of error mode; failure records are never silently dropped. Provider failures follow the same invariant at the orchestrator level. |
 | [ADR-0008](../adrs/0008-quality-bar-never-rules.md) | "No silent failures" quality rule that motivated the always-record design. Provider timeouts surface as `"error"` entries, not as dropped blocks with no signal. |
-| [ADR-0009](../adrs/0009-bounded-hybrid-migration.md) | The bounded-hybrid migration strategy; obligations M1, M4, M7, M8 (parity behaviors) cover provider-level orchestration. |
+| Bounded-hybrid migration strategy | The bounded-hybrid migration strategy adopted during extraction establishes parity obligations M1, M4, M7, M8 that cover provider-level orchestration. |
 | [ADR-0011](../adrs/0011-public-api-shape.md) | Provider types (`ProviderDefinition`, `ProviderContext`, `ProviderResult`, `ProviderOutcome`) are part of the public API surface. |
 
 ---

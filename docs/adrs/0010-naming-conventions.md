@@ -57,7 +57,7 @@ The context: marplanner's existing type was `BriefingEnvelope<T>`, with an `enve
 ## Links
 
 - [ADR-0011: Public API shape](0011-public-api-shape.md)
-- [ADR-0009: Bounded-hybrid migration strategy](0009-bounded-hybrid-migration.md)
+- Bounded-hybrid migration strategy (the strategy adopted during extraction from the source app)
 
 ---
 
