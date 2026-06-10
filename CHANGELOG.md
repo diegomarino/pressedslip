@@ -1,3 +1,9 @@
+## [0.3.0](https://github.com/diegomarino/pressedslip/compare/v0.2.0...v0.3.0) (2026-06-10)
+
+### Features
+
+* enrich RenderContext with paper geometry (contentWidth + dpi) ([#3](https://github.com/diegomarino/pressedslip/issues/3)) ([c6ced0a](https://github.com/diegomarino/pressedslip/commit/c6ced0a2f0ea449fc90272b4dc850295d3c3f730))
+
 ## [0.2.0](https://github.com/diegomarino/pressedslip/compare/v0.1.3...v0.2.0) (2026-06-10)
 
 ### Features
