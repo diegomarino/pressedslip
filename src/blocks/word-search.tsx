@@ -1,7 +1,8 @@
 /**
  * @fileoverview wordSearchBlock: render-only word-search grid. Caller provides
- * the pre-filled grid and word list; this block renders them with fixed 24×24px
- * monospace cells and a 2-column word list below.
+ * the pre-filled grid and word list; this block renders them with square monospace
+ * cells at a normal 36px target (the grid grows with column count, shrinking only to
+ * fit the paper width) and a 2-column word list below.
  */
 import { type ZodType, z } from "zod";
 import { defineBlock } from "../define-block.js";
@@ -38,10 +39,10 @@ export type WordSearchData = z.infer<typeof wordSearchSchema>;
 /**
  * Built-in word-search grid block.
  *
- * Renders a fixed-size monospace grid (24×24px cells, JetBrains Mono 14px)
- * bordered by `ctx.theme.separatorColor`, with hidden words listed in two
- * columns below. Grid construction is the caller's responsibility — this block
- * is render-only.
+ * Renders a monospace grid (square cells at a normal 36px target that shrink to
+ * fit `ctx.contentWidth` when needed, JetBrains Mono) bordered by `ctx.theme.separatorColor`,
+ * with hidden words listed in two columns below. Grid construction is the caller's
+ * responsibility — this block is render-only.
  *
  * @example
  * ```ts
@@ -56,15 +57,41 @@ export const wordSearchBlock: BlockDefinition<WordSearchData> = defineBlock({
   schema: wordSearchSchema,
   render: ({ data, ctx }) => {
     const bodyStyle = applyTextStyle(ctx.theme.textStyles.body, ctx.fontRoles);
+    // Cell sizing: cells default to a NORMAL size and the grid grows with the
+    // column count (a 12-col puzzle is physically wider than a 6-col one). Only
+    // when the grid would overflow the available content width do cells shrink to
+    // fit, down to a MIN legibility floor. This is the inverse of a fill-the-paper
+    // approach — small grids stay small, they don't stretch.
+    const NORMAL_CELL = 36;
+    const MIN_CELL = 16;
+    const WRAPPER_PADDING = 8; // this block's own outer padding, per side (see wrapper below)
+    // ctx.contentWidth is the usable width inside the shell's horizontal padding;
+    // subtract this block's own wrapper padding to get the grid's budget. Schema
+    // guarantees a non-empty rectangular grid, so grid[0] always exists.
+    const cols = data.grid[0]?.length ?? 6;
+    const availableWidth = ctx.contentWidth - 2 * WRAPPER_PADDING;
+    const cellSize = Math.max(MIN_CELL, Math.min(NORMAL_CELL, Math.floor(availableWidth / cols)));
+    // fontSize tracks cellSize at a 21/24 ratio (≈0.875) to preserve glyph fit while
+    // keeping the letters comfortably large within each ruled cell.
+    const cellFontSize = Math.round(cellSize * (21 / 24));
     // fontFamily/fontSize: identity intent — monospace alignment is non-negotiable for word-search.
+    // Each cell draws its right + bottom edge; the container (below) draws top + left.
+    // Shared edges therefore render exactly one 1px line — no doubled seams. Satori
+    // defaults to border-box, so the inset borders don't change the cell's outer size.
     const cellStyle = {
-      width: 24,
-      height: 24,
+      width: cellSize,
+      height: cellSize,
       display: "flex" as const,
       justifyContent: "center" as const,
       alignItems: "center" as const,
       fontFamily: '"JetBrains Mono"',
-      fontSize: 20,
+      fontSize: cellFontSize,
+      borderRightWidth: 1,
+      borderRightStyle: "solid" as const,
+      borderRightColor: ctx.theme.separatorColor,
+      borderBottomWidth: 1,
+      borderBottomStyle: "solid" as const,
+      borderBottomColor: ctx.theme.separatorColor,
     };
     const midpoint = Math.ceil(data.words.length / 2);
     const leftWords = data.words.slice(0, midpoint);
@@ -80,15 +107,19 @@ export const wordSearchBlock: BlockDefinition<WordSearchData> = defineBlock({
           alignItems: "center",
         }}
       >
-        {/* Grid container — outer border via separatorColor; no inter-cell gaps.
+        {/* Grid container — draws only the top + left edges; cells supply right + bottom,
+            so every row/column is separated by a single 1px ruled line (no doubled seams).
             Satori does not support the `border` shorthand — use individual properties. */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            borderWidth: 1,
-            borderStyle: "solid",
-            borderColor: ctx.theme.separatorColor,
+            borderTopWidth: 1,
+            borderTopStyle: "solid",
+            borderTopColor: ctx.theme.separatorColor,
+            borderLeftWidth: 1,
+            borderLeftStyle: "solid",
+            borderLeftColor: ctx.theme.separatorColor,
           }}
         >
           {data.grid.map((row, ri) => (
