@@ -1,3 +1,14 @@
+## [0.2.0](https://github.com/diegomarino/pressedslip/compare/v0.1.3...v0.2.0) (2026-06-10)
+
+### Features
+
+* documentation audit and fixes ([#2](https://github.com/diegomarino/pressedslip/issues/2)) ([49abce4](https://github.com/diegomarino/pressedslip/commit/49abce477c14e30503636e8be15e9f9928315458))
+
+### Documentation
+
+* **architecture:** clean up key boundaries list and remove internal references ([e63e539](https://github.com/diegomarino/pressedslip/commit/e63e5391853b7b425ba33553e78bedfa881c769f))
+* **playground:** skip unknown blockTypes in JSON editor validation instead of aborting draft sync ([cacb498](https://github.com/diegomarino/pressedslip/commit/cacb49800c208dd6394eeb03839177b49a407d71))
+
 ## [0.1.3](https://github.com/diegomarino/pressedslip/compare/v0.1.2...v0.1.3) (2026-06-09)
 
 ### Bug Fixes
