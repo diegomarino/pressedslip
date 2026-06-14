@@ -73,6 +73,7 @@ export const SHELL_DEFAULTS: Required<ShellTheme> = {
   separatorColor: "#000",
   listItemGap: 8,
   listItemBullet: "•",
+  wordSearchBorderColor: "#000",
   textStyles: TEXT_STYLES_DEFAULTS,
 };
 
@@ -117,10 +118,17 @@ export const HEADER_DEFAULTS: Required<HeaderTheme> = {
  * ```
  */
 export function applyShellDefaults(input: ShellTheme): Required<ShellTheme> {
-  return {
+  const resolved = {
     ...SHELL_DEFAULTS,
     ...input,
     textStyles: mergeTextStyles(input.textStyles),
+  };
+  // wordSearchBorderColor falls back to the *resolved* separatorColor (not the
+  // SHELL_DEFAULTS value) so themes that set a light separatorColor but omit
+  // wordSearchBorderColor automatically get the correct grid-line color.
+  return {
+    ...resolved,
+    wordSearchBorderColor: input.wordSearchBorderColor ?? resolved.separatorColor,
   };
 }
 

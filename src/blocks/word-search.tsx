@@ -40,8 +40,9 @@ export type WordSearchData = z.infer<typeof wordSearchSchema>;
  * Built-in word-search grid block.
  *
  * Renders a monospace grid (square cells at a normal 36px target that shrink to
- * fit `ctx.contentWidth` when needed, JetBrains Mono) bordered by `ctx.theme.separatorColor`,
- * with hidden words listed in two columns below. Grid construction is the caller's
+ * fit `ctx.contentWidth` when needed, JetBrains Mono) bordered by `ctx.theme.wordSearchBorderColor`
+ * (falls back to `separatorColor` when unset), with hidden words listed in two columns below. Grid
+ * construction is the caller's
  * responsibility — this block is render-only.
  *
  * @example
@@ -57,6 +58,7 @@ export const wordSearchBlock: BlockDefinition<WordSearchData> = defineBlock({
   schema: wordSearchSchema,
   render: ({ data, ctx }) => {
     const bodyStyle = applyTextStyle(ctx.theme.textStyles.body, ctx.fontRoles);
+    const gridBorderColor = ctx.theme.wordSearchBorderColor;
     // Cell sizing: cells default to a NORMAL size and the grid grows with the
     // column count (a 12-col puzzle is physically wider than a 6-col one). Only
     // when the grid would overflow the available content width do cells shrink to
@@ -88,10 +90,10 @@ export const wordSearchBlock: BlockDefinition<WordSearchData> = defineBlock({
       fontSize: cellFontSize,
       borderRightWidth: 1,
       borderRightStyle: "solid" as const,
-      borderRightColor: ctx.theme.separatorColor,
+      borderRightColor: gridBorderColor,
       borderBottomWidth: 1,
       borderBottomStyle: "solid" as const,
-      borderBottomColor: ctx.theme.separatorColor,
+      borderBottomColor: gridBorderColor,
     };
     const midpoint = Math.ceil(data.words.length / 2);
     const leftWords = data.words.slice(0, midpoint);
@@ -116,10 +118,10 @@ export const wordSearchBlock: BlockDefinition<WordSearchData> = defineBlock({
             flexDirection: "column",
             borderTopWidth: 1,
             borderTopStyle: "solid",
-            borderTopColor: ctx.theme.separatorColor,
+            borderTopColor: gridBorderColor,
             borderLeftWidth: 1,
             borderLeftStyle: "solid",
-            borderLeftColor: ctx.theme.separatorColor,
+            borderLeftColor: gridBorderColor,
           }}
         >
           {data.grid.map((row, ri) => (
