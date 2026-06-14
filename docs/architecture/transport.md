@@ -79,7 +79,7 @@ The implementation must preserve all of the following. Any fix that would violat
 
 | ADR | Relevance |
 |---|---|
-| [ADR-0005: Node baseline >=22.11](../adrs/0005-node-baseline-22.md) | The `/transports` subpath relies on `node:net` (TCP socket) and `node:fs/promises`; Node 22 is the minimum supported version. |
+| [ADR-0005: Node baseline >=22.12](../adrs/0005-node-baseline-22.md) | The `/transports` subpath relies on `node:net` (TCP socket) and `node:fs/promises`; Node 22 is the minimum supported version. |
 | [ADR-0011: Public API shape](../adrs/0011-public-api-shape.md) | Establishes `/transports` as a named subpath export; the `Transport` interface and three reference factories are the committed public surface. |
 | [ADR-0013: WidthSpec and PAPER presets](../adrs/0013-widthspec-and-paper.md) | Fixes `PRINT_WIDTH_DOTS` at 576 — the printable pixel width of an 80 mm thermal roll at 203 dpi. The ESC/POS raster constraint (`width === 576`) is a direct consequence of this decision. |
 | [ADR-0014: Error handling and no-silent-failures](../adrs/0014-error-handling-and-no-silent-failures.md) | Mandates that all operational failures throw with a `code` tag and that programmer errors are never caught. All three reference transports implement this contract. |

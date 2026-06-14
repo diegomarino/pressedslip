@@ -10,7 +10,7 @@ message, or a new builtin block are the kinds of changes that land quickly.
 
 ## Dev environment setup
 
-**Prerequisites:** Node 22.11 or later (see `.nvmrc`; the rationale is in
+**Prerequisites:** Node 22.12 or later (see `.nvmrc`; the rationale is in
 [`docs/adrs/0005-node-baseline-22.md`](./docs/adrs/0005-node-baseline-22.md)).
 pnpm is the package manager
 ([`docs/adrs/0002-package-manager-pnpm.md`](./docs/adrs/0002-package-manager-pnpm.md)).
