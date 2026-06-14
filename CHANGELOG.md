@@ -1,3 +1,10 @@
+## [0.3.3](https://github.com/diegomarino/pressedslip/compare/v0.3.2...v0.3.3) (2026-06-14)
+
+### Bug Fixes
+
+* **cjs:** static-import satori + raise engines.node to >=22.12 ([#8](https://github.com/diegomarino/pressedslip/issues/8)) ([71e27a2](https://github.com/diegomarino/pressedslip/commit/71e27a21205fba8f120009aa4df384ed6c0c355e)), closes [#7](https://github.com/diegomarino/pressedslip/issues/7) [#7](https://github.com/diegomarino/pressedslip/issues/7)
+* **cjs:** unwrap satori namespace for Node >=22.12 CJS consumers ([#7](https://github.com/diegomarino/pressedslip/issues/7)) ([abaaa8f](https://github.com/diegomarino/pressedslip/commit/abaaa8fe5f53b0afd04efe6c66569fa2a2b899f9))
+
 ## [0.3.2](https://github.com/diegomarino/pressedslip/compare/v0.3.1...v0.3.2) (2026-06-14)
 
 ### Bug Fixes
