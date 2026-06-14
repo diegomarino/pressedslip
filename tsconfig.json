@@ -14,7 +14,14 @@
     "noEmit": true,
     "lib": ["ES2023"],
     "types": ["node"],
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "paths": {
+      "pressedslip": ["./src/index.ts"],
+      "pressedslip/testing": ["./src/testing/index.ts"],
+      "pressedslip/providers": ["./src/providers/index.ts"],
+      "pressedslip/browser": ["./src/browser/index.ts"],
+      "pressedslip/transports": ["./src/transports/index.ts"]
+    }
   },
   "include": ["src", "tests"],
   "exclude": [".attic"]
