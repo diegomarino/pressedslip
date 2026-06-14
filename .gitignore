@@ -40,3 +40,4 @@ apps/playground/playwright-report/
 
 # C4 — typedoc output is regenerated locally; API overview is tracked.
 docs/api/reference/**
+.worktrees/
