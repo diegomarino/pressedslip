@@ -143,6 +143,19 @@ export type ShellTheme = {
    * for ASCII parity.
    */
   listItemBullet?: string;
+  /**
+   * Color of the word-search grid border lines (CSS color string).
+   *
+   * **Why a separate field:** `separatorColor` targets decorative inter-block
+   * separator lines and is often a light gray in themes designed for thermal
+   * 1-bit binarization (e.g. `#b8b0a0`). At a 128-luma threshold that gray
+   * maps to white, making the grid lines disappear. This field lets themes
+   * dial in grid-line contrast independently of separator aesthetics.
+   *
+   * Falls back to the resolved `separatorColor` when omitted — so existing
+   * themes require no changes unless they need grid lines to differ.
+   */
+  wordSearchBorderColor?: string;
   /** Per-slot text-style vocabulary. See `TextStyles` for slot semantics. */
   textStyles?: TextStyles;
 };

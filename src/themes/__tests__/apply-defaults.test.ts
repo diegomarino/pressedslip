@@ -93,3 +93,23 @@ describe("applyShellDefaults — listItemBullet", () => {
     expect(applyShellDefaults({} as ShellTheme).listItemBullet).toBe("•");
   });
 });
+
+describe("applyShellDefaults — wordSearchBorderColor", () => {
+  it("uses the explicit wordSearchBorderColor when provided", () => {
+    const out = applyShellDefaults({
+      separatorColor: "#b8b0a0",
+      wordSearchBorderColor: "#000000",
+    } as ShellTheme);
+    expect(out.wordSearchBorderColor).toBe("#000000");
+  });
+
+  it("falls back to the resolved separatorColor when wordSearchBorderColor is omitted", () => {
+    const out = applyShellDefaults({ separatorColor: "#b8b0a0" } as ShellTheme);
+    expect(out.wordSearchBorderColor).toBe("#b8b0a0");
+  });
+
+  it("falls back to the default separatorColor when neither field is provided", () => {
+    const out = applyShellDefaults({} as ShellTheme);
+    expect(out.wordSearchBorderColor).toBe(SHELL_DEFAULTS.separatorColor);
+  });
+});

@@ -175,6 +175,18 @@ describe("wordSearchBlock — render", () => {
     expect(html).toContain("border-bottom-width:1px");
   });
 
+  it("uses wordSearchBorderColor for grid lines when set, ignoring separatorColor", () => {
+    // Simulates a thermal theme: light separator (#b8b0a0) that would binarize to white,
+    // but wordSearchBorderColor explicitly set to black so grid lines remain visible.
+    const ctx = makeCtx({ separatorColor: "#b8b0a0", wordSearchBorderColor: "#000000" });
+    const data: WordSearchData = { grid: basicGrid, words: ["DART"] };
+    const element = wordSearchBlock.render({ data, ctx });
+    // biome-ignore lint/style/noNonNullAssertion: null checked above
+    const html = renderToStaticMarkup(element!);
+    expect(html).toContain("#000000");
+    expect(html).not.toContain("#b8b0a0");
+  });
+
   it("draws an inter-cell gridline on every cell (right + bottom edge)", () => {
     const ctx = makeCtx();
     const data: WordSearchData = { grid: basicGrid, words: ["DART"] };
