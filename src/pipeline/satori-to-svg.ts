@@ -2,7 +2,6 @@
  * @fileoverview React element to SVG conversion via Satori, with font passthrough and weight type coercion.
  */
 import type { ReactElement } from "react";
-import satori from "satori";
 import type { LoadedFont } from "../types.js";
 
 /**
@@ -19,7 +18,14 @@ export type SatoriOpts = {
  * coerced to Satori's accepted numeric literal union (100–900) via `as`.
  */
 export async function renderReactToSvg(element: ReactElement, opts: SatoriOpts): Promise<string> {
-  return satori(element, {
+  // Dynamic import keeps satori out of esbuild's __toESM CJS interop wrapper.
+  // Static `import satori from "satori"` compiles to `(0, satori.default)(...)`
+  // in the CJS bundle, which breaks under Node >= 22.12 require(esm) because
+  // the wrapper sets `target.default` to satori's whole namespace object.
+  const mod = await import("satori");
+  const satoriFn =
+    (mod as { default?: typeof mod.default }).default ?? (mod as unknown as typeof mod.default);
+  return satoriFn(element, {
     width: opts.width,
     fonts: opts.fonts.map((f) => ({
       name: f.name,
