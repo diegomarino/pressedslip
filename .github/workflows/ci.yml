@@ -28,8 +28,8 @@ jobs:
       - run: pnpm test
       - run: pnpm check-docs
       - run: pnpm check-public-docs
-      - run: pnpm dlx publint
-      - run: pnpm dlx @arethetypeswrong/cli --pack .
+      - run: pnpm exec publint
+      - run: pnpm exec attw --pack .
 
   tarball-smoke:
     runs-on: ubuntu-latest
@@ -56,9 +56,6 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build           # docs:api / check-docs resolve 'pressedslip'
-                                  # self-imports through package.json#exports
-                                  # to ./dist/ — must exist before tsc runs
-      - run: pnpm check-docs
-      - run: pnpm check-public-docs
+      - run: pnpm build           # docs:api resolves 'pressedslip' self-imports
+                                  # through package.json#exports to ./dist/
       - run: pnpm docs:api
