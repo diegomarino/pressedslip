@@ -1,3 +1,9 @@
+## [0.3.1](https://github.com/diegomarino/pressedslip/compare/v0.3.0...v0.3.1) (2026-06-14)
+
+### Bug Fixes
+
+* **theme:** add wordSearchBorderColor to prevent grid lines disappearing on thermal themes ([#4](https://github.com/diegomarino/pressedslip/issues/4)) ([15d2acc](https://github.com/diegomarino/pressedslip/commit/15d2acccac86884e3395cc282627bb2748ad280d)), closes [#b8b0a0](https://github.com/diegomarino/pressedslip/issues/b8b0a0)
+
 ## [0.3.0](https://github.com/diegomarino/pressedslip/compare/v0.2.0...v0.3.0) (2026-06-10)
 
 ### Features
