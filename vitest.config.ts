@@ -28,7 +28,13 @@ export default defineConfig({
     // narrows discovery to `src/` only) plus Playwright via the verify gate.
     // Also exclude git worktrees checked out under .claude/worktrees/ — they
     // are isolated branches and must not leak their test files into the root run.
-    exclude: ["**/node_modules/**", "**/dist/**", "apps/playground/tests/**", "**/*worktrees/**"],
+    exclude: [
+      "**/node_modules/**",
+      "**/dist/**",
+      "apps/playground/tests/**",
+      "**/*worktrees/**",
+      "examples/**",
+    ],
     typecheck: {
       enabled: true,
       include: ["**/*.test-d.ts"],

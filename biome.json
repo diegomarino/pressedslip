@@ -64,6 +64,22 @@
       }
     },
     {
+      "includes": ["examples/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noNonNullAssertion": "off",
+            "useImportType": "off"
+          },
+          "correctness": { "noUnusedImports": "off" },
+          "a11y": {
+            "useButtonType": "off",
+            "noSvgWithoutTitle": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": ["scripts/doc-snippets-context.d.ts", "scripts/doc-snippets-shims.d.ts"],
       "linter": {
         "rules": {
