@@ -26,7 +26,9 @@ export default defineConfig({
     // scan it and fail (Playwright's `test()` API is not vitest's). The
     // playground runs its own vitest via `pnpm --filter ... test` (which
     // narrows discovery to `src/` only) plus Playwright via the verify gate.
-    exclude: ["**/node_modules/**", "**/dist/**", "apps/playground/tests/**"],
+    // Also exclude git worktrees checked out under .claude/worktrees/ — they
+    // are isolated branches and must not leak their test files into the root run.
+    exclude: ["**/node_modules/**", "**/dist/**", "apps/playground/tests/**", "**/*worktrees/**"],
     typecheck: {
       enabled: true,
       include: ["**/*.test-d.ts"],
