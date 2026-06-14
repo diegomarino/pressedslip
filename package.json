@@ -1,10 +1,10 @@
 {
   "name": "pressedslip",
-  "version": "0.3.1",
+  "version": "0.3.3",
   "description": "Compose printable slips from pre-built content blocks and send them directly to your thermal printer.",
   "type": "module",
   "engines": {
-    "node": ">=22.11"
+    "node": ">=22.12"
   },
   "packageManager": "pnpm@10.29.3",
   "exports": {

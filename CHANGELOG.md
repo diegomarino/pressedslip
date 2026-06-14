@@ -1,3 +1,20 @@
+## [0.3.3](https://github.com/diegomarino/pressedslip/compare/v0.3.2...v0.3.3) (2026-06-14)
+
+### Bug Fixes
+
+* **cjs:** static-import satori + raise engines.node to >=22.12 ([#8](https://github.com/diegomarino/pressedslip/issues/8)) ([71e27a2](https://github.com/diegomarino/pressedslip/commit/71e27a21205fba8f120009aa4df384ed6c0c355e)), closes [#7](https://github.com/diegomarino/pressedslip/issues/7) [#7](https://github.com/diegomarino/pressedslip/issues/7)
+* **cjs:** unwrap satori namespace for Node >=22.12 CJS consumers ([#7](https://github.com/diegomarino/pressedslip/issues/7)) ([abaaa8f](https://github.com/diegomarino/pressedslip/commit/abaaa8fe5f53b0afd04efe6c66569fa2a2b899f9))
+
+## [0.3.2](https://github.com/diegomarino/pressedslip/compare/v0.3.1...v0.3.2) (2026-06-14)
+
+### Bug Fixes
+
+* **build:** add tsconfig paths for self-subpath imports ([#6](https://github.com/diegomarino/pressedslip/issues/6)) ([b50f855](https://github.com/diegomarino/pressedslip/commit/b50f8553c210c3b8385539937f6e4dc6d40fdce5)), closes [package.json#exports](https://github.com/diegomarino/package.json/issues/exports)
+
+### Maintenance
+
+* **ci:** reduce redundant work across workflows ([#5](https://github.com/diegomarino/pressedslip/issues/5)) ([b0148d5](https://github.com/diegomarino/pressedslip/commit/b0148d59bf799c6a38d5935a9c8ea7cb762d8695))
+
 ## [0.3.1](https://github.com/diegomarino/pressedslip/compare/v0.3.0...v0.3.1) (2026-06-14)
 
 ### Bug Fixes

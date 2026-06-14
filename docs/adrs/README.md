@@ -10,7 +10,7 @@ These ADRs are the project's internal design history. They reference internal de
 | [0002](0002-package-manager-pnpm.md) | Package manager — pnpm 10.x | accepted | Use pnpm for strict node_modules layout and `workspace:*` dist consumption. |
 | [0003](0003-linter-formatter-biome-alone.md) | Linter + formatter — Biome 2.x alone | accepted | Use Biome 2.x as the sole linter and formatter; no ESLint or Prettier. |
 | [0004](0004-git-hooks-husky-alone.md) | Git hooks — Husky 9.x alone (no lint-staged) | accepted | Use Husky alone; Biome's `--staged` mode replaces lint-staged. |
-| [0005](0005-node-baseline-22.md) | Node.js baseline — >=22.11 | accepted | Target Node >=22.11 (Active LTS) for native ESM `require()` support. |
+| [0005](0005-node-baseline-22.md) | Node.js baseline — >=22.12 | accepted | Target Node >=22.12 (Active LTS) for unflagged `require(esm)` so CJS consumers can load ESM-only deps like `satori`. |
 | [0006](0006-repo-topology-workspace-at-root.md) | Repository topology — pnpm workspace, publishable package at root | accepted | Place the publishable package at the workspace root so dist is always exercised. |
 | [0007](0007-test-runner-vitest.md) | Test runner — Vitest 4.1.x | accepted | Use Vitest 4.x for native TypeScript/ESM support and Jest-compatible API. |
 | [0008](0008-quality-bar-never-rules.md) | Quality bar — five rules we never relax | accepted | Enforce five hard lint rules (no `any`, no silent failures, etc.) at `error` level. |

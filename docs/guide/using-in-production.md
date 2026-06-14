@@ -125,7 +125,7 @@ This gate ensures the development/demo surface does not regress. The published n
 
 ### Node.js versions
 
-- **Minimum:** Node 22.11 (set in `package.json#engines`).
+- **Minimum:** Node 22.12 (set in `package.json#engines`). `require(esm)` is gated behind a flag in Node 22.11 and earlier, and CJS consumers of this package import an ESM-only dep (`satori`) via `require()`; 22.12 is the first version where that resolves without `ERR_REQUIRE_ESM`.
 - **Tested:** Node 22, 24 (matrix in `.github/workflows/ci.yml`).
 - **Module type:** ESM-first (`"type": "module"` in package.json), CJS shim provided.
 
