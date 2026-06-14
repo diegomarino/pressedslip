@@ -79,6 +79,12 @@
     "dev:render": "tsx scripts/dev-render.ts",
     "dev:render:all": "tsx scripts/dev-render.ts --all",
     "dev:render:watch": "tsx scripts/dev-render.ts --all --watch",
+    "example:number-fact": "tsx examples/number-fact/example.ts",
+    "example:dad-joke": "tsx examples/dad-joke/example.ts",
+    "example:riddle": "tsx examples/riddle/example.ts",
+    "example:word-of-day": "tsx examples/word-of-day/example.tsx",
+    "example:weather": "tsx examples/weather/example.tsx",
+    "example:all": "pnpm example:number-fact && pnpm example:dad-joke && pnpm example:riddle && pnpm example:word-of-day && pnpm example:weather",
     "docs:api": "typedoc",
     "check-public-docs": "node scripts/check-public-docs.mjs",
     "docs:visual-refs": "tsx scripts/docs/render-visual-refs.ts",
@@ -112,6 +118,7 @@
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
     "@vitest/coverage-v8": "^4.1.7",
+    "fast-png": "^8.0.0",
     "husky": "^9.1.7",
     "publint": "^0.3.21",
     "react": "^19.2.6",
@@ -155,7 +162,6 @@
   "dependencies": {
     "@resvg/resvg-js": "^2.6.2",
     "@resvg/resvg-wasm": "^2.6.2",
-    "fast-png": "^8.0.0",
     "jsonc-parser": "^3.3.1",
     "satori": "^0.26.0"
   },

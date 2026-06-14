@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Number Fact — pressedslip example</title>
+    <style>
+      body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+      button { padding: 0.5rem 1rem; font-size: 1rem; cursor: pointer; }
+      #preview { display: block; margin-top: 1rem; max-width: 100%; image-rendering: pixelated; border: 1px solid #ddd; }
+      #status { margin-top: 0.5rem; font-family: monospace; font-size: 0.85rem; color: #555; min-height: 1.2em; }
+    </style>
+  </head>
+  <body>
+    <h1>Number Fact</h1>
+    <p>Pure-composition example: picks today's number trivia by day of month and renders it through the built-in <code>kpi</code> block. No external API, no custom block.</p>
+    <div id="status">Rendering…</div>
+    <img id="preview" alt="" />
+    <a id="download" hidden>Download PNG</a>
+    <script type="module">
+      import {
+        builtinBlocks,
+        createRegistry,
+        loadThemeFonts,
+        render,
+        themes,
+      } from "https://esm.sh/pressedslip@latest/browser";
+
+      const facts = {
+        1: "is the only positive integer that is neither prime nor composite.",
+        2: "is the only even prime number.",
+        3: "is the smallest odd prime and the number of dimensions humans perceive.",
+        4: "is the only number whose name in English has the same number of letters as its value.",
+        5: "is the number of Platonic solids: tetrahedron, cube, octahedron, dodecahedron, icosahedron.",
+        6: "is the smallest perfect number: 1 + 2 + 3 = 6.",
+        7: "is the number of continents, days in a week, and notes in a Western diatonic scale.",
+        8: "is the number of bits in a byte and the only cube that is one less than a square.",
+        9: "is the number such that every multiple has digits that sum to a multiple of 9.",
+        10: "is the base of the decimal system, dating back to ancient counting on fingers.",
+        11: "is the smallest two-digit prime and the number of players on a soccer team.",
+        12: "is the number of signs in the zodiac, months in a year, and hours on a clock face.",
+        13: "is considered unlucky in many Western cultures but lucky in Italy.",
+        14: "is the atomic number of silicon, the second-most-abundant element in Earth's crust.",
+        15: "is a triangular number: 1 + 2 + 3 + 4 + 5 = 15.",
+        16: "is the only number of the form x^y = y^x with distinct positive integers (2^4 = 4^2).",
+        17: "is the number of syllables in a haiku (5-7-5) and a Fermat prime.",
+        18: "is the number of holes in a standard round of golf.",
+        19: "is the number of years in the Metonic cycle, which aligns lunar and solar calendars.",
+        20: "is the highest score on a single dart throw (treble 20).",
+        21: "is the number of spots on a standard six-sided die (1+2+3+4+5+6).",
+        22: "is the catch in Joseph Heller's novel; also the atomic number of titanium.",
+        23: "is the number of pairs of chromosomes in a human cell.",
+        24: "is the number of hours in a day and frames per second in classic cinema.",
+        25: "is a perfect square (5^2) and the smallest pseudoprime in base 7.",
+        26: "is the number of letters in the English alphabet.",
+        27: "is 3^3 and the number of bones in a human hand.",
+        28: "is the second perfect number: 1 + 2 + 4 + 7 + 14 = 28.",
+        29: "is the only month-end day that appears once every four years.",
+        30: "is the number of degrees in each section of a clock face.",
+        31: "is a Mersenne prime: 2^5 - 1 = 31.",
+      };
+
+      const statusEl = document.getElementById("status");
+      const previewEl = document.getElementById("preview");
+      const downloadEl = document.getElementById("download");
+
+      async function generate() {
+        statusEl.textContent = "Loading theme + wasm…";
+        const day = new Date().getDate();
+        const fact = facts[day] ?? "is just a number.";
+        const today = new Date().toISOString().slice(0, 10);
+        const registry = createRegistry(builtinBlocks);
+        const theme = await loadThemeFonts(themes.default);
+        const wasm = fetch("https://esm.sh/@resvg/resvg-wasm/index_bg.wasm");
+
+        statusEl.textContent = `Rendering day ${day}…`;
+        const { bytes } = await render(
+          {
+            id: `number-fact-${today}`,
+            version: 1,
+            date: today,
+            status: "ready",
+            slots: [
+              {
+                index: 0,
+                blockType: "kpi",
+                data: { value: String(day), caption: fact },
+                title: "Number of the day",
+              },
+            ],
+          },
+          { registry, theme, wasm },
+        );
+
+        const blob = new Blob([bytes], { type: "image/png" });
+        const url = URL.createObjectURL(blob);
+        previewEl.src = url;
+        downloadEl.href = url;
+        downloadEl.download = `number-fact-${today}.png`;
+        downloadEl.hidden = false;
+        downloadEl.textContent = "Download PNG";
+        statusEl.textContent = `Day ${day}: ${day} ${fact}`;
+      }
+
+      generate().catch((err) => {
+        statusEl.textContent = `Error: ${String(err)}`;
+        console.error(err);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Word of the Day — pressedslip example</title>
+    <style>
+      body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+      button { padding: 0.5rem 1rem; font-size: 1rem; cursor: pointer; }
+      #preview { display: block; margin-top: 1rem; max-width: 100%; image-rendering: pixelated; border: 1px solid #ddd; }
+      #status { margin-top: 0.5rem; font-family: monospace; font-size: 0.85rem; color: #555; min-height: 1.2em; }
+    </style>
+  </head>
+  <body>
+    <h1>Word of the Day</h1>
+    <p>Custom block defined inline via <code>defineBlock</code>, using <code>applyTextStyle</code> to read theme slots (display, label, body, emphasis). JSX-free in the browser: <code>React.createElement</code> directly.</p>
+    <div id="status">Rendering…</div>
+    <img id="preview" alt="" />
+    <a id="download" hidden>Download PNG</a>
+    <script type="module">
+      import {
+        applyTextStyle,
+        builtinBlocks,
+        createRegistry,
+        defineBlock,
+        defineTheme,
+        loadThemeFonts,
+        render,
+        themes,
+      } from "https://esm.sh/pressedslip@latest/browser";
+      import React from "https://esm.sh/react@19";
+      import { z } from "https://esm.sh/zod@4";
+
+      const h = React.createElement;
+
+      const wordOfDaySchema = z.object({
+        word: z.string(),
+        type: z.string(),
+        pronunciation: z.string(),
+        definition: z.string(),
+        example: z.string(),
+      });
+
+      const wordOfDayBlock = defineBlock({
+        type: "wordOfDay",
+        schema: wordOfDaySchema,
+        render: ({ data, ctx }) => {
+          const displayStyle = applyTextStyle(ctx.theme.textStyles.display, ctx.fontRoles);
+          const labelStyle = applyTextStyle(ctx.theme.textStyles.label, ctx.fontRoles);
+          const bodyStyle = applyTextStyle(ctx.theme.textStyles.body, ctx.fontRoles);
+          const emphasisStyle = applyTextStyle(ctx.theme.textStyles.emphasis, ctx.fontRoles);
+          return h("div", {
+            style: { width: "100%", padding: 8, display: "flex", flexDirection: "column", gap: 4 },
+          },
+            h("div", { style: displayStyle }, data.word),
+            h("div", { style: { display: "flex", flexDirection: "row", gap: 8 } },
+              h("span", { style: labelStyle }, data.type),
+              h("span", { style: labelStyle }, data.pronunciation),
+            ),
+            h("div", { style: bodyStyle }, data.definition),
+            h(
+              "div",
+              { style: { ...emphasisStyle, fontStyle: "italic", textAlign: "right", width: "100%" } },
+              `“${data.example}”`,
+            ),
+          );
+        },
+        shell: { showTitle: true, separator: "thin", padding: "normal" },
+      });
+
+      const corpus = [
+        { word: "Petrichor", type: "noun", pronunciation: "/ˈpɛtrɪkɔːr/", definition: "The pleasant, earthy smell after rain on dry ground.", example: "After the drought, the petrichor was almost intoxicating." },
+        { word: "Sonder", type: "noun", pronunciation: "/ˈsɒndər/", definition: "The realization that each passerby has a life as vivid as your own.", example: "Standing in the train station, she was struck by a sudden sonder." },
+        { word: "Limerence", type: "noun", pronunciation: "/ˈlɪmərəns/", definition: "An involuntary state of intense romantic infatuation.", example: "He confused limerence for love and made a fool of himself." },
+        { word: "Sisu", type: "noun", pronunciation: "/ˈsiːsuː/", definition: "Finnish concept of stoic determination in the face of adversity.", example: "It was sheer sisu that got the climbers to the summit." },
+        { word: "Saudade", type: "noun", pronunciation: "/saʊˈdɑːdə/", definition: "A deep, melancholic longing for something or someone absent.", example: "She felt a quiet saudade for the city of her childhood." },
+        { word: "Hiraeth", type: "noun", pronunciation: "/ˈhɪraɪθ/", definition: "Welsh: a homesickness for a home you cannot return to, or that never was.", example: "There is a hiraeth in old folk songs that nobody can quite name." },
+        { word: "Mamihlapinatapai", type: "noun", pronunciation: "/mɑmɪɬɑpɪnɑtɑˌpaɪ/", definition: "A look shared by two people, each wishing the other would do what both desire but neither will.", example: "Across the dinner table, they shared a long mamihlapinatapai." },
+        { word: "Komorebi", type: "noun", pronunciation: "/koːmoːrɛbi/", definition: "Japanese: sunlight filtering through leaves.", example: "The forest path was dappled with komorebi." },
+        { word: "Iktsuarpok", type: "noun", pronunciation: "/ɪkˈtsuːɑːrpɒk/", definition: "Inuit: the anticipation that makes you keep looking out to see if someone is coming.", example: "He paced by the window in iktsuarpok, expecting his daughter at any moment." },
+        { word: "Wabi-sabi", type: "noun", pronunciation: "/ˌwɑːbi ˈsɑːbi/", definition: "Japanese aesthetic of finding beauty in imperfection and transience.", example: "The chipped ceramic bowl was an exercise in wabi-sabi." },
+        { word: "Querencia", type: "noun", pronunciation: "/kɛˈɾɛnθja/", definition: "A place where one feels safe and most authentically oneself.", example: "The library was her querencia on rainy afternoons." },
+        { word: "Apricity", type: "noun", pronunciation: "/əˈprɪsɪti/", definition: "The warmth of the sun in winter.", example: "He sat on the bench, soaking in the apricity of January." },
+        { word: "Eudaimonia", type: "noun", pronunciation: "/juːdɪˈmoʊniə/", definition: "Greek: human flourishing or the highest good.", example: "Aristotle held that eudaimonia comes from living virtuously." },
+        { word: "Numinous", type: "adjective", pronunciation: "/ˈnuːmɪnəs/", definition: "Having a strong spiritual or supernatural quality.", example: "The mountaintop at dawn felt numinous." },
+        { word: "Liminal", type: "adjective", pronunciation: "/ˈlɪmɪnəl/", definition: "Occupying a position on a boundary; transitional.", example: "Airports are liminal spaces — neither home nor destination." },
+        { word: "Ephemeral", type: "adjective", pronunciation: "/ɪˈfɛmərəl/", definition: "Lasting for a very short time.", example: "Cherry blossoms are loved because they are ephemeral." },
+        { word: "Halcyon", type: "adjective", pronunciation: "/ˈhælsɪən/", definition: "Denoting a period of time in the past that was idyllically happy.", example: "She spoke of the halcyon days of her university years." },
+        { word: "Mellifluous", type: "adjective", pronunciation: "/məˈlɪfluəs/", definition: "Pleasingly smooth and musical to hear.", example: "His mellifluous voice could narrate a phone book and make it gripping." },
+        { word: "Susurrus", type: "noun", pronunciation: "/suˈsʌrəs/", definition: "A whispering, rustling, or murmuring sound.", example: "All night, the susurrus of leaves outside the tent." },
+        { word: "Defenestrate", type: "verb", pronunciation: "/diːˈfɛnɪstreɪt/", definition: "To throw someone or something out of a window.", example: "Frustrated with the manuscript, he threatened to defenestrate the typewriter." },
+        { word: "Crepuscular", type: "adjective", pronunciation: "/krɪˈpʌskjʊlər/", definition: "Of, resembling, or relating to twilight.", example: "Many cats are crepuscular hunters." },
+        { word: "Ineffable", type: "adjective", pronunciation: "/ɪnˈɛfəbəl/", definition: "Too great or extreme to be expressed in words.", example: "The grief was ineffable; she simply held her hand." },
+        { word: "Pareidolia", type: "noun", pronunciation: "/ˌpɛrɪˈdoʊliə/", definition: "The tendency to perceive a meaningful image in random patterns.", example: "Faces in clouds are a classic example of pareidolia." },
+        { word: "Aubade", type: "noun", pronunciation: "/oʊˈbɑːd/", definition: "A poem or piece of music appropriate to the dawn.", example: "The trumpeter played a soft aubade as the sun rose." },
+        { word: "Nepenthe", type: "noun", pronunciation: "/nɪˈpɛnθi/", definition: "A drug or potion that causes forgetfulness of suffering.", example: "She wished for a nepenthe to numb the day." },
+        { word: "Velleity", type: "noun", pronunciation: "/vəˈliːɪti/", definition: "A wish or inclination not strong enough to lead to action.", example: "His desire to learn cello was a mere velleity." },
+        { word: "Yūgen", type: "noun", pronunciation: "/ˈjuːɡɛn/", definition: "Japanese: a profound, mysterious sense of the beauty of the universe.", example: "The deep forest filled him with yūgen." },
+        { word: "Tsundoku", type: "noun", pronunciation: "/tsuːnˈdoʊkuː/", definition: "Japanese: acquiring books and letting them pile up unread.", example: "His apartment was an architectural marvel of tsundoku." },
+        { word: "Fernweh", type: "noun", pronunciation: "/ˈfɛrnveː/", definition: "German: an ache for distant places; the opposite of homesickness.", example: "The travel posters gave her acute fernweh." },
+        { word: "Resfeber", type: "noun", pronunciation: "/ˈreːsfeːbər/", definition: "Swedish: the restless beat of a traveler's heart before a journey.", example: "The night before her flight, resfeber kept her awake." },
+      ];
+
+      function dayOfYear(now = new Date()) {
+        const start = Date.UTC(now.getUTCFullYear(), 0, 0);
+        return Math.floor((now.getTime() - start) / 86_400_000);
+      }
+
+      const statusEl = document.getElementById("status");
+      const previewEl = document.getElementById("preview");
+      const downloadEl = document.getElementById("download");
+
+      async function generate() {
+        statusEl.textContent = "Loading theme + wasm…";
+        const pick = corpus[dayOfYear() % corpus.length];
+        const today = new Date().toISOString().slice(0, 10);
+        const registry = createRegistry([...builtinBlocks, wordOfDayBlock]);
+        // Extend default with Inter italic 400 so the usage-example line can
+        // actually render italic — Satori needs the matching font face.
+        const wordOfDayTheme = defineTheme({
+          ...themes.default,
+          id: "word-of-day-italic",
+          roleUrls: {
+            ...themes.default.roleUrls,
+            body: [
+              ...(themes.default.roleUrls.body ?? []),
+              {
+                family: "Inter",
+                url: "https://fonts.gstatic.com/s/inter/v20/UcCM3FwrK3iLTcvneQg7Ca725JhhKnNqk4j1ebLhAm8SrXTc2dthjQ.ttf",
+                weight: 400,
+                style: "italic",
+              },
+            ],
+          },
+        });
+        const theme = await loadThemeFonts(wordOfDayTheme);
+        const wasm = fetch("https://esm.sh/@resvg/resvg-wasm/index_bg.wasm");
+
+        statusEl.textContent = `Rendering "${pick.word}"…`;
+        const { bytes } = await render(
+          {
+            id: `word-of-day-${today}`,
+            version: 1,
+            date: today,
+            status: "ready",
+            slots: [
+              { index: 0, blockType: "wordOfDay", data: pick, title: "Word of the day" },
+            ],
+          },
+          { registry, theme, wasm },
+        );
+
+        const blob = new Blob([bytes], { type: "image/png" });
+        const url = URL.createObjectURL(blob);
+        previewEl.src = url;
+        downloadEl.href = url;
+        downloadEl.download = `word-of-day-${today}.png`;
+        downloadEl.hidden = false;
+        downloadEl.textContent = "Download PNG";
+        statusEl.textContent = `${pick.word} (${pick.type}): ${pick.definition}`;
+      }
+
+      generate().catch((err) => {
+        statusEl.textContent = `Error: ${String(err)}`;
+        console.error(err);
+      });
+    </script>
+  </body>
+</html>
