@@ -1,3 +1,13 @@
+## [0.3.2](https://github.com/diegomarino/pressedslip/compare/v0.3.1...v0.3.2) (2026-06-14)
+
+### Bug Fixes
+
+* **build:** add tsconfig paths for self-subpath imports ([#6](https://github.com/diegomarino/pressedslip/issues/6)) ([b50f855](https://github.com/diegomarino/pressedslip/commit/b50f8553c210c3b8385539937f6e4dc6d40fdce5)), closes [package.json#exports](https://github.com/diegomarino/package.json/issues/exports)
+
+### Maintenance
+
+* **ci:** reduce redundant work across workflows ([#5](https://github.com/diegomarino/pressedslip/issues/5)) ([b0148d5](https://github.com/diegomarino/pressedslip/commit/b0148d59bf799c6a38d5935a9c8ea7cb762d8695))
+
 ## [0.3.1](https://github.com/diegomarino/pressedslip/compare/v0.3.0...v0.3.1) (2026-06-14)
 
 ### Bug Fixes
