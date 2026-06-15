@@ -80,8 +80,21 @@ export const listBlock: BlockDefinition<ListData> = defineBlock({
               <div style={{ ...emphasisStyle, fontWeight: 700 }}>{group.title}</div>
             )}
             {group.items.map((item, ii) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: item order is stable per data
-              <div key={ii} style={{ ...bodyStyle, display: "flex", flexDirection: "row" }}>
+              <div
+                // biome-ignore lint/suspicious/noArrayIndexKey: item order is stable per data
+                key={ii}
+                style={{
+                  ...bodyStyle,
+                  display: "flex",
+                  flexDirection: "row",
+                  // width:100% + alignItems:flex-start are the row-side half of
+                  // the safe flex-row idiom (see docs/guide/custom-block-walkthrough.md
+                  // "Layout gotcha"): pins the row to the shell content width
+                  // and anchors the id at the top of the wrapped value.
+                  width: "100%",
+                  alignItems: "flex-start",
+                }}
+              >
                 {item.id !== undefined && (
                   // paddingRight (not flex `gap`) — Satori applies flex gap
                   // unreliably when a sibling's value wraps to a second line:
@@ -101,7 +114,15 @@ export const listBlock: BlockDefinition<ListData> = defineBlock({
                     {`${item.id}${group.separator ?? ""}`}
                   </div>
                 )}
-                <div>{item.value}</div>
+                {/* flexGrow:1 + flexBasis:0 + minWidth:0 + width:100% — the
+                 *  value-side half of the safe flex-row idiom. minWidth:0 is
+                 *  the load-bearing line: it overrides Yoga's default
+                 *  minWidth:auto so the value div can be measured from zero
+                 *  and grow into the remaining row space, letting Satori wrap
+                 *  long values within the canvas instead of overflowing. */}
+                <div style={{ flexGrow: 1, flexBasis: 0, minWidth: 0, width: "100%" }}>
+                  {item.value}
+                </div>
               </div>
             ))}
           </div>

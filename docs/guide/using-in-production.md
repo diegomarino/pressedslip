@@ -188,6 +188,63 @@ Provider diagnostics are carried on the `Composition` returned by `compose()`:
 flag, and serialized error when applicable. Block-level failures are carried in
 `Composition.failedBlocks` and `Rendering.failedBlocks`.
 
+#### Render-time diagnostic signals
+
+The library writes three distinct diagnostics at render time. Each one has an
+`on*` option that controls its policy and a corresponding field on `Rendering`
+or `Composition` that is **always populated** regardless of the policy choice.
+"Always populated" means a non-throw policy never hides the signal from your
+application — it only controls the side effect (log/throw/silent).
+
+| Signal | Policy option | Default | Result field | Logger event |
+|---|---|---|---|---|
+| Unknown block type in composition | `onUnknownType: "skip" \| "warn" \| "throw"` | `"warn"` | `Rendering.failedBlocks` | `Unknown block type` |
+| Block render threw or schema invalid | `onBlockError: "skip" \| "placeholder" \| "throw"` | `"skip"` | `Rendering.failedBlocks` | `Block render threw` / `Block schema validation failed` |
+| Content extends past canvas width | `onCanvasOverflow: "warn" \| "throw" \| "ignore"` | `"warn"` | `Rendering.canvasOverflow` | `Canvas overflow detected` |
+
+Each logger event is structured: the first argument is the human-readable
+message above, the second is an object with the relevant fields. For
+`Canvas overflow detected` the payload shape is:
+
+```ts
+{
+  widthPx: number;     // Resolved canvas width (e.g. 576 for PAPER.thermal80).
+  overflowPx: number;  // Pixels past the canvas edge (integer, rounded up).
+  hint: string;        // Actionable guidance pointing at the flex-layout fix.
+}
+```
+
+The matching `Rendering.canvasOverflow` field is `{ widthPx, overflowPx } | null`
+— `null` when the rendered SVG fits, never `undefined`. Consumers can branch
+on a single nullable check:
+
+<!-- check-doc-snippets: skip -->
+```ts
+const result = await render(composition, { registry, fonts });
+if (result.canvasOverflow !== null) {
+  metrics.increment("pressedslip.canvas_overflow", {
+    block_count: composition.slots.length,
+    overflow_px: result.canvasOverflow.overflowPx,
+  });
+}
+```
+
+**What triggers `Canvas overflow detected`.** A block emits content past the
+canvas width when (a) a flex-row child has no `minWidth: 0` and its intrinsic
+content exceeds the available row space, or (b) the content contains an
+unbreakable token (no whitespace) wider than the canvas — Yoga cannot wrap
+either case. The first is a layout bug fixable in the block renderer; the
+second is a content issue fixable upstream (truncate, validate input).
+See [Layout gotcha: flex-row with unbounded text children](./custom-block-walkthrough.md#layout-gotcha-flex-row-with-unbounded-text-children)
+for the canonical safe idiom.
+
+**Choosing a policy.** Default `"warn"` is safe for production: it preserves
+the rendered PNG (the trailing glyphs are cropped, the rest is correct) and
+surfaces the issue via your logger. Use `"throw"` in CI and integration tests
+to fail loudly on overflow rather than ship a silently-cropped receipt. Use
+`"ignore"` only when you actively branch on `Rendering.canvasOverflow` and
+prefer to suppress the duplicate log line.
+
 ### Planned observability
 
 - More granular render-pipeline stage durations (composition → SVG → raster → PNG).

@@ -269,6 +269,12 @@ export type Rendering = {
   /** ALWAYS present. Empty array when no failures. Unknown-type drops and
    *  block-render errors land here regardless of mode. */
   failedBlocks: FailedBlock[];
+  /** ALWAYS present. `null` when the rendered SVG fits within the canvas width.
+   *  Non-null when content (a flex child with unbounded intrinsic width is the
+   *  classic cause) extends past the canvas and is being silently cropped by
+   *  resvg. Populated regardless of `onCanvasOverflow` mode — the policy only
+   *  controls warning / throw behavior. */
+  canvasOverflow: import("./pipeline/measure-svg-bounds.js").CanvasOverflow | null;
 };
 
 /**
@@ -297,6 +303,14 @@ export type RenderOptions = {
   onUnknownType?: "skip" | "warn" | "throw";
   /** Default "skip". Failures always recorded in failedBlocks regardless. */
   onBlockError?: "skip" | "placeholder" | "throw";
+  /** Default "warn". Controls reaction when the rendered SVG extends past the
+   *  canvas width (typically a flex child with unbounded intrinsic width).
+   *  Detection always populates `Rendering.canvasOverflow` regardless; this
+   *  option only controls side effects:
+   *    - "warn"   → emit a structured `logger.warn` with overflowPx/widthPx.
+   *    - "throw"  → throw an Error after detection (aborts the render).
+   *    - "ignore" → no log, no throw; only the `canvasOverflow` field reports it. */
+  onCanvasOverflow?: "warn" | "throw" | "ignore";
 };
 
 /**

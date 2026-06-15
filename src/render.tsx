@@ -4,6 +4,7 @@
 import { noopLogger } from "./logger.js";
 import { PAPER, resolveDpi, resolveWidth } from "./paper.js";
 import { composeTree } from "./pipeline/compose-tree.js";
+import { applyOverflowPolicy, measureSvgBounds } from "./pipeline/measure-svg-bounds.js";
 import { rgbaToOneBit } from "./pipeline/one-bit.js";
 import { encodeOneBitPng } from "./pipeline/png-encode.js";
 import { renderReactToSvg } from "./pipeline/satori-to-svg.js";
@@ -61,6 +62,7 @@ export async function render(
   const threshold = options.threshold ?? DEFAULT_THRESHOLD;
   const onUnknownType = options.onUnknownType ?? "warn";
   const onBlockError = options.onBlockError ?? "skip";
+  const onCanvasOverflow = options.onCanvasOverflow ?? "warn";
 
   // Resolve theme — codex F2: use explicit _kind discriminant, NOT duck-typing.
   const prepared: PreparedTheme | undefined =
@@ -86,6 +88,10 @@ export async function render(
     width: widthPx,
     fonts,
   });
+  // Detect canvas-edge clipping BEFORE rasterisation so we can react per policy.
+  // null = content fits (common path).
+  const canvasOverflow = measureSvgBounds(svg);
+  applyOverflowPolicy(canvasOverflow, onCanvasOverflow, logger);
   const { rgba, width, height } = svgToRgba(svg, widthPx);
   const onebit = rgbaToOneBit(rgba, width, height, threshold);
   const bytes = encodeOneBitPng(onebit, width, height);
@@ -96,5 +102,6 @@ export async function render(
     width,
     height,
     failedBlocks,
+    canvasOverflow,
   };
 }
