@@ -1,3 +1,13 @@
+## [0.3.4](https://github.com/diegomarino/pressedslip/compare/v0.3.3...v0.3.4) (2026-06-15)
+
+### Bug Fixes
+
+* **render:** detect silent canvas-edge clipping ([#10](https://github.com/diegomarino/pressedslip/issues/10)) ([2528e43](https://github.com/diegomarino/pressedslip/commit/2528e43d6754a9bb71be02b9a31fce57be9f23cd))
+
+### Documentation
+
+* **examples:** add 5 end-to-end recipes with generators ([#9](https://github.com/diegomarino/pressedslip/issues/9)) ([5c4ffa4](https://github.com/diegomarino/pressedslip/commit/5c4ffa4ad355dc515f5c025bf87f1b9d4ce3945d))
+
 ## [0.3.3](https://github.com/diegomarino/pressedslip/compare/v0.3.2...v0.3.3) (2026-06-14)
 
 ### Bug Fixes
