@@ -112,6 +112,35 @@ describe("measureSvgBounds", () => {
     expect(result?.overflowPx).toBe(51);
   });
 
+  it('ignores content inside <g clip-path="url(...)"> (Satori encodes overflow:hidden this way)', () => {
+    // Reproduces the false-positive flagged by codex on PR #10: Satori serializes
+    // CSS `overflow: hidden` as an attribute on a <g>, not as a <clipPath> ancestor.
+    // The BlockShell hash-title filler (`"# ".repeat(200)`) is intentionally clipped
+    // by Satori, so its 3000+ px glyph run must not be reported as canvas overflow.
+    const svg = svgWith(
+      `<g clip-path="url(#cp1)"><path d="M0 0L3500 0"/></g><path d="M0 0L100 0"/>`,
+      200,
+    );
+    expect(measureSvgBounds(svg)).toBeNull();
+  });
+
+  it('ignores content inside <g mask="url(...)"> (Satori\'s other overflow:hidden form)', () => {
+    const svg = svgWith(
+      `<g mask="url(#m1)"><path d="M0 0L3500 0"/></g><path d="M0 0L100 0"/>`,
+      200,
+    );
+    expect(measureSvgBounds(svg)).toBeNull();
+  });
+
+  it("still detects overflow OUTSIDE a clipped subtree", () => {
+    // The clip-path skip must not leak across sibling boundaries.
+    const svg = svgWith(
+      `<g clip-path="url(#cp1)"><path d="M0 0L3500 0"/></g><path d="M0 0L250 0"/>`,
+      200,
+    );
+    expect(measureSvgBounds(svg)?.overflowPx).toBeCloseTo(50, 5);
+  });
+
   it("tolerates the bug-report repro shape: dense glyph paths past canvas", () => {
     // Approximates Satori's output for the bug repro: many M/L glyph commands,
     // the last extending past canvas. No <g transform> wrapping.

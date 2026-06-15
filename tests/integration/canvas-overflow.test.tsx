@@ -147,4 +147,100 @@ describe("integration — canvas overflow detection", () => {
     expect(r.canvasOverflow).not.toBeNull();
     expect(r.canvasOverflow?.overflowPx).toBeGreaterThan(0);
   });
+
+  it("does NOT false-positive on hash-style titles (BlockShell '# ' filler is intentionally clipped)", async () => {
+    // Regression for the codex review on PR #10: BlockShell with titleStyle:"hash"
+    // renders `"# ".repeat(200)` inside an `overflow:"hidden"` div. Satori serializes
+    // that as a <g clip-path="url(...)"> wrapper; resvg clips the 3000+px filler
+    // run to the title-strip box, so the detector must skip paths inside the
+    // clipped subtree. A keyValue block with showTitle and a fits-cleanly value
+    // must report canvasOverflow: null.
+    const titledBlock = defineBlock({
+      type: "titled-keyvalue",
+      schema: z.object({ label: z.string(), value: z.string() }),
+      render: ({ data }) => (
+        <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+          <div style={{ fontWeight: 700 }}>{data.label}</div>
+          <div>{data.value}</div>
+        </div>
+      ),
+      shell: { showTitle: true },
+    });
+
+    const fonts = await getFonts();
+    const preparedTheme = {
+      _kind: "prepared" as const,
+      id: "test-hash",
+      label: "Test hash-title",
+      fonts,
+      fontRoles: { body: fonts, mono: fonts },
+      shell: {
+        contentPadding: "normal" as const,
+        separatorThickness: "thin" as const,
+        separatorColor: "#000",
+        titleStyle: "hash" as const,
+        titleFontRole: "mono",
+        titleFontSize: 18,
+        titleFontWeight: 400,
+        titleAlignment: "right" as const,
+        titleFillChar: "#",
+        titleBg: "#000",
+        titleFg: "#fff",
+        textStyles: {
+          body: { fontSize: 16 },
+          label: { fontSize: 14 },
+          emphasis: { fontWeight: 700 },
+          display: { fontSize: 24 },
+          question: { fontWeight: 700 },
+          answer: {},
+        },
+        listItemGap: 6,
+        listItemBullet: "-" as const,
+      },
+      header: {
+        nameFontRole: "mono",
+        nameFontSize: 20,
+        nameFontWeight: 400,
+        nameColor: "#000",
+        dateFontRole: "mono",
+        dateFontSize: 12,
+        dateFontWeight: 400,
+        dateColor: "#000",
+        padding: 8,
+        bottomRuleHeight: 1,
+        bottomRuleColor: "#000",
+      },
+      // biome-ignore lint/suspicious/noExplicitAny: structural-typed for test fixture
+    } as any;
+
+    const composition: Composition = {
+      id: "hash-title-regression",
+      version: 1,
+      date: "2026-06-15",
+      status: "ready",
+      slots: [
+        {
+          index: 0,
+          blockType: "titled-keyvalue",
+          title: "Summary",
+          data: { label: "Status", value: "OK" },
+        },
+      ],
+      failedBlocks: [],
+      providerOutcomes: {},
+      timing: { totalMs: 0, fetchPhaseMs: 0, renderPhaseMs: 0 },
+    };
+
+    const warn = vi.fn();
+    const logger = { debug: vi.fn(), info: vi.fn(), warn, error: vi.fn() };
+
+    const r = await render(composition, {
+      registry: createRegistry([...builtinBlocks, titledBlock]),
+      theme: preparedTheme,
+      logger,
+    });
+
+    expect(r.canvasOverflow).toBeNull();
+    expect(warn).not.toHaveBeenCalled();
+  });
 });

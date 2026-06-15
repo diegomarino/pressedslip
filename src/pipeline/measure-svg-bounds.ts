@@ -12,8 +12,13 @@
  * Scope (v1):
  *   - Supports <g transform="translate(x[,y])"> and <g transform="matrix(a,b,c,d,e,f)">.
  *     Satori 0.26 encodes CSS transforms into these two forms.
- *   - Skips content inside <mask> and <clipPath> — masks are not rasterised to
- *     the canvas, so overflow there is irrelevant.
+ *   - Skips content inside <mask> and <clipPath> definitions — those define
+ *     shapes, they aren't rasterised to the canvas.
+ *   - Skips content inside <g clip-path="url(...)"> and <g mask="url(...)">
+ *     subtrees — Satori encodes CSS `overflow: hidden` this way (the BlockShell
+ *     hash-title filler is the canonical example). resvg respects the
+ *     attribute and clips legitimately, so paths inside such groups are NOT
+ *     visible past the clip box and must not be counted as canvas overflow.
  *   - Samples curve endpoints AND control points for Q/C/S/T commands so that
  *     bezier overshoot (1–5 px past the endpoint) is captured.
  *   - Returns null when the canvas width cannot be determined or no overflow
@@ -226,7 +231,12 @@ export function measureSvgBounds(svg: string): CanvasOverflow | null {
   if (widthPx === null) return null;
 
   const ctmStack: Matrix[] = [IDENTITY];
-  let skipDepth = 0; // >0 when inside <mask> or <clipPath>.
+  // Parallel boolean stack: one entry per open <g>, true when that <g>
+  // introduces a clip-path/mask attribute. Aligned with `ctmStack` (offset
+  // by 1 because the IDENTITY at index 0 has no corresponding <g>).
+  const gClippedStack: boolean[] = [];
+  let clipDepth = 0; // >0 when any ancestor <g> has clip-path=/mask= attr.
+  let skipDepth = 0; // >0 when inside <mask> or <clipPath> definitions.
   let maxX = Number.NEGATIVE_INFINITY;
 
   // Tokenize: walk every tag in document order.
@@ -248,14 +258,25 @@ export function measureSvgBounds(svg: string): CanvasOverflow | null {
     if (tag === "g") {
       if (closing) {
         if (ctmStack.length > 1) ctmStack.pop();
+        const wasClipped = gClippedStack.pop();
+        if (wasClipped) clipDepth--;
       } else {
         const tAttr = attrs.match(/\btransform\s*=\s*"([^"]+)"/);
         const local = tAttr?.[1] ? parseTransform(tAttr[1]) : IDENTITY;
         const parent = ctmStack[ctmStack.length - 1] ?? IDENTITY;
         ctmStack.push(compose(parent, local));
+        // Satori encodes CSS `overflow: hidden` as `clip-path="url(#...)"`
+        // (and sometimes `mask="url(#...)"`) on the wrapping <g>. resvg
+        // honors this attribute and crops the subtree intentionally, so any
+        // paths inside must not be counted toward canvas overflow.
+        const introducesClip = /\b(?:clip-path|mask)\s*=\s*"url\(/.test(attrs);
+        gClippedStack.push(introducesClip);
+        if (introducesClip) clipDepth++;
       }
       continue;
     }
+
+    if (clipDepth > 0) continue;
 
     if (tag === "path" && !closing) {
       const dAttr = attrs.match(/\bd\s*=\s*"([^"]+)"/);
