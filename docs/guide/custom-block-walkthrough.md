@@ -96,6 +96,55 @@ Notice:
 - We map `data.condition` to an emoji for visual interest.
 - All dimensions are in pixels; satori handles the conversion to the printed output.
 
+### Layout gotcha: flex-row with unbounded text children
+
+If your block uses `display: flex` with `flexDirection: row` and one of the children is a text node with potentially long content (a "value" alongside a fixed "label"), you can hit a silent canvas-edge clip:
+
+<!-- check-doc-snippets: skip -->
+```tsx
+// ⚠️ Vulnerable to long values
+<div style={{ display: "flex", gap: 6 }}>
+  <div style={{ fontWeight: 700 }}>Lunch:</div>
+  <div>{data.lunch}</div>
+</div>
+```
+
+What happens under the hood: Yoga (the layout engine Satori uses) measures the value `<div>` at its intrinsic content width because its default `minWidth` is `auto`. When that intrinsic exceeds the available space, Yoga cannot shrink it — Satori lays out glyphs past the canvas, and resvg silently crops at the right edge. Last word of every wrapped line ends up truncated mid-character (`calabacín` → `calabac`).
+
+The library detects this at render time and writes a structured warning to your `logger` plus a `canvasOverflow` field on the `Rendering` return value. See ["Logging and diagnostics"](./using-in-production.md#logging-and-diagnostics) for the warning payload and policy options.
+
+The canonical fix is to either **stack vertically** (preferred — matches every built-in block) or use a four-property idiom on the value.
+
+Preferred — column-stack lets Satori use the full row width to wrap:
+
+<!-- check-doc-snippets: skip -->
+```tsx
+<div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+  <div style={{ fontWeight: 700 }}>Lunch:</div>
+  <div>{data.lunch}</div>
+</div>
+```
+
+Or, when you really need label and value side-by-side:
+
+<!-- check-doc-snippets: skip -->
+```tsx
+<div style={{ width: "100%", display: "flex", gap: 6, alignItems: "flex-start" }}>
+  <div style={{ fontWeight: 700, flexShrink: 0 }}>Lunch:</div>
+  <div style={{ flexGrow: 1, flexBasis: 0, minWidth: 0, width: "100%" }}>{data.lunch}</div>
+</div>
+```
+
+Each property in the side-by-side idiom is load-bearing:
+
+- `width: "100%"` on the row — fixes the row at the shell content width (528 px on the default 80 mm thermal canvas), preventing it from growing to max-content.
+- `flexShrink: 0` on the label — keeps fixed-width siblings from being squeezed when the value wraps.
+- `flexGrow: 1` + `flexBasis: 0` on the value — instruct Yoga to measure from zero and grow into the remaining space, not from intrinsic content width.
+- `minWidth: 0` on the value — overrides Yoga's default `minWidth: auto`. Without this line the previous three do nothing.
+- `alignItems: "flex-start"` on the row — anchors the label to the top of the wrapped block instead of vertically centering it.
+
+**Caveat about unbreakable text.** If your `data.lunch` contains a single token with no whitespace (a long URL, a German compound, a hash), no layout strategy can wrap it — Yoga has nowhere to break. The detector will still fire in that case; the fix is upstream (truncate, validate input, or split the token). Satori does not yet support `word-break: break-word`.
+
 ## Step 3: Define the Block
 
 Now assemble schema + renderer into a block definition using `defineBlock`.
