@@ -1,3 +1,18 @@
+## [0.3.5](https://github.com/diegomarino/pressedslip/compare/v0.3.4...v0.3.5) (2026-07-29)
+
+### Bug Fixes
+
+* shell command built from environment values ([#13](https://github.com/diegomarino/pressedslip/issues/13))  ([0267364](https://github.com/diegomarino/pressedslip/commit/026736467ca141c33439e7d8c62a5d815f4f82ef))
+
+### Maintenance
+
+* **deps-dev:** bump undici from 8.3.0 to 8.5.0 ([#12](https://github.com/diegomarino/pressedslip/issues/12)) ([07c59ea](https://github.com/diegomarino/pressedslip/commit/07c59ea211073c1e7c8e5e918852d330c41e70a0))
+* **deps-dev:** bump vite from 6.4.2 to 6.4.3 ([#11](https://github.com/diegomarino/pressedslip/issues/11)) ([491baab](https://github.com/diegomarino/pressedslip/commit/491baabe8fa5636f0675331d52e950d1e94736c0))
+
+### Continuous Integration
+
+* make playground bundle budget configurable via CHECK_BUNDLE_BYTES (2 MiB default) ([#14](https://github.com/diegomarino/pressedslip/issues/14)) ([ff5b35d](https://github.com/diegomarino/pressedslip/commit/ff5b35d89e18212199aee3923ca633be8341a5e1))
+
 ## [0.3.4](https://github.com/diegomarino/pressedslip/compare/v0.3.3...v0.3.4) (2026-06-15)
 
 ### Bug Fixes
