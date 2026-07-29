@@ -46,7 +46,7 @@
  * type declarations rather than value expressions.
  */
 
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import {
   existsSync,
   globSync,
@@ -333,13 +333,15 @@ const dynamicTsconfig = {
 const dynamicTsconfigPath = join(TEMP_DIR, "tsconfig.json");
 writeFileSync(dynamicTsconfigPath, JSON.stringify(dynamicTsconfig, null, 2), "utf8");
 
-const tscCmd = `npx tsc --noEmit --project ${JSON.stringify(dynamicTsconfigPath)}`;
-
 let tscOutput = "";
 let tscFailed = false;
 
 try {
-  tscOutput = execSync(tscCmd, { cwd: ROOT, encoding: "utf8", stdio: "pipe" });
+  tscOutput = execFileSync("npx", ["tsc", "--noEmit", "--project", dynamicTsconfigPath], {
+    cwd: ROOT,
+    encoding: "utf8",
+    stdio: "pipe",
+  });
 } catch (err) {
   tscFailed = true;
   tscOutput = /** @type {any} */ (err).stdout ?? "";
