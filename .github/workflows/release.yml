@@ -41,6 +41,12 @@ jobs:
         run: pnpm --filter pressedslip-playground exec playwright install --with-deps chromium
 
       - name: Verify
+        env:
+          # Bundle-size budget (bytes) consumed by scripts/check-bundle-size.mjs.
+          # Sourced from the CHECK_BUNDLE_BYTES repo variable (Settings → Variables,
+          # or `gh variable set CHECK_BUNDLE_BYTES`) so the budget can be raised
+          # without a PR. Unset → empty string → script falls back to its default.
+          CHECK_BUNDLE_BYTES: ${{ vars.CHECK_BUNDLE_BYTES }}
         run: pnpm verify
 
       - name: Release
