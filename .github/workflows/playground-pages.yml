@@ -30,7 +30,12 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter pressedslip-playground exec playwright install --with-deps chromium
-      - run: pnpm verify
+      - env:
+          # Same bundle-size budget override as release.yml — both run `pnpm verify`
+          # (→ check-bundle-size.mjs), so both must read the CHECK_BUNDLE_BYTES repo
+          # variable or a raised budget would block this deploy while release passes.
+          CHECK_BUNDLE_BYTES: ${{ vars.CHECK_BUNDLE_BYTES }}
+        run: pnpm verify
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
