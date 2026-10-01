@@ -10,6 +10,7 @@ export type Variant = {
   slot: DraftSlot;
 };
 
+import { imageVariants } from "./image.js";
 import { keyValueVariants } from "./key-value.js";
 import { kpiVariants } from "./kpi.js";
 import { listVariants } from "./list.js";
@@ -20,6 +21,7 @@ import { textCellVariants } from "./text-cell.js";
 import { wordSearchVariants } from "./word-search.js";
 
 export const variantsByBlock: Array<{ blockType: string; label: string; variants: Variant[] }> = [
+  { blockType: "image", label: "image", variants: imageVariants },
   { blockType: "textCell", label: "text-cell", variants: textCellVariants },
   { blockType: "kpi", label: "kpi", variants: kpiVariants },
   { blockType: "list", label: "list", variants: listVariants },

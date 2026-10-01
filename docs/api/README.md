@@ -35,6 +35,26 @@ import { createEscPosTransport } from "pressedslip/transports";
 import { assertNoFailedBlocks } from "pressedslip/testing";
 ```
 
+## Local image inputs
+
+`imageBlock`, `ImageData`, and `imageFromBuffer` are available from both the root
+and `/browser` entrypoints. The helper accepts a `Uint8Array` (including a Node
+`Buffer`) and produces a base64 data URI after checking the payload and PNG header or SVG
+syntax and safety rules; it does not fetch or render an image.
+
+```ts
+import { imageFromBuffer, type ImageData } from "pressedslip";
+
+// Supply PNG bytes from your application.
+const imageData: ImageData = {
+  layout: "column",
+  images: [{ src: imageFromBuffer(bytes, "image/png"), alt: "Logo" }],
+};
+```
+
+See the [image block reference](../blocks/image.md) for accepted formats and limits.
+`pressedslip/testing` exports `imageFixtures` and `builtinFixtures.image`.
+
 ## Generated TypeDoc
 
 The complete symbol-by-symbol reference is generated from TSDoc-annotated

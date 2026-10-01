@@ -3,7 +3,7 @@
  * Renders the canonical visual references for docs.
  *
  * Outputs:
- *   - One PNG per builtin block (6) at canonical width.
+ *   - One PNG per builtin block (8) at canonical width.
  *   - One PNG per theme (3).
  *   - One Composition example PNG (morning briefing).
  *
@@ -75,6 +75,7 @@ const blockTypes = [
   "kpi",
   "quotation",
   "wordSearch",
+  "image",
 ] as const;
 
 for (const blockType of blockTypes) {

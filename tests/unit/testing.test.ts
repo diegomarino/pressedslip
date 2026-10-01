@@ -9,6 +9,7 @@ describe("/testing subpath", () => {
   it("exports builtinFixtures with one entry per catalog shape", () => {
     // EXHAUSTIVE list — update when a shape is added to builtinFixtures.
     expect(Object.keys(builtinFixtures).sort()).toEqual([
+      "image",
       "keyValue",
       "kpi",
       "list",

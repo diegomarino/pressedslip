@@ -72,6 +72,36 @@ function makeComposition(lunch: string): Composition {
 }
 
 describe("integration — canvas overflow detection", () => {
+  it("detects a real Satori image extending past the canvas", async () => {
+    const imageBlock = defineBlock({
+      type: "overflow-image",
+      schema: z.object({}),
+      render: () => (
+        <div style={{ display: "flex" }}>
+          <img
+            alt="overflow regression"
+            src={`data:image/svg+xml;base64,${Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="600" height="20"><rect width="600" height="20" fill="black"/></svg>').toString("base64")}`}
+            width={600}
+            height={20}
+            style={{ flexShrink: 0 }}
+          />
+        </div>
+      ),
+    });
+    const composition = makeComposition("");
+    const imageComposition = {
+      ...composition,
+      slots: [{ index: 0, blockType: "overflow-image", data: {} }],
+    };
+    const result = await render(imageComposition, {
+      registry: createRegistry([...builtinBlocks, imageBlock]),
+      fonts: await getFonts(),
+      onCanvasOverflow: "ignore",
+    });
+    expect(result.canvasOverflow).not.toBeNull();
+    expect(result.canvasOverflow?.overflowPx).toBeGreaterThan(0);
+  });
+
   it("detects the bug-report repro (long meal value in unbounded flex row)", async () => {
     const composition = makeComposition(UNBREAKABLE);
     const fonts = await getFonts();

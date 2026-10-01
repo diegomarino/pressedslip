@@ -138,8 +138,8 @@ await transport.send({ bytes });
 
 ## Why pressedslip?
 
-- **Composable content blocks** - seven builtin blocks (text, list, key-value,
-  KPI, Q&A, quotation, word-search); write your own via `defineBlock`.
+- **Composable content blocks** - eight builtin blocks (text, list, key-value,
+  KPI, Q&A, quotation, word-search, image); write your own via `defineBlock`.
 - **Browser and Node renders from the same source** - `pressedslip/browser`
   ships a resvg-wasm path so the playground and Node CI render with identical
   output.
@@ -186,6 +186,9 @@ be built locally from the published source repo.
 - [Themes](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/themes.md)
 - [Testing](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/testing.md)
 - [Transports](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/transports.md)
+
+See the [image block reference](https://github.com/diegomarino/pressedslip/blob/main/docs/blocks/image.md)
+for local PNG/SVG inputs, sizing, and dithering.
 
 ## Visual Reference
 

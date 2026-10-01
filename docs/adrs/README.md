@@ -32,6 +32,7 @@ These ADRs are the project's internal design history. They reference internal de
 | [0026](0026-textstyle-mapping-multi-field-structured-blocks.md) | TextStyle mapping for multi-field structured blocks | accepted | Prefer canonical slots; use `extras.<key>` only when no canonical slot has a semantic fit. |
 | [0027](0027-block-variants-vs-theme-tokens.md) | Block variants vs theme tokens — decision rule | accepted | New schema → new block definition; atomic visual variation within same schema → theme token. |
 | [0028](0028-textstyles-builtin-migration.md) | Built-in block TextStyles migration | accepted | Migrate all 6 built-in blocks to read `ctx.theme.textStyles`; block intent spreads after slot style. |
+| [0029](0029-image-block-layout-enum.md) | Image block uses an explicit layout enum | accepted | Require `layout: "column"`; defer row/grid and keep sizing and consumer-provided image bytes explicit. |
 
 ---
 

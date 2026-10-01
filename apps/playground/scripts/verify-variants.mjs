@@ -1,5 +1,6 @@
 /** biome-ignore-all lint/suspicious/noConsole: CLI script; stdout/stderr ARE the output channel. */
 import {
+  imageBlock,
   keyValueBlock,
   kpiBlock,
   listBlock,
@@ -16,6 +17,7 @@ import {
 import { variantsByBlock } from "../src/variants/index.ts";
 
 const blocks = {
+  image: imageBlock,
   keyValue: keyValueBlock,
   kpi: kpiBlock,
   list: listBlock,

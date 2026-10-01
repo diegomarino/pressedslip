@@ -10,6 +10,8 @@ import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { imageFixtures } from "../../src/blocks/image.fixtures.js";
+import { imageBlock } from "../../src/blocks/image.js";
 import { keyValueBlock } from "../../src/blocks/key-value.js";
 import { kpiBlock } from "../../src/blocks/kpi.js";
 import { listBlock } from "../../src/blocks/list.js";
@@ -29,6 +31,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURE_FONT = join(__dirname, "..", "fixtures/fonts/jetbrains-mono-regular.ttf");
 
 const REGISTRY = createRegistry([
+  imageBlock,
   keyValueBlock,
   kpiBlock,
   listBlock,
@@ -46,6 +49,11 @@ const BASE: Pick<Composition, "status" | "failedBlocks" | "providerOutcomes" | "
 };
 
 const SHAPES: { name: string; blockType: string; data: unknown }[] = [
+  ...Object.entries(imageFixtures).map(([name, data]) => ({
+    name: `image-${name}`,
+    blockType: "image",
+    data,
+  })),
   { name: "textCell", blockType: "textCell", data: { text: "Hello world" } },
   { name: "kpi", blockType: "kpi", data: { value: "12,345", label: "Steps" } },
   {
