@@ -365,3 +365,32 @@ test("12. sp8f — theme switch produces new render with built-ins", async ({ pa
   expect(newSrc).not.toBe(firstSrc);
   expect(newSrc.startsWith("blob:")).toBe(true);
 });
+
+for (const label of ["image · logo and stripes", "image · Tux (dithered PNG)"]) {
+  test(`${label} adds and renders a local image column`, async ({ page }) => {
+    await page.goto("/");
+    await page.locator(".preview-cta").click();
+    await page.waitForFunction(() => {
+      const image = document.querySelector(".preview-img") as HTMLImageElement | null;
+      return image !== null && image.naturalHeight > 0;
+    });
+    const previous = await page.evaluate(() => {
+      const image = document.querySelector(".preview-img") as HTMLImageElement;
+      return { src: image.src, height: image.naturalHeight };
+    });
+    await page.getByRole("button", { name: label, exact: true }).press("Enter");
+    await expect(page.locator(".slot-card")).toHaveCount(12);
+    await page.getByRole("button", { name: "Render", exact: true }).click();
+    await page.waitForFunction(
+      (previous) => {
+        const image = document.querySelector(".preview-img") as HTMLImageElement | null;
+        return (
+          image !== null && image.src !== previous.src && image.naturalHeight > previous.height
+        );
+      },
+      previous,
+      { timeout: 15000 },
+    );
+    await expect(page.locator(".preview-error")).toHaveCount(0);
+  });
+}

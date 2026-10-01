@@ -42,8 +42,8 @@ Hand-drawn originals, no external icon-set attribution required.
 - Live API integration with timeout + graceful fallback (the example always
   produces output, even offline).
 - Inline `<svg>` inside a block render — Satori serializes `<svg>` elements
-  natively; `<img>` tags are NOT supported, so all imagery must be inline
-  SVG or data-URI.
+  natively. `<img>` can use local PNG/SVG data URIs; the built-in
+  [image block](../../docs/blocks/image.md) adds validation, sizing, and PNG dithering.
 - WMO weather code → visual condition mapping done inside the example's
   generator function; the block only sees the simplified shape.
 - Sharing one block definition between the Node `.tsx` (JSX) and the browser

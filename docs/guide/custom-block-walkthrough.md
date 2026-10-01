@@ -25,7 +25,7 @@ import { z } from "zod";
 const weatherBlockSchema = z.object({
   temperature: z.number(),
   condition: z.enum(["sunny", "cloudy", "rainy", "snowy"]),
-  icon: z.string(), // URL to an icon image
+  icon: z.string().startsWith("data:image/png;base64,"), // Consumer-provided PNG data URI
 });
 
 export type WeatherBlockData = z.infer<typeof weatherBlockSchema>;
@@ -80,6 +80,12 @@ const renderWeather = ({ data }: { data: WeatherBlockData }): ReactElement => {
   );
 };
 ```
+
+For this custom block, supply validated PNG bytes from your application before
+rendering. `imageFromBuffer` checks the header and encodes without network access;
+a custom `<img>`
+does not gain the builtin image block's decoding, dithering, or failure isolation.
+Use the [image block](../blocks/image.md) for a standalone image column.
 
 Notice:
 
@@ -162,7 +168,7 @@ export const weatherBlock = defineBlock({
     padding: "normal",
   },
   hints: [
-    "Required: `data.temperature` (number), `data.condition` (sunny|cloudy|rainy|snowy), `data.icon` (URL)",
+    "Required: `data.temperature` (number), `data.condition` (sunny|cloudy|rainy|snowy), `data.icon` (PNG data URI)",
     "Tip: `data.temperature` is displayed in Celsius",
     "Docs: docs/blocks/weather.md",
   ],
@@ -187,6 +193,7 @@ Create a registry with your new block and pass it to `render()`. Two ingredients
 ```ts
 import {
   createRegistry,
+  imageFromBuffer,
   loadThemeFonts,
   PAPER,
   render,
@@ -216,7 +223,7 @@ const composition: CompositionInput = {
       data: {
         temperature: 22,
         condition: "sunny" as const, // `as const` narrows the literal so TypeScript doesn't widen it to `string`
-        icon: "https://example.com/sunny.png",
+        icon: imageFromBuffer(bytes, "image/png"), // PNG bytes supplied by your application
       },
     },
   ],

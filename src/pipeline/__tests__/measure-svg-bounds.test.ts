@@ -20,6 +20,52 @@ function svgWith(inner: string, width = 200): string {
 }
 
 describe("measureSvgBounds", () => {
+  it.each([
+    ["bare image", '<image x="175" width="50" height="20"/>', 25],
+    [
+      "Satori image clip",
+      '<image x="175" width="50" height="20" clip-path="url(#image)" mask="url(#mask)"/>',
+      25,
+    ],
+    ["translated group", '<g transform="translate(170,0)"><image width="50" height="20"/></g>', 20],
+    ["image transform", '<image width="50" height="20" transform="translate(170,0)"/>', 20],
+    [
+      "negative scale",
+      '<g transform="matrix(-1,0,0,1,230,0)"><image width="50" height="20"/></g>',
+      30,
+    ],
+    [
+      "sheared image",
+      '<g transform="matrix(1,0,2,1,170,0)"><image width="20" height="20"/></g>',
+      30,
+    ],
+  ])("detects overflow of %s", (_name, inner, overflowPx) => {
+    expect(measureSvgBounds(svgWith(inner))).toEqual({ widthPx: 200, overflowPx });
+  });
+
+  it.each([
+    '<defs><image width="9999" height="20"/></defs>',
+    '<mask><image width="9999" height="20"/></mask>',
+    '<clipPath><image width="9999" height="20"/></clipPath>',
+    '<g clip-path="url(#clip)"><image width="9999" height="20"/></g>',
+    '<g mask="url(#mask)"><image width="9999" height="20"/></g>',
+    '<image width="Infinity" height="20"/>',
+    '<image width="-100" height="20"/>',
+    '<image width="300" height="0"/>',
+  ])("ignores non-visible or invalid image: %s", (inner) => {
+    expect(measureSvgBounds(svgWith(inner))).toBeNull();
+  });
+
+  it("does not let self-closing definitions or clipped groups hide sibling images", () => {
+    expect(
+      measureSvgBounds(
+        svgWith(
+          '<defs/><mask/><clipPath/><g clip-path="url(#clip)"/><image width="220" height="20"/>',
+        ),
+      ),
+    ).toEqual({ widthPx: 200, overflowPx: 20 });
+  });
+
   it("returns null when no path exceeds canvas width", () => {
     const svg = svgWith(`<path d="M10 10L50 10L50 50L10 50Z"/>`, 200);
     expect(measureSvgBounds(svg)).toBeNull();

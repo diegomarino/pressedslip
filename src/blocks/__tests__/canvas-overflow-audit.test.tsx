@@ -194,3 +194,21 @@ describe("built-in block audit — UNBREAKABLE token (content-side issue, not la
     });
   }
 });
+
+describe("image overflow contract", () => {
+  const src = `data:image/svg+xml;utf8,${encodeURIComponent('<svg width="800" height="40"><rect width="800" height="40"/></svg>')}`;
+  it.each(["reduce", "extend"])("%s fits the image budget", async (fit) => {
+    const result = await renderSlot([
+      { index: 0, blockType: "image", data: { layout: "column", fit, images: [{ src }] } },
+    ]);
+    expect(result.failedBlocks).toEqual([]);
+    expect(result.canvasOverflow).toBeNull();
+  });
+  it("none reports the right-edge crop", async () => {
+    const result = await renderSlot([
+      { index: 0, blockType: "image", data: { layout: "column", fit: "none", images: [{ src }] } },
+    ]);
+    expect(result.failedBlocks).toEqual([]);
+    expect(result.canvasOverflow).not.toBeNull();
+  });
+});

@@ -9,6 +9,8 @@
  * land in patch releases. Assertion helpers (assertBlockCount, assertBlockTypes,
  * assertNoFailedBlocks, assertStructurallyEqual) are stable public API.
  */
+import { imageFixtures } from "../blocks/image.fixtures.js";
+import type { ImageData } from "../blocks/image.js";
 import { keyValueFixtures } from "../blocks/key-value.fixtures.js";
 import type { KeyValueData } from "../blocks/key-value.js";
 import { kpiFixtures } from "../blocks/kpi.fixtures.js";
@@ -38,6 +40,8 @@ import type { WordSearchData } from "../blocks/word-search.js";
 export const builtinFixtures: {
   /** Fixture scenarios for the keyValue block. */
   keyValue: Record<string, KeyValueData>;
+  /** Fixture scenarios for the image block. */
+  image: Record<string, ImageData>;
   /** Fixture scenarios for the kpi block. */
   kpi: Record<string, KpiData>;
   /** Fixture scenarios for the list block. */
@@ -52,6 +56,7 @@ export const builtinFixtures: {
   wordSearch: Record<string, WordSearchData>;
 } = {
   keyValue: keyValueFixtures,
+  image: imageFixtures,
   kpi: kpiFixtures,
   list: listFixtures,
   qaPair: qaPairFixtures,
@@ -60,6 +65,7 @@ export const builtinFixtures: {
   wordSearch: wordSearchFixtures,
 };
 
+export { imageFixtures } from "../blocks/image.fixtures.js";
 export { keyValueFixtures } from "../blocks/key-value.fixtures.js";
 export { kpiFixtures } from "../blocks/kpi.fixtures.js";
 export { listFixtures } from "../blocks/list.fixtures.js";

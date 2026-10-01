@@ -6,13 +6,13 @@
  * <div> with no minWidth:0" footgun). resvg then crops at the viewBox, swallowing
  * the trailing glyphs without a warning. This module scans the SVG that Satori
  * produces, accumulates `<g transform="...">` matrices on a stack to obtain the
- * absolute x-extent of every path command, and reports overflow vs. the canvas
+ * absolute x-extent of paths and images, and reports overflow vs. the canvas
  * width when detected.
  *
  * Scope (v1):
  *   - Supports <g transform="translate(x[,y])"> and <g transform="matrix(a,b,c,d,e,f)">.
  *     Satori 0.26 encodes CSS transforms into these two forms.
- *   - Skips content inside <mask> and <clipPath> definitions — those define
+ *   - Skips content inside <defs>, <mask> and <clipPath> definitions — those define
  *     shapes, they aren't rasterised to the canvas.
  *   - Skips content inside <g clip-path="url(...)"> and <g mask="url(...)">
  *     subtrees — Satori encodes CSS `overflow: hidden` this way (the BlockShell
@@ -216,7 +216,7 @@ function maxXFromPath(d: string, ctm: Matrix): number {
 
 /**
  * Scan an SVG string for the maximum absolute x-coordinate reached by any
- * visible path element. Returns overflow info when that x exceeds the canvas
+ * visible path or image element. Returns overflow info when that x exceeds the canvas
  * width, or null otherwise.
  *
  * Implementation: linear regex-driven walk maintaining a transform stack across
@@ -248,14 +248,17 @@ export function measureSvgBounds(svg: string): CanvasOverflow | null {
     const tag = token[2] ?? "";
     const attrs = token[3] ?? "";
 
-    if (tag === "mask" || tag === "clipPath") {
-      skipDepth += closing ? -1 : 1;
+    const selfClosing = /\/\s*$/.test(attrs);
+
+    if (tag === "defs" || tag === "mask" || tag === "clipPath") {
+      if (!selfClosing) skipDepth += closing ? -1 : 1;
       continue;
     }
 
     if (skipDepth > 0) continue;
 
     if (tag === "g") {
+      if (selfClosing) continue;
       if (closing) {
         if (ctmStack.length > 1) ctmStack.pop();
         const wasClipped = gClippedStack.pop();
@@ -277,6 +280,31 @@ export function measureSvgBounds(svg: string): CanvasOverflow | null {
     }
 
     if (clipDepth > 0) continue;
+
+    if (tag === "image" && !closing) {
+      const numberAttr = (name: string, fallback: number): number => {
+        const value = attrs.match(new RegExp(`\\b${name}\\s*=\\s*"([^"]*)"`))?.[1];
+        return value === undefined ? fallback : Number(value);
+      };
+      const x = numberAttr("x", 0);
+      const y = numberAttr("y", 0);
+      const width = numberAttr("width", 0);
+      const height = numberAttr("height", 0);
+      if (![x, y, width, height].every(Number.isFinite) || width <= 0 || height <= 0) continue;
+      const transform = attrs.match(/\btransform\s*=\s*"([^"]+)"/)?.[1];
+      const ctm = compose(
+        ctmStack[ctmStack.length - 1] ?? IDENTITY,
+        transform ? parseTransform(transform) : IDENTITY,
+      );
+      // Satori adds a clip/mask to the image's own box; ancestor clips were
+      // already skipped above. All four corners account for rotation/shear.
+      for (const cornerX of [x, x + width]) {
+        for (const cornerY of [y, y + height]) {
+          const absoluteX = ctm[0] * cornerX + ctm[2] * cornerY + ctm[4];
+          if (Number.isFinite(absoluteX)) maxX = Math.max(maxX, absoluteX);
+        }
+      }
+    }
 
     if (tag === "path" && !closing) {
       const dAttr = attrs.match(/\bd\s*=\s*"([^"]+)"/);

@@ -13,6 +13,7 @@ import wasmUrl from "@resvg/resvg-wasm/index_bg.wasm?url";
 import {
   type CompositionInput,
   createRegistry,
+  imageBlock,
   keyValueBlock,
   kpiBlock,
   listBlock,
@@ -32,6 +33,7 @@ export const themeIds = ["default", "mono", "compact"] as const;
 export type ThemeId = (typeof themeIds)[number];
 
 const registry = createRegistry([
+  imageBlock,
   keyValueBlock,
   kpiBlock,
   listBlock,
