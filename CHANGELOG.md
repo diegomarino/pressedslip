@@ -1,3 +1,9 @@
+## [0.4.0](https://github.com/diegomarino/pressedslip/compare/v0.3.5...v0.4.0) (2026-10-01)
+
+### Features
+
+* add PNG and SVG image block ([#18](https://github.com/diegomarino/pressedslip/issues/18)) ([#21](https://github.com/diegomarino/pressedslip/issues/21)) ([663028e](https://github.com/diegomarino/pressedslip/commit/663028ea9ce813192efec798323b5cadd382fffd))
+
 ## [0.3.5](https://github.com/diegomarino/pressedslip/compare/v0.3.4...v0.3.5) (2026-07-29)
 
 ### Bug Fixes
