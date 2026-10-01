@@ -7,11 +7,25 @@ import { imageFromBuffer, parseImageSource, validateImageUri } from "./image/sou
 
 /** Consumer input for a column of images, with optional sizing and dither defaults. */
 export type ImageData = {
+  /** Required column layout; row and grid layouts are unsupported. */
   layout: "column";
+  /** Proportional sizing relative to the content width; defaults to reduce. */
   fit?: "reduce" | "extend" | "none";
+  /** PNG binarization method; defaults to Floyd–Steinberg. SVG remains vector content. */
   dither?: "floyd-steinberg" | "none";
+  /** Positive integer height limit in pixels, applied proportionally to each image. */
   maxHeight?: number;
-  images: { src: string; alt?: string; width?: number; height?: number }[];
+  /** One to twelve local images, in display order. */
+  images: {
+    /** PNG or SVG data URI, containing at most 2 MiB of decoded source bytes. */
+    src: string;
+    /** Optional description of the image. */
+    alt?: string;
+    /** Positive integer fallback width for SVGs without measurable intrinsic dimensions. */
+    width?: number;
+    /** Positive integer fallback height for SVGs without measurable intrinsic dimensions. */
+    height?: number;
+  }[];
 };
 type ResolvedImageData = Omit<ImageData, "fit" | "dither"> & {
   fit: "reduce" | "extend" | "none";

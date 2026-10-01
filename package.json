@@ -102,7 +102,7 @@
     "format": "biome format --write .",
     "prepare": "husky",
     "release:dry": "semantic-release --dry-run",
-    "verify": "pnpm lint && node scripts/lint-replay-fixtures.mjs && pnpm build && pnpm typecheck && pnpm coverage && pnpm check-docs && pnpm check-public-docs && node scripts/check-doc-snippets.mjs && node scripts/verify-browser-bundle.mjs && node scripts/verify-replay-harness.mjs && pnpm --filter pressedslip-playground verify"
+    "verify": "pnpm lint && node scripts/lint-replay-fixtures.mjs && pnpm build && pnpm typecheck && pnpm coverage && pnpm docs:api && pnpm check-docs && pnpm check-public-docs && node scripts/check-doc-snippets.mjs && node scripts/verify-browser-bundle.mjs && node scripts/verify-replay-harness.mjs && pnpm --filter pressedslip-playground verify"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.3",
