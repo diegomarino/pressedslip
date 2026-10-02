@@ -2,7 +2,7 @@
 
 Source: https://commons.wikimedia.org/wiki/File:Tux.svg
 
-Artwork by Larry Ewing (lewing@isc.tamu.edu), created with The GIMP; vector work by Simon Budig and Garrett LeSage. The playground stores a 216 × 256 PNG rasterization in `tux.ts` as a local data URI. The original SVG uses filters unsupported by the image block. Rasterization preserves those effects; the image block applies its default Floyd–Steinberg dithering. No image download occurs at runtime.
+Artwork by Larry Ewing (lewing@isc.tamu.edu), created with The GIMP; vector work by Simon Budig and Garrett LeSage. The Playground Tux variant uses the existing rendered PNG at the pinned commit URL in `src/variants/image.ts`. Users can edit the URL in JSON and click Render; the Playground downloads and validates bytes before calling the renderer. The original SVG uses filters unsupported by the image block. The 216 × 256 PNG rasterization in `tux.ts` remains a local data URI for offline variant validation. Browser tests serve the existing rendered PNG locally, without live image downloads.
 
 The artwork has its own reuse terms; the repository's MIT license does not replace them. It permits reuse with attribution. The redistribution notice below is reproduced from https://www.home.unix-ag.org/simon/penguin/README.
 

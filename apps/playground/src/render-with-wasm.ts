@@ -13,7 +13,9 @@ import wasmUrl from "@resvg/resvg-wasm/index_bg.wasm?url";
 import {
   type CompositionInput,
   createRegistry,
+  type ImageData,
   imageBlock,
+  imageFromUrl,
   keyValueBlock,
   kpiBlock,
   listBlock,
@@ -45,7 +47,7 @@ const registry = createRegistry([
 ]);
 
 /** Map a DraftComposition to a renderable CompositionInput envelope. */
-function buildComposition(draft: DraftComposition): CompositionInput {
+async function buildComposition(draft: DraftComposition): Promise<CompositionInput> {
   return {
     // id/version/status are required identity fields; the diagnostic fields
     // (failedBlocks/providerOutcomes/timing) are optional on CompositionInput
@@ -55,12 +57,30 @@ function buildComposition(draft: DraftComposition): CompositionInput {
     date: draft.date,
     status: "ready",
     ...(draft.subject !== undefined ? { subject: draft.subject } : {}),
-    slots: draft.slots.map((s, index) => ({
-      index,
-      blockType: s.blockType,
-      data: s.data,
-      ...(s.title !== undefined ? { title: s.title } : {}),
-    })),
+    slots: await Promise.all(
+      draft.slots.map(async (s, index) => {
+        const data = s.data as Partial<ImageData> | null;
+        const resolved =
+          s.blockType === "image" && Array.isArray(data?.images)
+            ? {
+                ...data,
+                images: await Promise.all(
+                  data.images.map(async (image) =>
+                    typeof image?.src === "string" && /^https?:\/\//i.test(image.src)
+                      ? { ...image, src: await imageFromUrl(image.src) }
+                      : image,
+                  ),
+                ),
+              }
+            : s.data;
+        return {
+          index,
+          blockType: s.blockType,
+          data: resolved,
+          ...(s.title !== undefined ? { title: s.title } : {}),
+        };
+      }),
+    ),
     meta: draft.meta,
   };
 }
@@ -77,7 +97,7 @@ export async function renderDraft(
   themeId: ThemeId,
   options?: { width?: number },
 ): Promise<RenderResult> {
-  const rendered = await render(buildComposition(draft), {
+  const rendered = await render(await buildComposition(draft), {
     registry,
     theme: themes[themeId],
     wasm: fetch(wasmUrl),

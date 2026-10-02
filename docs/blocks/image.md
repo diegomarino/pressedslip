@@ -121,7 +121,10 @@ through their injected fetch. Fetch, timeout, status, and validation failures re
 the helper promise. Catch them in application code or use the
 [complete provider wiring example](../guide/providers.md#loading-an-image-url).
 Resolve URLs before `compose()`/`render()`; automatic URL resolution in JSON is
-deferred. Playground inputs remain local data URIs.
+deferred in the package. The Playground accepts HTTP(S) image sources in its
+editor and resolves them with this helper before calling render. The editor keeps
+the URL; loading failures appear in the existing preview error with Retry.
+Select `image · Tux (URL)`, edit `images[].src`, and click Render.
 
 The optional live smoke is separate from all offline verification:
 
@@ -192,9 +195,10 @@ applies to the complete slip, including shell, text, and all images.
 
 ## See also
 
-- The playground's `image · Tux (dithered PNG)` example rasterizes the
+- The playground's `image · Tux (URL)` example loads the existing rendered PNG
+  from the pinned commit URL before rendering. The original
   [Wikimedia Commons Tux SVG](https://commons.wikimedia.org/wiki/File:Tux.svg)
-  before passing it to the block, because that SVG uses filters. Artwork:
+  uses filters unsupported by the block. Artwork:
   Larry Ewing and The GIMP; vector work: Simon Budig and Garrett LeSage.
   See the [asset attribution and original redistribution notice](../../apps/playground/src/variants/assets/README.md).
   [Rendered example](../assets/visual-refs/block-image-tux.png).

@@ -1,19 +1,23 @@
 /** @fileoverview Playground image examples using compact builtin fixtures. */
 import { imageFixtures } from "pressedslip/testing";
-import { tuxPng } from "./assets/tux.js";
 import type { Variant } from "./index.js";
 
 export const imageVariants: Variant[] = [
   {
     id: "image-tux",
-    label: "image · Tux (dithered PNG)",
+    label: "image · Tux (URL)",
     slot: {
       blockType: "image",
       title: "TUX",
       data: {
         layout: "column",
         maxHeight: 256,
-        images: [{ src: tuxPng, alt: "Tux, the Linux mascot" }],
+        images: [
+          {
+            src: "https://raw.githubusercontent.com/diegomarino/pressedslip/663028ea9ce813192efec798323b5cadd382fffd/docs/assets/visual-refs/block-image-tux.png",
+            alt: "Tux, the Linux mascot",
+          },
+        ],
       },
     },
   },
