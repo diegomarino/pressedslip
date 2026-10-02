@@ -123,7 +123,9 @@ the helper promise. Catch them in application code or use the
 Resolve URLs before `compose()`/`render()`; automatic URL resolution in JSON is
 deferred in the package. The Playground accepts HTTP(S) image sources in its
 editor and resolves them with this helper before calling render. The editor keeps
-the URL; loading failures appear in the existing preview error with Retry.
+the URL. A failed URL skips its image block while the other blocks still render;
+the browser console logs the URL, image index, block index, and error. Fix the URL
+and click Render again.
 Select `image · Tux (URL)`, edit `images[].src`, and click Render.
 
 The optional live smoke is separate from all offline verification:

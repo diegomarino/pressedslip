@@ -167,10 +167,10 @@ export function App(): JSX.Element {
     (opts: { clearStale: boolean; draft?: DraftComposition }) => {
       const draft = opts.draft ?? editor.draft;
       setIsRendering(true);
-      setError(null);
       renderDraft(draft, themeId, { width })
         .then((result) => {
           setPreviewSrc(result.src);
+          setError(null);
           if (opts.clearStale) setIsStale(false);
         })
         .catch((err: unknown) => setError(err instanceof Error ? err.message : String(err)))

@@ -48,39 +48,69 @@ const registry = createRegistry([
 
 /** Map a DraftComposition to a renderable CompositionInput envelope. */
 async function buildComposition(draft: DraftComposition): Promise<CompositionInput> {
-  return {
-    // id/version/status are required identity fields; the diagnostic fields
-    // (failedBlocks/providerOutcomes/timing) are optional on CompositionInput
-    // and normalized by render(). Only slots/date/subject/meta are consumed.
-    id: "playground-draft",
-    version: 1,
-    date: draft.date,
-    status: "ready",
-    ...(draft.subject !== undefined ? { subject: draft.subject } : {}),
-    slots: await Promise.all(
-      draft.slots.map(async (s, index) => {
+  const failedBlocks: Rendering["failedBlocks"][number][] = [];
+  const slots = await Promise.all(
+    draft.slots.map(async (s, index) => {
+      try {
         const data = s.data as Partial<ImageData> | null;
-        const resolved =
-          s.blockType === "image" && Array.isArray(data?.images)
-            ? {
-                ...data,
-                images: await Promise.all(
-                  data.images.map(async (image) =>
-                    typeof image?.src === "string" && /^https?:\/\//i.test(image.src)
-                      ? { ...image, src: await imageFromUrl(image.src) }
-                      : image,
-                  ),
-                ),
+        let resolved = s.data;
+        if (s.blockType === "image" && Array.isArray(data?.images)) {
+          // Settle all downloads before render, including siblings of a failed URL.
+          const images = await Promise.allSettled(
+            data.images.map(async (image, imageIndex) => {
+              if (typeof image?.src !== "string" || !/^https?:\/\//i.test(image.src)) return image;
+              try {
+                return { ...image, src: await imageFromUrl(image.src) };
+              } catch (cause) {
+                throw new Error(
+                  `image ${imageIndex} (${image.src}): ${cause instanceof Error ? cause.message : String(cause)}`,
+                  { cause },
+                );
               }
-            : s.data;
+            }),
+          );
+          resolved = {
+            ...data,
+            images: images.map((image) => {
+              if (image.status === "rejected") throw image.reason;
+              return image.value;
+            }),
+          };
+        }
         return {
           index,
           blockType: s.blockType,
           data: resolved,
           ...(s.title !== undefined ? { title: s.title } : {}),
         };
-      }),
-    ),
+      } catch (error) {
+        const failed = {
+          index,
+          blockType: s.blockType,
+          reason: {
+            name: error instanceof Error ? error.name : "ImageLoadError",
+            message: error instanceof Error ? error.message : String(error),
+          },
+        };
+        failedBlocks.push(failed);
+        console.error("Image URL loading failed", failed);
+        return null;
+      }
+    }),
+  );
+  return {
+    id: "playground-draft",
+    version: 1,
+    date: draft.date,
+    status:
+      failedBlocks.length === 0
+        ? "ready"
+        : slots.some((slot) => slot !== null)
+          ? "partial"
+          : "failed",
+    ...(draft.subject !== undefined ? { subject: draft.subject } : {}),
+    slots: slots.filter((slot) => slot !== null),
+    failedBlocks: failedBlocks.sort((a, b) => a.index - b.index),
     meta: draft.meta,
   };
 }
@@ -97,7 +127,9 @@ export async function renderDraft(
   themeId: ThemeId,
   options?: { width?: number },
 ): Promise<RenderResult> {
-  const rendered = await render(await buildComposition(draft), {
+  const composition = await buildComposition(draft);
+  const rendered = await render(composition, {
+    logger: console,
     registry,
     theme: themes[themeId],
     wasm: fetch(wasmUrl),
@@ -109,6 +141,8 @@ export async function renderDraft(
     src: URL.createObjectURL(blob),
     width: rendered.width,
     height: rendered.height,
-    failedBlocks: rendered.failedBlocks,
+    failedBlocks: [...(composition.failedBlocks ?? []), ...rendered.failedBlocks].sort(
+      (a, b) => a.index - b.index,
+    ),
   };
 }

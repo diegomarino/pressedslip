@@ -32,6 +32,7 @@ beforeEach(() => {
     canvasOverflow: null,
   });
   vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:preview");
+  vi.spyOn(console, "error").mockImplementation(() => undefined);
 });
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -81,7 +82,7 @@ describe("playground URL images", () => {
     "404",
     "CORS",
     "unsupported",
-  ])("surfaces %s load errors before calling render", async (failure) => {
+  ])("logs %s and renders surviving blocks with failure diagnostics", async (failure) => {
     vi.stubGlobal(
       "fetch",
       vi.fn<typeof globalThis.fetch>(async (input) => {
@@ -90,14 +91,79 @@ describe("playground URL images", () => {
         return new Response("GIF89a", { status: failure === "404" ? 404 : 200 });
       }),
     );
-    await expect(renderDraft(draft(), "default")).rejects.toThrow(
+    const input = draft();
+    input.slots.push({ blockType: "kpi", data: { value: "42" } });
+    const original = structuredClone(input);
+    const result = await renderDraft(input, "default");
+    const message =
       failure === "404"
         ? /HTTP 404/
         : failure === "CORS"
           ? /Failed to fetch/
-          : /Convert other formats to PNG/,
+          : /Convert other formats to PNG/;
+    expect(result).toMatchObject({
+      src: "blob:preview",
+      failedBlocks: [
+        { index: 0, blockType: "image", reason: { message: expect.stringMatching(message) } },
+      ],
+    });
+    expect(result.failedBlocks[0]?.reason.message).toContain(url);
+    expect(vi.mocked(render).mock.calls[0]?.[0].slots).toEqual([
+      { index: 1, blockType: "kpi", data: { value: "42" } },
+    ]);
+    expect(console.error).toHaveBeenCalledWith("Image URL loading failed", result.failedBlocks[0]);
+    expect(input).toEqual(original);
+  });
+  it("waits for every image load to settle before rendering after a failed URL", async () => {
+    const otherUrl = "https://images.example/slow.png";
+    let finish: (() => void) | undefined;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn<typeof globalThis.fetch>(async (input) => {
+        if (input === url) return new Response("not found", { status: 404 });
+        if (input === otherUrl)
+          return new Promise((resolve) => {
+            finish = () => resolve(new Response(png));
+          });
+        return new Response(new Uint8Array());
+      }),
     );
+    const input = draft();
+    (input.slots[0]?.data as { images: { src: string }[] }).images.push({ src: otherUrl });
+    const pending = renderDraft(input, "default").catch((error: unknown) => error);
+    await vi.waitFor(() => expect(finish).toBeTypeOf("function"));
     expect(render).not.toHaveBeenCalled();
+    finish?.();
+    expect(await pending).toMatchObject({ failedBlocks: [{ index: 0, blockType: "image" }] });
+    expect(render).toHaveBeenCalledOnce();
+  });
+  it("preserves both image loading and renderer failure diagnostics", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn<typeof globalThis.fetch>(
+        async (input) => new Response("not found", { status: input === url ? 404 : 200 }),
+      ),
+    );
+    vi.mocked(render).mockResolvedValue({
+      bytes: Uint8Array.of(0),
+      width: 8,
+      height: 8,
+      format: "png-1bit",
+      canvasOverflow: null,
+      failedBlocks: [
+        {
+          index: 1,
+          blockType: "kpi",
+          reason: { name: "Error", message: "Schema validation failed" },
+        },
+      ],
+    });
+    const input = draft();
+    input.slots.push({ blockType: "kpi", data: {} });
+    expect((await renderDraft(input, "default")).failedBlocks).toMatchObject([
+      { index: 0, blockType: "image" },
+      { index: 1, blockType: "kpi" },
+    ]);
   });
   it("leaves local sources and malformed image data to existing render validation", async () => {
     const fetch = vi.fn<typeof globalThis.fetch>(async () => new Response(new Uint8Array()));

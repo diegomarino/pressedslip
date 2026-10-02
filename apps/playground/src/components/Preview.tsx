@@ -54,8 +54,8 @@ export function Preview({
     return (
       <div className="preview preview-error">
         <pre>{error}</pre>
-        <button type="button" onClick={onRetry}>
-          Retry
+        <button type="button" onClick={onRetry} disabled={isLoading}>
+          {isLoading ? "Retrying…" : "Retry"}
         </button>
       </div>
     );
