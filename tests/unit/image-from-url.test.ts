@@ -167,6 +167,69 @@ describe("imageFromUrl", () => {
       /HTTP 404/,
     );
   });
+  it.each([
+    "request",
+    "body",
+  ])("normalizes operational %s TypeErrors with their cause", async (phase) => {
+    const cause = new TypeError("fetch failed");
+    const fetch: typeof globalThis.fetch = async () => {
+      if (phase === "request") throw cause;
+      return new Response(
+        new ReadableStream({
+          start(controller) {
+            controller.error(cause);
+          },
+        }),
+      );
+    };
+    const error = await imageFromUrl(url, { fetch }).catch((error: unknown) => error);
+    expect(error).toBeInstanceOf(Error);
+    expect(error).not.toBeInstanceOf(TypeError);
+    expect(error).toMatchObject({ message: "fetch failed", cause });
+  });
+  it.each([
+    "http",
+    "size",
+    "timeout",
+  ])("reports %s failure even if cancellation never settles", async (phase) => {
+    vi.useFakeTimers();
+    const cancel = vi.fn(
+      () =>
+        new Promise<void>(() => {
+          /* Simulate stalled cleanup. */
+        }),
+    );
+    const stream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        if (phase === "size") controller.enqueue(new Uint8Array(11));
+      },
+      cancel,
+    });
+    const result = imageFromUrl(url, {
+      timeoutMs: 10,
+      maxBytes: 10,
+      fetch: async () => new Response(stream, { status: phase === "http" ? 404 : 200 }),
+    }).catch((error: unknown) => error);
+    let watchdog: ReturnType<typeof setTimeout> | undefined;
+    const settled = Promise.race([
+      result,
+      new Promise((resolve) => {
+        watchdog = setTimeout(() => resolve("still pending"), 100);
+      }),
+    ]);
+    await vi.advanceTimersByTimeAsync(100);
+    const error = await settled;
+    clearTimeout(watchdog);
+    expect(error).toBeInstanceOf(Error);
+    expect(error).toMatchObject({
+      message: expect.stringMatching(
+        phase === "http" ? /HTTP 404/ : phase === "size" ? /byte limit/ : /timed out/,
+      ),
+    });
+    expect(cancel).toHaveBeenCalledOnce();
+    expect(stream.locked).toBe(false);
+    expect(vi.getTimerCount()).toBe(0);
+  });
   it("accepts an exact limit and never lets an option bypass 2 MiB", async () => {
     expect(await imageFromUrl(url, { fetch: fetchBytes(svg), maxBytes: svg.length })).toBe(
       imageFromBuffer(svg, "image/svg+xml"),
