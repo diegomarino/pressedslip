@@ -93,10 +93,21 @@ describe("URL image provider", () => {
     "timeout",
     "unsupported",
     "invalid-svg",
+    "network",
+    "body-network",
   ])("records %s provider diagnostics and renders the sibling", async (failure) => {
     let signal: AbortSignal | undefined;
     const fetch: typeof globalThis.fetch = async (_, init) => {
       signal = init?.signal ?? undefined;
+      if (failure === "network") throw new TypeError("fetch failed");
+      if (failure === "body-network")
+        return new Response(
+          new ReadableStream({
+            start(controller) {
+              controller.error(new TypeError("fetch failed"));
+            },
+          }),
+        );
       if (failure === "timeout") return new Response(new ReadableStream());
       return new Response(
         failure === "invalid-svg"
@@ -119,13 +130,15 @@ describe("URL image provider", () => {
       ok: "error",
       reason: {
         message: expect.stringMatching(
-          failure === "404"
-            ? /HTTP 404/
-            : failure === "timeout"
-              ? /timed out/
-              : failure === "invalid-svg"
-                ? /encoded data|encoding/
-                : /Convert other formats to PNG/,
+          failure === "network" || failure === "body-network"
+            ? /fetch failed/
+            : failure === "404"
+              ? /HTTP 404/
+              : failure === "timeout"
+                ? /timed out/
+                : failure === "invalid-svg"
+                  ? /encoded data|encoding/
+                  : /Convert other formats to PNG/,
         ),
       },
     });

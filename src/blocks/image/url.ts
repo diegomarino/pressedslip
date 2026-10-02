@@ -94,7 +94,7 @@ export async function imageFromUrl(url: string, opts: ImageFromUrlOptions = {}):
   let complete = false;
   const cancel = () => {
     void reader?.cancel(controller.signal.reason).catch(() => {
-      /* Preserve the timeout error if cancellation fails. */
+      /* Cleanup must not replace or delay the request/read error. */
     });
   };
   controller.signal.addEventListener("abort", cancel, { once: true });
@@ -126,17 +126,16 @@ export async function imageFromUrl(url: string, opts: ImageFromUrlOptions = {}):
       bytes.set(chunk, offset);
       offset += chunk.length;
     }
+  } catch (cause) {
+    // Fetch/body TypeErrors are operational failures, not invalid caller arguments.
+    if (cause instanceof TypeError) throw new Error(cause.message, { cause });
+    throw cause;
   } finally {
     clearTimeout(timer);
     controller.signal.removeEventListener("abort", cancel);
     if (reader) {
-      try {
-        if (!complete) await reader.cancel();
-      } catch {
-        /* Preserve the request/read error. */
-      } finally {
-        reader.releaseLock();
-      }
+      if (!complete) cancel();
+      reader.releaseLock();
     }
   }
   const src = encodeImage(bytes, maxBytes);

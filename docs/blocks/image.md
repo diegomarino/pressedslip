@@ -90,8 +90,11 @@ pixel data can still produce an indexed block failure during rendering.
 
 The default `timeoutMs` is 5000 and covers both the request and the entire streamed
 body, including stalls after headers. Injected `fetch` implementations must honor
-the provided abort signal. The helper clears its timer and cancels/releases body
-readers on failure. It checks usable Content-Length headers early and counts
+the provided abort signal. The helper clears its timer, requests cancellation, and
+releases body readers on failure without waiting for cancellation to finish.
+Network and body-read TypeErrors become ordinary errors with the original cause,
+so provider failures remain isolated; invalid arguments still throw TypeError.
+It checks usable Content-Length headers early and counts
 actual bytes even when the header is absent or false. Empty bodies fail.
 `maxBytes` defaults to 2,097,152 (2 MiB); a smaller cap is allowed, a larger value
 is clamped to 2 MiB. Both options require positive safe integers, and `timeoutMs`
