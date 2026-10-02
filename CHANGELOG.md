@@ -1,3 +1,9 @@
+## [0.5.0](https://github.com/diegomarino/pressedslip/compare/v0.4.0...v0.5.0) (2026-10-02)
+
+### Features
+
+* resolve image URLs before rendering ([#22](https://github.com/diegomarino/pressedslip/issues/22)) ([90107b0](https://github.com/diegomarino/pressedslip/commit/90107b04e8da7b6dbe4429974dfbd28cabbe4532))
+
 ## [0.4.0](https://github.com/diegomarino/pressedslip/compare/v0.3.5...v0.4.0) (2026-10-01)
 
 ### Features
