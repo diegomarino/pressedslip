@@ -110,6 +110,73 @@ const weatherProvider = defineProvider({
 
 The orchestrator wraps your fetch call in a timeout; if it exceeds `timeoutMs`, the result becomes `{ ok: "error" }` automatically. No need to add your own timeout logic.
 
+## Loading an image URL
+
+Resolve remote bytes inside the provider, then return the complete schema-parsed
+image data. `compose()` passes the sole provider value directly to the block
+renderer; it does not apply schema defaults. Register one image definition with
+its dependency, rather than adding a second image block alongside it.
+
+```ts
+import {
+  compose, createProviderRegistry, createRegistry, createStaticTextProvider,
+  defineProvider, imageBlock, imageFromUrl, kpiBlock, loadThemeFonts, render, themes,
+} from "pressedslip";
+
+const tuxUrl = "https://raw.githubusercontent.com/diegomarino/pressedslip/663028ea9ce813192efec798323b5cadd382fffd/docs/assets/visual-refs/block-image-tux.png";
+const logo = defineProvider({
+  key: "logo",
+  scope: "shared",
+  freshness: "never",
+  timeoutMs: 6000, // Longer than the helper's request/body deadline.
+  async fetch() {
+    try {
+      return {
+        ok: "data",
+        value: imageBlock.schema.parse({
+          layout: "column",
+          images: [{ src: await imageFromUrl(tuxUrl), alt: "Tux" }],
+        }),
+      };
+    } catch (error) {
+      return {
+        ok: "error",
+        reason: {
+          name: error instanceof Error ? error.name : "ImageLoadError",
+          message: error instanceof Error ? error.message : String(error),
+        },
+      };
+    }
+  },
+});
+const providers = createProviderRegistry({
+  logo,
+  stat: createStaticTextProvider({ key: "stat", value: { value: "42" } }),
+});
+const blocks = createRegistry([
+  { ...imageBlock, dependencies: ["logo"] },
+  { ...kpiBlock, dependencies: ["stat"] },
+]);
+const theme = await loadThemeFonts(themes.default); // Resolve fonts before render too.
+const composition = await compose({ providers, blocks, date: "2026-10-02" });
+const output = await render(composition, { registry: blocks, theme });
+console.log(composition.providerOutcomes.logo, composition.failedBlocks);
+console.log(output.width, output.height);
+```
+
+An HTTP error, helper timeout, or unsupported payload records an error in
+`Composition.providerOutcomes.logo` and a failed image block with
+`failedProvider: "logo"`; the independent KPI still produces printable output.
+Provider failures are composition diagnostics. `Rendering.failedBlocks` reports
+failures encountered while rendering the surviving slots. Raw URLs supplied as
+image data fail validation without fetching; automatic JSON URL resolution is
+deferred. Rendering the resolved composition performs no image network I/O.
+
+See the [image block reference](../blocks/image.md#loading-a-url-before-rendering)
+for optional raw-byte caching, injected fetch/CORS, source limits, and the trusted
+URL boundary. The pinned PNG reuses the existing rendered Tux asset and its
+[attribution notice](../../apps/playground/src/variants/assets/README.md).
+
 ## Provider context
 
 Each `fetch(ctx)` receives a context object:

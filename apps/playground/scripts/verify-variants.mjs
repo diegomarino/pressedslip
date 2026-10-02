@@ -14,6 +14,7 @@ import {
   streakDemoBlock,
   wordOfDayDemoBlock,
 } from "../src/showcase-blocks/index.ts";
+import { tuxPng } from "../src/variants/assets/tux.ts";
 import { variantsByBlock } from "../src/variants/index.ts";
 
 const blocks = {
@@ -38,7 +39,10 @@ for (const group of variantsByBlock) {
     continue;
   }
   for (const v of group.variants) {
-    const r = def.schema.safeParse(v.slot.data);
+    const data = structuredClone(v.slot.data);
+    // Check the URL variant's shape offline; browser smoke tests exercise loading.
+    if (v.id === "image-tux") data.images[0].src = tuxPng;
+    const r = def.schema.safeParse(data);
     if (!r.success) {
       console.error(`✗ ${v.id}: ${r.error.message}`);
       failed++;

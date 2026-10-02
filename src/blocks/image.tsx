@@ -3,7 +3,12 @@ import { z } from "zod";
 import { defineBlock } from "../define-block.js";
 import type { BlockDefinition } from "../types.js";
 import { preparePng } from "./image/raster.js";
-import { imageFromBuffer, parseImageSource, validateImageUri } from "./image/source.js";
+import {
+  imageFromBuffer,
+  parseImageSource,
+  UNSUPPORTED_IMAGE_SOURCE_MESSAGE,
+  validateImageUri,
+} from "./image/source.js";
 
 /** Consumer input for a column of images, with optional sizing and dither defaults. */
 export type ImageData = {
@@ -39,12 +44,7 @@ const imageSchema: z.ZodType<ResolvedImageData, ImageData> = z.object({
   images: z
     .array(
       z.object({
-        src: z
-          .string()
-          .refine(
-            validateImageUri,
-            "Pass a PNG or SVG data URI (maximum 2 MiB); see imageFromBuffer. Convert other formats to PNG.",
-          ),
+        src: z.string().refine(validateImageUri, UNSUPPORTED_IMAGE_SOURCE_MESSAGE),
         alt: z.string().optional(),
         width: z.number().int().positive().optional(),
         height: z.number().int().positive().optional(),

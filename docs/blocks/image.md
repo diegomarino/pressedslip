@@ -64,6 +64,81 @@ Full PNG decoding and final-size processing happen when the block renders.
 }
 ```
 
+## Loading a URL before rendering
+
+```ts
+import { imageBlock, imageFromUrl } from "pressedslip";
+
+const tuxUrl = "https://raw.githubusercontent.com/diegomarino/pressedslip/663028ea9ce813192efec798323b5cadd382fffd/docs/assets/visual-refs/block-image-tux.png";
+const imageData = imageBlock.schema.parse({
+  layout: "column",
+  images: [{ src: await imageFromUrl(tuxUrl), alt: "Tux" }],
+});
+```
+
+This pinned URL serves the existing [rendered Tux PNG](../assets/visual-refs/block-image-tux.png),
+not the original filtered SVG. Attribution remains Larry Ewing and The GIMP;
+vector work by Simon Budig and Garrett LeSage, with the
+[original redistribution notice](../../apps/playground/src/variants/assets/README.md).
+
+`imageFromUrl` is also exported from `pressedslip/browser`. Only absolute HTTP(S)
+URLs are accepted. PNG signatures and the existing SVG XML validator determine
+format; URL extensions and Content-Type headers are ignored. Unsupported formats
+use the image schema's guidance; recognizable malformed PNG/SVG payloads keep
+their validation diagnostics. PNG headers are validated before encoding; corrupt
+pixel data can still produce an indexed block failure during rendering.
+
+The default `timeoutMs` is 5000 and covers both the request and the entire streamed
+body, including stalls after headers. Injected `fetch` implementations must honor
+the provided abort signal. The helper clears its timer and cancels/releases body
+readers on failure. It checks usable Content-Length headers early and counts
+actual bytes even when the header is absent or false. Empty bodies fail.
+`maxBytes` defaults to 2,097,152 (2 MiB); a smaller cap is allowed, a larger value
+is clamped to 2 MiB. Both options require positive safe integers, and `timeoutMs`
+must not exceed 2,147,483,647 ms.
+
+```ts
+import { imageFromUrl, memoryFontCache, type ImageCache } from "pressedslip/browser";
+
+// A dedicated existing byte cache instance; no new cache factory is needed.
+const imageCache: ImageCache = memoryFontCache();
+const src = await imageFromUrl(
+  "https://raw.githubusercontent.com/diegomarino/pressedslip/663028ea9ce813192efec798323b5cadd382fffd/docs/assets/visual-refs/block-image-tux.png",
+  { cache: imageCache, timeoutMs: 5000, maxBytes: 2 * 1024 * 1024 },
+);
+```
+
+There is no cache by default. Cache keys are
+`pressedslip:image:v1:<normalized-url-without-fragment>` and values are raw bytes.
+Hits are validated again against the current cap and format rules. Only validated
+loads are saved; cache errors propagate. There is no TTL, retry, or concurrent
+request deduplication. Node consumers can use `nodeFontCache({ dir })` from
+`pressedslip/providers` with a dedicated image directory.
+
+Normal fetch/CORS restrictions apply. HTTP-only validation is not an SSRF policy:
+applications accepting untrusted URLs must enforce host and redirect restrictions
+through their injected fetch. Fetch, timeout, status, and validation failures reject
+the helper promise. Catch them in application code or use the
+[complete provider wiring example](../guide/providers.md#loading-an-image-url).
+Resolve URLs before `compose()`/`render()`; automatic URL resolution in JSON is
+deferred in the package. The Playground accepts HTTP(S) image sources in its
+editor and resolves them with this helper before calling render. The editor keeps
+the URL. A failed URL skips its image block while the other blocks still render;
+the browser console logs the URL, image index, block index, and error. Fix the URL
+and click Render again.
+Select `image · Tux (URL)`, edit `images[].src`, and click Render.
+
+The optional live smoke is separate from all offline verification:
+
+```bash
+pnpm build
+node scripts/smoke-image-url.mjs --live
+```
+
+It explicitly fetches the pinned URL once, compares it with the existing local
+PNG, and checks both built public helpers. No image network request is made by
+`pnpm verify`.
+
 ## Layout notes
 
 The column has 8 px padding and 8 px gaps. The image width budget is the shell's
@@ -122,9 +197,10 @@ applies to the complete slip, including shell, text, and all images.
 
 ## See also
 
-- The playground's `image · Tux (dithered PNG)` example rasterizes the
+- The playground's `image · Tux (URL)` example loads the existing rendered PNG
+  from the pinned commit URL before rendering. The original
   [Wikimedia Commons Tux SVG](https://commons.wikimedia.org/wiki/File:Tux.svg)
-  before passing it to the block, because that SVG uses filters. Artwork:
+  uses filters unsupported by the block. Artwork:
   Larry Ewing and The GIMP; vector work: Simon Budig and Garrett LeSage.
   See the [asset attribution and original redistribution notice](../../apps/playground/src/variants/assets/README.md).
   [Rendered example](../assets/visual-refs/block-image-tux.png).

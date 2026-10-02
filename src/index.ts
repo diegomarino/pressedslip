@@ -9,6 +9,7 @@
 // Functions
 
 export { imageFromBuffer } from "./blocks/image/source.js";
+export { type ImageCache, type ImageFromUrlOptions, imageFromUrl } from "./blocks/image/url.js";
 export { type ImageData, imageBlock } from "./blocks/image.js";
 export { keyValueBlock } from "./blocks/key-value.js";
 export { kpiBlock } from "./blocks/kpi.js";

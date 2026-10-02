@@ -4,6 +4,9 @@ import { XMLBuilder, XMLParser, XMLValidator } from "fast-xml-parser";
 
 /** Maximum decoded source payload per image (2 MiB). */
 export const MAX_IMAGE_BYTES: number = 2 * 1024 * 1024;
+/** Shared guidance for unsupported image sources; kept internal to the image implementation. */
+export const UNSUPPORTED_IMAGE_SOURCE_MESSAGE =
+  "Pass a PNG or SVG data URI (maximum 2 MiB); see imageFromBuffer. Convert other formats to PNG.";
 /** Formats accepted by the image block. */
 export type ImageMime = "image/png" | "image/svg+xml";
 /** Measured image source, with explicit dimensions in normalized SVGs. */
@@ -63,8 +66,7 @@ function checkSize(bytes: Uint8Array): void {
 }
 function readUri(src: string): { bytes: Uint8Array; mime: ImageMime } {
   const match = /^data:(image\/png|image\/svg\+xml);(base64|utf8),([\s\S]*)$/.exec(src);
-  if (!match)
-    throw new Error("Pass a PNG/SVG data URI; see imageFromBuffer (convert other formats to PNG)");
+  if (!match) throw new Error(UNSUPPORTED_IMAGE_SOURCE_MESSAGE);
   const mime = match[1] as ImageMime;
   const encoding = match[2];
   const payload = match[3] ?? "";

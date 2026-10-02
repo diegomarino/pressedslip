@@ -3,8 +3,25 @@
  * scripts/verify-browser-harness.mjs build-success-only gate.
  */
 
+import { fileURLToPath } from "node:url";
 import { expect, type Page, test } from "@playwright/test";
 import { initialCompositionJsonc } from "../src/initial-composition.js";
+
+const tuxUrl =
+  "https://raw.githubusercontent.com/diegomarino/pressedslip/663028ea9ce813192efec798323b5cadd382fffd/docs/assets/visual-refs/block-image-tux.png";
+const tuxPath = fileURLToPath(
+  new URL("../../../docs/assets/visual-refs/block-image-tux.png", import.meta.url),
+);
+
+test.beforeEach(async ({ page }) => {
+  await page.route(tuxUrl, (route) =>
+    route.fulfill({
+      path: tuxPath,
+      contentType: "image/png",
+      headers: { "Access-Control-Allow-Origin": "*" },
+    }),
+  );
+});
 
 async function previewDigest(page: Page) {
   return page.evaluate(async () => {
@@ -15,6 +32,51 @@ async function previewDigest(page: Page) {
     return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0")).join("");
   });
 }
+
+test("retry keeps the error visible until a new render succeeds", async ({ page }) => {
+  let retrying = false;
+  let releaseRetry: () => void = () => undefined;
+  const retryGate = new Promise<void>((resolve) => {
+    releaseRetry = resolve;
+  });
+  let notifyRequest: () => void = () => undefined;
+  const retryRequested = new Promise<void>((resolve) => {
+    notifyRequest = resolve;
+  });
+  await page.route("**/jetbrainsmono/**", async (route) => {
+    if (!retrying) {
+      await route.fulfill({ status: 404, headers: { "Access-Control-Allow-Origin": "*" } });
+      return;
+    }
+    notifyRequest();
+    await retryGate;
+    await route.fulfill({
+      path: fileURLToPath(
+        new URL("../../../tests/fixtures/fonts/jetbrains-mono-regular.ttf", import.meta.url),
+      ),
+      contentType: "font/ttf",
+      headers: { "Access-Control-Allow-Origin": "*" },
+    });
+  });
+  await page.goto("/");
+  await page.locator(".preview-cta").click();
+  await expect(page.locator(".preview-img")).toBeVisible({ timeout: 15000 });
+  await page.locator('select[aria-label="Theme selector"]').selectOption("mono");
+  await page.getByRole("button", { name: "Render", exact: true }).click();
+  await expect(page.locator(".preview-error")).toContainText("Font fetch failed");
+  retrying = true;
+  try {
+    await page.getByRole("button", { name: "Retry", exact: true }).click();
+    await retryRequested;
+    await expect(page.locator(".preview-error")).toBeVisible();
+    await expect(page.locator(".preview-img")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Retrying…", exact: true })).toBeDisabled();
+  } finally {
+    releaseRetry();
+  }
+  await expect(page.locator(".preview-img")).toBeVisible({ timeout: 15000 });
+  await expect(page.locator(".preview-error")).toHaveCount(0);
+});
 
 test("1. cold load — page loads with CTA, no errors, builder pre-loaded", async ({ page }) => {
   const errors: string[] = [];
@@ -366,8 +428,8 @@ test("12. sp8f — theme switch produces new render with built-ins", async ({ pa
   expect(newSrc.startsWith("blob:")).toBe(true);
 });
 
-for (const label of ["image · logo and stripes", "image · Tux (dithered PNG)"]) {
-  test(`${label} adds and renders a local image column`, async ({ page }) => {
+for (const label of ["image · logo and stripes", "image · Tux (URL)"]) {
+  test(`${label} adds and renders an image column`, async ({ page }) => {
     await page.goto("/");
     await page.locator(".preview-cta").click();
     await page.waitForFunction(() => {
@@ -394,3 +456,91 @@ for (const label of ["image · logo and stripes", "image · Tux (dithered PNG)"]
     await expect(page.locator(".preview-error")).toHaveCount(0);
   });
 }
+
+test("image URL editing preserves the URL, skips failed image blocks, and logs load errors", async ({
+  page,
+}) => {
+  const loaded: string[] = [];
+  const failures: Promise<unknown>[] = [];
+  page.on("console", (message) => {
+    if (!message.text().startsWith("Image URL loading failed")) return;
+    const detail = message.args()[1];
+    if (detail) failures.push(detail.jsonValue());
+  });
+  page.on("request", (request) => {
+    if (request.url() === tuxUrl || request.url().startsWith("https://images.example/"))
+      loaded.push(request.url());
+  });
+  const editedUrl = "https://images.example/edited.svg";
+  const missingUrl = "https://images.example/missing.png";
+  await page.route(editedUrl, (route) =>
+    route.fulfill({
+      contentType: "image/svg+xml",
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body: '<svg width="32" height="32"><rect width="32" height="32"/></svg>',
+    }),
+  );
+  await page.route(missingUrl, (route) =>
+    route.fulfill({
+      status: 404,
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body: "not found",
+    }),
+  );
+  await page.goto("/");
+  await page.getByRole("button", { name: "image · Tux (URL)", exact: true }).press("Enter");
+  expect(loaded).toEqual([]);
+  const image = { blockType: "image", data: { layout: "column", images: [{ src: tuxUrl }] } };
+  const input = {
+    date: "2026-10-02",
+    meta: {},
+    slots: [image, { blockType: "kpi", data: { value: "42" } }],
+  };
+  await page.locator(".cm-content").click();
+  await page.keyboard.press("ControlOrMeta+A");
+  await page.keyboard.insertText(JSON.stringify(input, null, 2));
+  await page.getByRole("button", { name: "Render", exact: true }).click();
+  await expect(page.locator(".preview-img")).toBeVisible({ timeout: 15000 });
+  const first = await previewDigest(page);
+  await expect(page.locator(".cm-content")).toContainText(tuxUrl);
+  expect(loaded).toEqual([tuxUrl]);
+
+  image.data.images[0].src = editedUrl;
+  await page.locator(".cm-content").click();
+  await page.keyboard.press("ControlOrMeta+A");
+  await page.keyboard.insertText(JSON.stringify(input, null, 2));
+  await page.getByRole("button", { name: "Render", exact: true }).click();
+  await expect(page.locator(".preview-stale-banner")).toHaveCount(0, { timeout: 15000 });
+  const editedDigest = await previewDigest(page);
+  expect(editedDigest).not.toBe(first);
+  await expect(page.locator(".cm-content")).toContainText(editedUrl);
+  expect(loaded).toEqual([tuxUrl, editedUrl]);
+
+  image.data.images[0].src = missingUrl;
+  await page.locator(".cm-content").click();
+  await page.keyboard.press("ControlOrMeta+A");
+  await page.keyboard.insertText(JSON.stringify(input, null, 2));
+  await page.getByRole("button", { name: "Render", exact: true }).click();
+  await expect(page.locator(".preview-stale-banner")).toHaveCount(0, { timeout: 15000 });
+  await expect(page.locator(".preview-error")).toHaveCount(0);
+  await expect.poll(() => previewDigest(page)).not.toBe(editedDigest);
+  await expect
+    .poll(() => Promise.all(failures))
+    .toMatchObject([
+      { index: 0, blockType: "image", reason: { message: expect.stringContaining("HTTP 404") } },
+    ]);
+  expect(JSON.stringify(await Promise.all(failures))).toContain(missingUrl);
+  await expect(page.locator(".cm-content")).toContainText(missingUrl);
+  await page.route(missingUrl, (route) =>
+    route.fulfill({
+      path: tuxPath,
+      contentType: "image/png",
+      headers: { "Access-Control-Allow-Origin": "*" },
+    }),
+  );
+  await page.getByRole("button", { name: "Render", exact: true }).click();
+  await expect(page.locator(".preview-img")).toBeVisible({ timeout: 15000 });
+  await expect(page.locator(".preview-error")).toHaveCount(0);
+  await expect.poll(() => previewDigest(page)).toBe(first);
+  expect(loaded).toEqual([tuxUrl, editedUrl, missingUrl, missingUrl]);
+});

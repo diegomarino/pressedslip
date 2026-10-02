@@ -10,6 +10,11 @@ function surfaceOf(mod: Record<string, unknown>): string[] {
 }
 
 describe("public API surface", () => {
+  it("exports callable image URL helpers from root and browser", () => {
+    expect(typeof Root.imageFromUrl).toBe("function");
+    expect(typeof Browser.imageFromUrl).toBe("function");
+  });
+
   it("locks the root entry surface", () => {
     expect(surfaceOf(Root)).toMatchSnapshot();
   });
