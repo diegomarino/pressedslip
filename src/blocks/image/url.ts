@@ -22,6 +22,24 @@ export type ImageFromUrlOptions = {
   cache?: ImageCache;
 };
 
+/** Recognize the root prefix for diagnostics with a forward-only scan. */
+function hasSvgRootPrefix(text: string): boolean {
+  let offset = 0;
+  while (offset < text.length) {
+    while (/\s/.test(text[offset] ?? "")) offset++;
+    const terminator = text.startsWith("<?", offset)
+      ? "?>"
+      : text.startsWith("<!--", offset)
+        ? "-->"
+        : undefined;
+    if (terminator === undefined) return /^<svg(?:\s|\/?>)/.test(text.slice(offset, offset + 6));
+    const end = text.indexOf(terminator, offset + (terminator === "?>" ? 2 : 4));
+    if (end === -1) return false;
+    offset = end + terminator.length;
+  }
+  return false;
+}
+
 function encodeImage(bytes: Uint8Array, maxBytes: number): string {
   if (bytes.length > maxBytes)
     throw new Error(`Image source exceeds maximum byte limit (${maxBytes})`);
@@ -31,12 +49,7 @@ function encodeImage(bytes: Uint8Array, maxBytes: number): string {
   } catch (cause) {
     // The existing XML validator decides acceptance. Recognizable malformed SVGs
     // keep their detailed diagnostics; other formats receive the schema guidance.
-    if (
-      /^\s*(?:(?:<\?[\s\S]*?\?>|<!--[\s\S]*?-->)\s*)*<svg(?:\s|\/?>)/.test(
-        new TextDecoder().decode(bytes),
-      ) ||
-      bytes.length === 0
-    )
+    if (hasSvgRootPrefix(new TextDecoder().decode(bytes)) || bytes.length === 0)
       throw new Error(cause instanceof Error ? cause.message : String(cause), { cause });
     throw new Error(UNSUPPORTED_IMAGE_SOURCE_MESSAGE, { cause });
   }

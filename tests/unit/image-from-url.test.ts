@@ -94,6 +94,8 @@ describe("imageFromUrl", () => {
     new TextEncoder().encode("<html><svg/></html>"),
     Uint8Array.of(255),
     new TextEncoder().encode("plain text"),
+    new TextEncoder().encode("<?unterminated"),
+    new TextEncoder().encode("<!--unterminated"),
   ])("rejects unsupported bytes with the schema message", async (bytes) => {
     await expect(imageFromUrl(url, { fetch: fetchBytes(bytes) })).rejects.toThrow(unsupported);
     const result = imageBlock.schema.safeParse({ layout: "column", images: [{ src: url }] });
@@ -126,6 +128,21 @@ describe("imageFromUrl", () => {
       expect(error).not.toBeInstanceOf(TypeError);
       expect((error as Error).cause).toBeInstanceOf(TypeError);
     }
+  });
+  it.each(["<?x?>", "<!--x-->"])("rejects repeated XML prefixes promptly: %s", async (prefix) => {
+    const bytes = new TextEncoder().encode(prefix.repeat(32));
+    const start = performance.now();
+    await expect(imageFromUrl(url, { fetch: fetchBytes(bytes) })).rejects.toThrow(unsupported);
+    expect(performance.now() - start).toBeLessThan(1000);
+  });
+  it.each([
+    '<?xml version="1.0"?>',
+    " \n<!-- leading comment -->",
+  ])("preserves SVG diagnostics after a prefix: %s", async (prefix) => {
+    const bytes = new TextEncoder().encode(`${prefix} \n<svg><text>unsupported</text></svg>`);
+    await expect(imageFromUrl(url, { fetch: fetchBytes(bytes) })).rejects.toThrow(
+      "SVG text is unsupported",
+    );
   });
   it("preserves truncated PNG diagnostics", async () => {
     await expect(imageFromUrl(url, { fetch: fetchBytes(png.subarray(0, 8)) })).rejects.toThrow(
