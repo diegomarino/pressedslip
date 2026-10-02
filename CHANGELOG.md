@@ -1,3 +1,9 @@
+## [0.5.1](https://github.com/diegomarino/pressedslip/compare/v0.5.0...v0.5.1) (2026-10-02)
+
+### Bug Fixes
+
+* isolate image network failures and bound cancellation cleanup ([#23](https://github.com/diegomarino/pressedslip/issues/23)) ([d8564de](https://github.com/diegomarino/pressedslip/commit/d8564de320cbbb146704acdcac980db0a396b2a8))
+
 ## [0.5.0](https://github.com/diegomarino/pressedslip/compare/v0.4.0...v0.5.0) (2026-10-02)
 
 ### Features
