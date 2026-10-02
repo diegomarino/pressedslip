@@ -55,6 +55,29 @@ const imageData: ImageData = {
 See the [image block reference](../blocks/image.md) for accepted formats and limits.
 `pressedslip/testing` exports `imageFixtures` and `builtinFixtures.image`.
 
+## Image URL loading
+
+`imageFromUrl`, `ImageFromUrlOptions`, and `ImageCache` are exported from both
+`pressedslip` and `pressedslip/browser`. The asynchronous helper resolves HTTP(S)
+PNG/static-SVG bytes into a data URI before composition or rendering. It defaults
+to a 5000 ms request/body timeout and a 2 MiB streamed source cap. Optional injected
+fetch and raw-byte cache implementations are supported; no cache is used by default.
+
+```ts
+import { imageFromUrl, memoryFontCache, type ImageCache, type ImageFromUrlOptions } from "pressedslip";
+
+const cache: ImageCache = memoryFontCache();
+const options: ImageFromUrlOptions = { cache, timeoutMs: 5000 };
+const src = await imageFromUrl(
+  "https://raw.githubusercontent.com/diegomarino/pressedslip/663028ea9ce813192efec798323b5cadd382fffd/docs/assets/visual-refs/block-image-tux.png",
+  options,
+);
+```
+
+See [URL limits and validation](../blocks/image.md#loading-a-url-before-rendering)
+and [complete provider wiring](../guide/providers.md#loading-an-image-url).
+Automatic URL resolution in JSON is deferred; image rendering stays network-free.
+
 ## Generated TypeDoc
 
 The complete symbol-by-symbol reference is generated from TSDoc-annotated
