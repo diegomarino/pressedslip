@@ -1,3 +1,7 @@
 packages:
   - "."
   - "apps/*"
+
+# satori pins fflate 0.7.3 (GHSA unzipSync infinite loop); 0.7.5 is the patched release of the same line.
+overrides:
+  "fflate@>=0.7.0 <0.7.5": "^0.7.5"
