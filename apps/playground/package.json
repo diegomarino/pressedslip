@@ -24,6 +24,7 @@
     "@lezer/common": "^1.5.2",
     "@lezer/json": "^1.0.2",
     "@uiw/react-codemirror": "^4.23.0",
+    "harfbuzzjs": "0.10.0",
     "jsonc-parser": "^3.3.1",
     "pressedslip": "workspace:*",
     "react": "^19",
