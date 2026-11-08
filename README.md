@@ -29,6 +29,20 @@ pnpm add pressedslip
 npm install pressedslip
 ```
 
+`satori` pins `fflate@0.7.3`, which `npm audit` flags (`unzipSync` infinite
+loop; satori only calls `inflateSync`). A dependency of pressedslip cannot
+change that pin for you, so add an override in your own `package.json`:
+
+```json
+{
+  "overrides": { "fflate": "^0.7.5" },
+  "pnpm": { "overrides": { "fflate@>=0.7.0 <0.7.5": "^0.7.5" } }
+}
+```
+
+Use `overrides` for npm and Bun and `pnpm.overrides` (or `overrides` in
+`pnpm-workspace.yaml`) for pnpm.
+
 ## Quick Example
 
 ```ts
