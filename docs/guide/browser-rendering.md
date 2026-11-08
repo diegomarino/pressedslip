@@ -44,6 +44,50 @@ const registry = createRegistry(builtinBlocks);
 const { bytes } = await render(composition, { registry, wasm: fetch("/wasm/index_bg.wasm") });
 ```
 
+### 3. Bundle HarfBuzz's wasm (satori text shaping)
+
+satori shapes text with `harfbuzzjs`. Its loader fetches `hb.wasm` from a path
+relative to the page, a file most bundlers never emit. The server answers with
+HTML, the wasm compile aborts (`expected magic word 00 61 73 6d`), and every
+`render()` call hangs. Node is not affected.
+
+In Vite, alias `harfbuzzjs` to a small module that hands the loader a bundled
+asset URL:
+
+<!-- check-doc-snippets: skip -->
+```ts
+// src/harfbuzzjs-browser.ts
+import createHarfBuzz from "harfbuzzjs/hb.js";
+import hbWasmUrl from "harfbuzzjs/hb.wasm?url";
+import hbjs from "harfbuzzjs/hbjs.js";
+
+export default createHarfBuzz({ locateFile: () => hbWasmUrl }).then(hbjs);
+```
+
+<!-- check-doc-snippets: skip -->
+```ts
+// vite.config.ts
+import { fileURLToPath } from "node:url";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  resolve: {
+    alias: [
+      {
+        find: /^harfbuzzjs$/,
+        replacement: fileURLToPath(new URL("./src/harfbuzzjs-browser.ts", import.meta.url)),
+      },
+    ],
+  },
+});
+```
+
+Add `harfbuzzjs` as a direct dependency, at the exact version satori depends on
+(`npm ls harfbuzzjs`), so the import resolves under strict package managers.
+Other bundlers need the same thing: emit `harfbuzzjs/hb.wasm` as an asset and
+pass its URL to `hb.js` through `locateFile`. The pressedslip playground
+(`apps/playground/vite.config.ts`) uses this setup.
+
 ## Minimal example
 
 ```ts

@@ -29,6 +29,26 @@ pnpm add pressedslip
 npm install pressedslip
 ```
 
+`satori` pins `fflate@0.7.3`, which `npm audit` flags (`unzipSync` infinite
+loop; satori only calls `inflateSync`). A dependency of pressedslip cannot
+change that pin for you, so add an override in your own `package.json`:
+
+```json
+{
+  "overrides": { "fflate": "^0.7.5" },
+  "pnpm": { "overrides": { "fflate@>=0.7.0 <0.7.5": "^0.7.5" } }
+}
+```
+
+Use `overrides` for npm and Bun and `pnpm.overrides` (or `overrides` in
+`pnpm-workspace.yaml`) for pnpm.
+
+satori shapes text with `harfbuzzjs`, which loads `hb.wasm` from its own
+package directory. If you bundle a Node server (esbuild, Rollup) to ESM, keep
+`harfbuzzjs` external like `@resvg/resvg-js`; bundled, it fails at import with
+`ReferenceError: __dirname is not defined`. Browser bundles need the alias in
+[Browser rendering](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/browser-rendering.md).
+
 ## Quick Example
 
 ```ts
