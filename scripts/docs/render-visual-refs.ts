@@ -11,6 +11,8 @@
  *   - Recipe illustrations (`recipe-*.png`) for docs/guide/recipes.md.
  *   - One PNG per theme (3).
  *   - Composition example PNGs (morning briefing, kids briefing).
+ *   - The README hero (`hero.png`): three themed slips side by side on a grey
+ *     background, each ending in a torn paper edge.
  *
  * Run via: pnpm docs:visual-refs
  * Output goes to docs/assets/visual-refs/.
@@ -56,11 +58,13 @@ const registry = createRegistry([...builtinBlocks, ...showcaseBlocks]);
 function makeComposition(
   id: string,
   slots: Array<{ blockType: string; data: unknown; title?: string }>,
+  subjectName?: string,
 ): Composition {
   return {
     id,
     version: 1,
     date: "2026-06-09",
+    ...(subjectName ? { subject: { id: subjectName.toLowerCase(), name: subjectName } } : {}),
     status: "ready",
     slots: slots.map((s, i) => ({ index: i, ...s })),
     failedBlocks: [],
@@ -253,16 +257,20 @@ await renderToPng(compositionExample, "composition-example.png");
 
 // 4. Kids briefing — showcase blocks plus a riddle whose answer prints upside
 // down through a theme override (`textStyles.answer.rotate = 180`).
-const kidsTheme = {
-  ...themes.mono,
-  shell: {
-    ...themes.mono.shell,
-    textStyles: {
-      ...themes.mono.shell.textStyles,
-      answer: { ...themes.mono.shell.textStyles?.answer, rotate: 180 },
+/** A theme whose `answer` text style prints upside down. */
+function withUpsideDownAnswers<T extends (typeof themes)[keyof typeof themes]>(theme: T): T {
+  return {
+    ...theme,
+    shell: {
+      ...theme.shell,
+      textStyles: {
+        ...theme.shell.textStyles,
+        answer: { ...theme.shell.textStyles?.answer, rotate: 180 },
+      },
     },
-  },
-};
+  };
+}
+const kidsTheme = withUpsideDownAnswers(themes.mono);
 const kidsSlots = [
   phonicsDemoVariants[0].slot,
   routineDemoVariants[0].slot,
@@ -297,5 +305,92 @@ await renderToPng(
   kidsTheme,
   { crop: true },
 );
+
+// 5. README hero: three slips, three themes, side by side.
+const heroSlips: Array<{ theme: ThemeInput; composition: Composition }> = [
+  {
+    theme: themes.default,
+    composition: makeComposition(
+      "hero-morning",
+      [
+        morningBriefingSlots[0],
+        {
+          blockType: "list",
+          title: "TODAY",
+          data: {
+            groups: [
+              {
+                items: [
+                  { id: "09:00", value: "Weekly sync · Design × Eng" },
+                  { id: "14:00", value: "Deep work block" },
+                  { id: "16:45", value: "Product demo · Acme Corp" },
+                ],
+              },
+            ],
+          },
+        },
+        wordOfDayDemoVariants[0].slot,
+        morningBriefingSlots[2],
+        streakDemoVariants[0].slot,
+        morningBriefingSlots[3],
+      ],
+      "Good morning, María",
+    ),
+  },
+  {
+    theme: themes.mono,
+    composition: makeComposition(
+      "hero-kids",
+      [phonicsDemoVariants[1].slot, routineDemoVariants[0].slot],
+      "Leo's morning",
+    ),
+  },
+  {
+    theme: withUpsideDownAnswers(themes.compact),
+    composition: makeComposition(
+      "hero-puzzles",
+      [
+        kidsSlots[2],
+        { ...kidsSlots[3], title: "FIND 6 ANIMALS" },
+        {
+          ...drawingPromptDemoVariants[0].slot,
+          data: { prompt: "Draw a dragon eating breakfast.", height: 400 },
+        },
+      ],
+      "Puzzle time",
+    ),
+  },
+];
+const strips = [];
+for (const { theme, composition } of heroSlips) {
+  const r = await render(composition, { registry, theme, width: PAPER.thermal80 });
+  if (r.failedBlocks.length > 0)
+    throw new Error(`hero ${composition.id}: ${JSON.stringify(r.failedBlocks)}`);
+  strips.push(decodePng(r.bytes));
+}
+const GAP = 56;
+const TEAR = 14; // torn-edge tooth height
+const BG = 226;
+const stripHeight = Math.max(...strips.map((p) => p.height)) + 24;
+const heroWidth = strips.reduce((w, p) => w + p.width, 0) + (strips.length + 1) * GAP;
+const heroHeight = GAP + stripHeight + TEAR + GAP;
+const hero = new Uint8Array(heroWidth * heroHeight).fill(BG);
+for (const [i, strip] of strips.entries()) {
+  const left = GAP + i * (strip.width + GAP);
+  for (let y = 0; y < stripHeight + TEAR; y++) {
+    for (let x = 0; x < strip.width; x++) {
+      // Sawtooth bottom edge: the paper ends between stripHeight and stripHeight + TEAR.
+      const phase = (x + i * 7) % (TEAR * 2);
+      const edge = stripHeight + (phase < TEAR ? phase : TEAR * 2 - phase);
+      if (y >= edge) continue;
+      const value =
+        y < strip.height ? (strip.data[(y * strip.width + x) * strip.channels] ?? 255) : 255;
+      hero[(GAP + y) * heroWidth + left + x] = value;
+    }
+  }
+}
+const heroPng = encodePng({ width: heroWidth, height: heroHeight, channels: 1, data: hero });
+writeFileSync(resolve(OUT_DIR, "hero.png"), heroPng);
+console.log(`[visual-refs] hero.png — ${heroWidth}×${heroHeight}px (${heroPng.length} bytes)`);
 
 console.log("[visual-refs] done");

@@ -6,7 +6,7 @@
 [![CI](https://github.com/diegomarino/pressedslip/actions/workflows/ci.yml/badge.svg)](https://github.com/diegomarino/pressedslip/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-![Morning briefing rendered at 80mm thermal width](https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/composition-example.png)
+![Three 80 mm slips rendered by pressedslip: a morning briefing, a kids' phonics and emoji checklist, and a puzzle slip with an upside-down riddle, word search and drawing frame](https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/hero.png)
 
 <video src="https://github.com/user-attachments/assets/9df1895b-349f-410e-99cd-5cff7bf11700" controls autoplay loop muted width="100%"></video>
 
