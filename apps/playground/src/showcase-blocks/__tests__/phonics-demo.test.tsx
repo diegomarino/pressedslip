@@ -6,7 +6,12 @@ import type { RenderContext } from "pressedslip";
 import { SHELL_DEFAULTS } from "pressedslip";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { PHONICS_MAX_FONT_PX, phonicsDemoBlock, phonicsFontSize } from "../phonics-demo.js";
+import {
+  PHONICS_MAX_FONT_PX,
+  phonicsAdvanceEm,
+  phonicsDemoBlock,
+  phonicsFontSize,
+} from "../phonics-demo.js";
 
 /* biome-ignore lint/suspicious/noEmptyBlockStatements: test stub */
 const noop = () => {};
@@ -55,7 +60,21 @@ describe("phonicsDemoBlock", () => {
     const long = [{ word: "elephants", graphemes: ["e", "l", "e", "ph", "a", "n", "t", "s"] }];
     const size = phonicsFontSize(long, 544);
     expect(size).toBeLessThan(PHONICS_MAX_FONT_PX);
-    expect(size * 9 * 0.68).toBeLessThanOrEqual(544 - 16);
+    expect(size * 9 * 0.66).toBeLessThanOrEqual(544 - 16);
+  });
+
+  it("budgets a full em for wide letters so WWWW stays on the paper", () => {
+    const wide = [{ word: "WWWW", graphemes: ["W", "W", "W", "W"] }];
+    const size = phonicsFontSize(wide, 544);
+    // Inter's W advances ~0.96 em; four of them must fit the 528 px inner width.
+    expect(size * 4 * 0.96).toBeLessThanOrEqual(544 - 16);
+    expect(size).toBeLessThan(PHONICS_MAX_FONT_PX);
+  });
+
+  it("never estimates below the monospaced 0.6 em advance", () => {
+    for (const c of ["i", "l", "'", "é", "Ñ", "m", "W", "😀"]) {
+      expect(phonicsAdvanceEm(c)).toBeGreaterThanOrEqual(0.6);
+    }
   });
 
   it("draws a dot per letter and a stretched dash per digraph", () => {

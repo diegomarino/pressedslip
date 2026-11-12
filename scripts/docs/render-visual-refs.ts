@@ -108,6 +108,10 @@ async function renderToPng(
     ? { registry, theme: themeTemplate, width: PAPER.thermal80 }
     : { registry, fonts: [font], width: PAPER.thermal80 };
   const r = await render(composition, options);
+  // A rejected block still yields a PNG (blank where the block should be):
+  // fail loudly so a broken doc example can't ship an empty image.
+  if (r.failedBlocks.length > 0)
+    throw new Error(`${outName}: ${JSON.stringify(r.failedBlocks.map((f) => f.reason.message))}`);
   const bytes = crop ? cropHeader(r.bytes) : r.bytes;
   const outPath = resolve(OUT_DIR, outName);
   writeFileSync(outPath, bytes);

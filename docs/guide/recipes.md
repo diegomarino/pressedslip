@@ -143,10 +143,12 @@ trigraphs such as `sh` and `igh`. Tricky words get no marks.
 The patterns:
 
 1. **Fit from `ctx.contentWidth`.** It is the usable width inside the shell
-   padding. Divide it by the longest word's length times the font's average
-   advance. For a monospaced face that is exactly `0.6 em` (JetBrains Mono,
-   the `mono` theme), which makes the "fits, one more pixel would not" test
-   exact. Proportional faces need a little more headroom (`~0.68 em`).
+   padding. Divide it by the widest word's width in em. For a monospaced face
+   every glyph advances exactly `0.6 em` (JetBrains Mono, the `mono` theme),
+   which makes the "fits, one more pixel would not" test exact. If the theme
+   might be proportional, budget per character instead of using an average.
+   Wide letters (`m`, `w`, `M`, `W`) approach `1 em`, and an average lets
+   `WWWW` run off the paper.
 2. **Cap it.** `160 px` is about 20 mm at 203 dpi. Without a cap, a three-letter
    word fills the whole slip.
 3. **Draw marks as boxes, not glyphs.** A `div` with `backgroundColor` and a
@@ -155,12 +157,20 @@ The patterns:
    real glyph width and the mark centres under it.
 
 ```ts
-const ADVANCE_EM = 0.6; // monospaced; use ~0.68 for proportional faces
 const MAX_PX = 160;
 
+/** Upper-bound advance in em: exact for monospaced faces, safe for proportional ones. */
+function advanceEm(char: string): number {
+  const base = char.normalize("NFD")[0] ?? char;
+  if (/[mwMW]/.test(base)) return 1;
+  if (/[A-Z0-9]/.test(base)) return 0.8;
+  if (/[a-z]/.test(base)) return 0.66;
+  return 1;
+}
+
 function fitFontSize(words: string[], contentWidth: number): number {
-  const longest = Math.max(1, ...words.map((w) => [...w].length));
-  return Math.max(1, Math.min(MAX_PX, Math.floor(contentWidth / (longest * ADVANCE_EM))));
+  const widest = Math.max(1, ...words.map((w) => [...w].reduce((em, c) => em + advanceEm(c), 0)));
+  return Math.max(1, Math.min(MAX_PX, Math.floor(contentWidth / widest)));
 }
 ```
 

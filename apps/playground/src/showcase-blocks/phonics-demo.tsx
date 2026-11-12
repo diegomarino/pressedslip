@@ -30,18 +30,32 @@ const phonicsDemoSchema: ZodType<{ words: PhonicsWord[] }> = z.object({
 export type PhonicsDemoData = z.infer<typeof phonicsDemoSchema>;
 
 /**
- * Average glyph advance used to fit the longest word, in em. 0.6 is exact for
- * monospaced faces (JetBrains Mono, the `mono` theme); proportional faces
- * average a little more, so 0.68 keeps their widest words inside the paper.
+ * Conservative advance of one character, in em: an upper bound across the
+ * builtin faces (Inter, Atkinson Hyperlegible, JetBrains Mono), so the word
+ * fits whatever the theme. Monospaced faces advance exactly 0.6 em per glyph,
+ * so no class goes below that; wide letters (m, w, M, W) approach 1 em in
+ * proportional faces. Accents are ignored (NFD base letter); anything
+ * unrecognised counts as a full em.
  */
-export const PHONICS_ADVANCE_EM = 0.68;
+export function phonicsAdvanceEm(char: string): number {
+  const base = char.normalize("NFD")[0] ?? char;
+  if (/[mwMW@%]/.test(base)) return 1;
+  if (/[A-Z0-9]/.test(base)) return 0.8;
+  if (/[a-z]/.test(base)) return 0.66;
+  if (/[\s'.,!?-]/.test(base)) return 0.6;
+  return 1;
+}
+
 /** Font ceiling: 160 px is ~20 mm at 203 dpi, so short words don't fill the whole slip. */
 export const PHONICS_MAX_FONT_PX = 160;
 
-/** Largest font size at which the longest word fits `contentWidth`, capped at PHONICS_MAX_FONT_PX. */
+/** Largest font size at which the widest word fits `contentWidth`, capped at PHONICS_MAX_FONT_PX. */
 export function phonicsFontSize(words: readonly PhonicsWord[], contentWidth: number): number {
-  const longest = Math.max(1, ...words.map((w) => [...w.word].length));
-  const fitted = Math.floor((contentWidth - 16) / (longest * PHONICS_ADVANCE_EM));
+  const widestEm = Math.max(
+    1,
+    ...words.map((w) => [...w.word].reduce((em, c) => em + phonicsAdvanceEm(c), 0)),
+  );
+  const fitted = Math.floor((contentWidth - 16) / widestEm);
   return Math.max(1, Math.min(PHONICS_MAX_FONT_PX, fitted));
 }
 
@@ -118,6 +132,6 @@ export const phonicsDemoBlock: BlockDefinition<PhonicsDemoData> = defineBlock({
     "Required: `data.words`: 1–6 `{ word, graphemes }`; graphemes must join back into word",
     "Tip: one-letter graphemes get a dot, digraphs/trigraphs (`sh`, `igh`) get a dash",
     "Tip: set `tricky: true` on irregular words to print them without marks",
-    "Tip: the font fits the longest word, capped at 160 px — try the mono theme",
+    "Tip: the font fits the widest word, capped at 160 px — try the mono theme",
   ],
 });
