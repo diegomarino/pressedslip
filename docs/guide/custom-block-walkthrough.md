@@ -42,13 +42,6 @@ import type { ReactElement } from "react";
 import { defineBlock } from "pressedslip";
 
 const renderWeather = ({ data }: { data: WeatherBlockData }): ReactElement => {
-  const conditionEmoji: Record<WeatherBlockData["condition"], string> = {
-    sunny: "☀️",
-    cloudy: "☁️",
-    rainy: "🌧️",
-    snowy: "❄️",
-  };
-
   return (
     <div
       style={{
@@ -69,7 +62,6 @@ const renderWeather = ({ data }: { data: WeatherBlockData }): ReactElement => {
       />
       <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
         <div style={{ fontSize: 14, fontWeight: 700 }}>
-          {conditionEmoji[data.condition]}
           {data.condition.charAt(0).toUpperCase() + data.condition.slice(1)}
         </div>
         <div style={{ fontSize: 18, fontWeight: 700 }}>
@@ -99,7 +91,7 @@ Notice:
   - `transform` with `skew` or `matrix` (translate/scale/rotate are supported)
 
   Supported layout properties are `display: flex`, `flexDirection`, `alignItems`, `justifyContent`, `gap`, padding, margin, border, and most typography properties. See [the satori README](https://github.com/vercel/satori) for the full supported-CSS subset.
-- We map `data.condition` to an emoji for visual interest.
+- The icon is a PNG, not an emoji character. Text emoji only print if a loaded font has colour-free glyphs for them, and the builtin themes don't. See [Printing emoji](./recipes.md#printing-emoji).
 - All dimensions are in pixels; satori handles the conversion to the printed output.
 
 ### Layout gotcha: flex-row with unbounded text children
@@ -408,4 +400,4 @@ To write a custom block:
 
 The render pipeline validates every slot's data against your schema at **render-time** (inside `render()`, not at compose-time). Specifically, it calls `schema.safeParse(slot.data)` before invoking your `render` function. On failure: no error is thrown; instead the slot is dropped and a record is appended to `result.failedBlocks`. Each `FailedBlock` entry carries `{ index, blockType, reason: { name, message } }`. This safety layer means your renderer can assume `data` is already well-formed (it is the parsed, default-filled Zod output).
 
-For more examples, see `src/blocks/` in the package source — `textCellBlock`, `keyValueBlock`, and `listBlock` are all simple reference implementations.
+For more patterns (emoji, exact layout for large type, reusing builtins inside your block, upside-down answers, i18n), see [Recipes](./recipes.md). For more examples, see `src/blocks/` in the package source — `textCellBlock`, `keyValueBlock`, and `listBlock` are all simple reference implementations.

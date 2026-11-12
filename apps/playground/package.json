@@ -24,15 +24,16 @@
     "@lezer/common": "^1.5.2",
     "@lezer/json": "^1.0.2",
     "@uiw/react-codemirror": "^4.23.0",
+    "harfbuzzjs": "0.10.0",
     "jsonc-parser": "^3.3.1",
     "pressedslip": "workspace:*",
     "react": "^19",
     "react-dom": "^19",
     "react-resizable-panels": "^2.1.0",
-    "zod": "^4"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@playwright/test": "^1.48.0",
+    "@playwright/test": "^1.65.0",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",

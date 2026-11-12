@@ -1,3 +1,14 @@
+## [0.5.2](https://github.com/diegomarino/pressedslip/compare/v0.5.1...v0.5.2) (2026-11-08)
+
+### Bug Fixes
+
+* **deps:** move satori to 0.34.1 to fix SVG escaping advisory ([#30](https://github.com/diegomarino/pressedslip/issues/30)) ([8942b88](https://github.com/diegomarino/pressedslip/commit/8942b88a33abcecd710cfad5243a52284d92dbda))
+* **deps:** upgrade satori to 0.41 to fix SVG escaping advisory ([#27](https://github.com/diegomarino/pressedslip/issues/27)) ([56c5b72](https://github.com/diegomarino/pressedslip/commit/56c5b72536a249973f9d8b23918c368275907a22))
+
+### Build System
+
+* **deps:** bump playground @playwright/test to 1.65.0 ([#28](https://github.com/diegomarino/pressedslip/issues/28)) ([4fa19af](https://github.com/diegomarino/pressedslip/commit/4fa19af09568cee9e856281cb6f86df59e746455))
+
 ## [0.5.1](https://github.com/diegomarino/pressedslip/compare/v0.5.0...v0.5.1) (2026-10-02)
 
 ### Bug Fixes

@@ -30,6 +30,8 @@ Both fields are required. Validated by Zod. No optional fields.
 }
 ```
 
+![Rendered: Minimal — both fields required](../assets/visual-refs/doc-key-value-1.png)
+
 ```jsonc
 // Typical — metadata row inside a composed receipt
 {
@@ -42,6 +44,8 @@ Both fields are required. Validated by Zod. No optional fields.
 }
 ```
 
+![Rendered: Typical — metadata row inside a composed receipt](../assets/visual-refs/doc-key-value-2.png)
+
 ```jsonc
 // Edge — long value that wraps across multiple lines
 {
@@ -52,6 +56,8 @@ Both fields are required. Validated by Zod. No optional fields.
   }
 }
 ```
+
+![Rendered: Edge — long value that wraps across multiple lines](../assets/visual-refs/doc-key-value-3.png)
 
 ## Layout notes
 

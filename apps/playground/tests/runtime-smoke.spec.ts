@@ -6,6 +6,7 @@
 import { fileURLToPath } from "node:url";
 import { expect, type Page, test } from "@playwright/test";
 import { initialCompositionJsonc } from "../src/initial-composition.js";
+import { presets } from "../src/presets.js";
 
 const tuxUrl =
   "https://raw.githubusercontent.com/diegomarino/pressedslip/663028ea9ce813192efec798323b5cadd382fffd/docs/assets/visual-refs/block-image-tux.png";
@@ -93,8 +94,8 @@ test("1. cold load — page loads with CTA, no errors, builder pre-loaded", asyn
   await expect(cta).toBeVisible();
   await expect(page.locator(".preview-img")).toHaveCount(0);
 
-  // Builder has the 11 pre-loaded slots from initialComposition.
-  await expect(page.locator(".slot-card")).toHaveCount(11);
+  // Builder has the 12 pre-loaded slots from initialComposition.
+  await expect(page.locator(".slot-card")).toHaveCount(12);
 
   expect(errors).toEqual([]);
 });
@@ -428,8 +429,15 @@ test("12. sp8f — theme switch produces new render with built-ins", async ({ pa
   expect(newSrc.startsWith("blob:")).toBe(true);
 });
 
-for (const label of ["image · logo and stripes", "image · Tux (URL)"]) {
-  test(`${label} adds and renders an image column`, async ({ page }) => {
+for (const label of [
+  "image · logo and stripes",
+  "image · Tux (URL)",
+  "phonics-demo · sound buttons (dots + digraph dashes)",
+  "routine-demo · morning checklist with emoji",
+  "drawing-prompt-demo · draw a dragon",
+  "riddle-demo · answer printed upside down",
+]) {
+  test(`${label} adds and renders a taller slip`, async ({ page }) => {
     await page.goto("/");
     await page.locator(".preview-cta").click();
     await page.waitForFunction(() => {
@@ -441,7 +449,7 @@ for (const label of ["image · logo and stripes", "image · Tux (URL)"]) {
       return { src: image.src, height: image.naturalHeight };
     });
     await page.getByRole("button", { name: label, exact: true }).press("Enter");
-    await expect(page.locator(".slot-card")).toHaveCount(12);
+    await expect(page.locator(".slot-card")).toHaveCount(13);
     await page.getByRole("button", { name: "Render", exact: true }).click();
     await page.waitForFunction(
       (previous) => {
@@ -543,4 +551,41 @@ test("image URL editing preserves the URL, skips failed image blocks, and logs l
   await expect(page.locator(".preview-error")).toHaveCount(0);
   await expect.poll(() => previewDigest(page)).toBe(first);
   expect(loaded).toEqual([tuxUrl, editedUrl, missingUrl, missingUrl]);
+});
+
+for (const preset of presets) {
+  test(`example menu loads "${preset.label}" with its theme and renders it`, async ({ page }) => {
+    await page.goto("/");
+    await page.locator('select[aria-label="Example selector"]').selectOption(preset.id);
+    await expect(page.locator(".slot-card")).toHaveCount(preset.draft.slots.length);
+    await expect(page.locator('select[aria-label="Theme selector"]')).toHaveValue(preset.themeId);
+    await page.waitForFunction(
+      () => {
+        const image = document.querySelector(".preview-img") as HTMLImageElement | null;
+        return image?.src.startsWith("blob:") === true && image.naturalHeight > 0;
+      },
+      undefined,
+      { timeout: 15000 },
+    );
+    await expect(page.locator(".preview-error")).toHaveCount(0);
+    // The select resets so the same example can be loaded again.
+    await expect(page.locator('select[aria-label="Example selector"]')).toHaveValue("");
+  });
+}
+
+test("clear blocks empties the builder and keeps the slip renderable", async ({ page }) => {
+  await page.goto("/");
+  const clear = page.getByRole("button", { name: "Clear blocks", exact: true });
+  await clear.click();
+  await expect(page.locator(".slot-card")).toHaveCount(0);
+  await expect(clear).toBeDisabled();
+  await page.getByRole("button", { name: "Render", exact: true }).click();
+  await expect(page.locator(".preview-img")).toBeVisible({ timeout: 15000 });
+  await expect(page.locator(".preview-error")).toHaveCount(0);
+  // Adding a block re-enables Clear.
+  await page
+    .getByRole("button", { name: "riddle-demo · answer printed upside down", exact: true })
+    .press("Enter");
+  await expect(page.locator(".slot-card")).toHaveCount(1);
+  await expect(clear).toBeEnabled();
 });

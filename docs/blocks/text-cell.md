@@ -32,6 +32,8 @@ output types are identical.
 }
 ```
 
+![Rendered: Minimal — one required field only](../assets/visual-refs/doc-text-cell-1.png)
+
 ```jsonc
 // Typical — centered line
 {
@@ -44,6 +46,8 @@ output types are identical.
 }
 ```
 
+![Rendered: Typical — centered line](../assets/visual-refs/doc-text-cell-2.png)
+
 ```jsonc
 // Edge — right-aligned footnote
 {
@@ -54,6 +58,8 @@ output types are identical.
   }
 }
 ```
+
+![Rendered: Edge — right-aligned footnote](../assets/visual-refs/doc-text-cell-3.png)
 
 ## Layout notes
 

@@ -52,3 +52,7 @@ Simon Budig
 Am Hardtkoeppel 2
 D-61279 Graevenwiesbach
 ```
+
+# Noto Emoji attribution
+
+`emoji.ts` holds eight emoji from [Noto Emoji](https://github.com/googlefonts/noto-emoji) (tag `v2.051`, `svg/`), rasterized to 96 px grayscale PNGs on white by `scripts/docs/generate-emoji-assets.mjs`. Noto Emoji images are © Google and licensed under the [Apache License 2.0](https://github.com/googlefonts/noto-emoji/blob/main/LICENSE). They are rasterized only; the artwork is otherwise unmodified.
