@@ -128,6 +128,93 @@ const { bytes } = await render(composition, {
 await writeFile("morning-brief.png", bytes);
 ```
 
+## From data to paper
+
+Each slot is plain data. Builtin blocks cover the everyday cases. A theme
+override or a small [custom block](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/custom-block-walkthrough.md)
+covers the rest. These three are from the
+[recipes](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/recipes.md), and you can try them in the
+[playground](https://diegomarino.github.io/pressedslip/).
+
+<table>
+<tr><th>Slot data</th><th>Printed</th></tr>
+<tr>
+<td>
+
+**Phonics sound buttons** · custom block,
+[`phonics-demo.tsx`](https://github.com/diegomarino/pressedslip/blob/main/apps/playground/src/showcase-blocks/phonics-demo.tsx)
+
+```jsonc
+{
+  "blockType": "phonicsDemo",
+  "title": "READ ME",
+  "data": {
+    "words": [
+      { "word": "ship",  "graphemes": ["sh", "i", "p"] },
+      { "word": "night", "graphemes": ["n", "igh", "t"] },
+      { "word": "the",   "graphemes": ["the"], "tricky": true }
+    ]
+  }
+}
+```
+
+The font fits the longest word to the paper, up to 160 px. A dot goes under
+each letter and a dash under each digraph.
+
+</td>
+<td><img src="https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/showcase-phonics-demo-digraphs.png" width="320" alt="ship, night and the in large letters with dots and dashes underneath"></td>
+</tr>
+<tr>
+<td>
+
+**Emoji checklist** · custom block reusing the builtin `image` block,
+[`routine-demo.tsx`](https://github.com/diegomarino/pressedslip/blob/main/apps/playground/src/showcase-blocks/routine-demo.tsx)
+
+```jsonc
+{
+  "blockType": "routineDemo",
+  "title": "BEFORE SCHOOL",
+  "data": {
+    "items": [
+      { "text": "Brush teeth", "image": { "src": "data:image/png;base64,…" } },
+      { "text": "Wash hands",  "image": { "src": "data:image/png;base64,…" } },
+      { "text": "Shoes on",    "image": { "src": "data:image/png;base64,…" } },
+      { "text": "Backpack",    "image": { "src": "data:image/png;base64,…" } }
+    ]
+  }
+}
+```
+
+Each emoji is rasterized to PNG so it gets dithered. Light colours survive
+the 1-bit output ([why](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/recipes.md#printing-emoji)).
+
+</td>
+<td><img src="https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/showcase-routine-demo-morning.png" width="320" alt="Checklist with tick boxes, dithered emoji and labels"></td>
+</tr>
+<tr>
+<td>
+
+**Upside-down riddle** · builtin `qaPair` with a theme override
+
+```jsonc
+{
+  "blockType": "qaPair",
+  "title": "RIDDLE",
+  "data": {
+    "question": "What has hands but can't clap?",
+    "answer": "A clock"
+  }
+}
+// theme: shell.textStyles.answer = { rotate: 180 }
+```
+
+No custom code: the reader flips the paper to read the answer.
+
+</td>
+<td><img src="https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/showcase-riddle-upside-down.png" width="320" alt="A riddle with its answer printed upside down"></td>
+</tr>
+</table>
+
 ## Output format
 
 `render()` produces a **1-bit PNG raster** at the printer's native 203 DPI. Width
@@ -218,14 +305,6 @@ The source repo ships rendered references for builtin blocks and themes:
 | Default | Compact | Mono |
 |---|---|---|
 | ![Default theme](https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/theme-default.png) | ![Compact theme](https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/theme-compact.png) | ![Mono theme](https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/theme-mono.png) |
-
-Custom blocks go well beyond receipts. These come from the
-[recipes](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/recipes.md) and are all in the
-[playground](https://diegomarino.github.io/pressedslip/):
-
-| Phonics sound buttons | Emoji checklist (dithered) | Kids' morning slip |
-|---|---|---|
-| ![Phonics words with dots and dashes under each grapheme](https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/showcase-phonics-demo-digraphs.png) | ![Checklist with tick boxes and dithered emoji](https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/showcase-routine-demo-morning.png) | ![Phonics, checklist, upside-down riddle, word search and drawing frame](https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/composition-kids.png) |
 
 ## Reliability Notes
 

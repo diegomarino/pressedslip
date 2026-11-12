@@ -290,4 +290,12 @@ await renderToPng(
   kidsTheme,
 );
 
+// The riddle alone, for the README's data → paper pairs.
+await renderToPng(
+  makeComposition("showcase-riddle-upside-down", [kidsSlots[2]]),
+  "showcase-riddle-upside-down.png",
+  kidsTheme,
+  { crop: true },
+);
+
 console.log("[visual-refs] done");
