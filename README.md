@@ -6,7 +6,7 @@
 [![CI](https://github.com/diegomarino/pressedslip/actions/workflows/ci.yml/badge.svg)](https://github.com/diegomarino/pressedslip/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-![Morning briefing rendered at 80mm thermal width](https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/composition-example.png)
+![Three 80 mm slips rendered by pressedslip: a morning briefing, a kids' phonics and emoji checklist, and a puzzle slip with an upside-down riddle, word search and drawing frame](https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/hero.png)
 
 <video src="https://github.com/user-attachments/assets/9df1895b-349f-410e-99cd-5cff7bf11700" controls autoplay loop muted width="100%"></video>
 
@@ -128,6 +128,94 @@ const { bytes } = await render(composition, {
 await writeFile("morning-brief.png", bytes);
 ```
 
+## From data to paper
+
+Each slot is plain data. Builtin blocks cover the everyday cases. A theme
+override or a small [custom block](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/custom-block-walkthrough.md)
+covers the rest. These three are from the
+[recipes](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/recipes.md). The slips at the top of this page
+are in the [playground](https://diegomarino.github.io/pressedslip/) under
+**Example**, ready to edit.
+
+<table>
+<tr><th>Slot data</th><th>Printed</th></tr>
+<tr>
+<td>
+
+**Phonics sound buttons** · custom block,
+[`phonics-demo.tsx`](https://github.com/diegomarino/pressedslip/blob/main/apps/playground/src/showcase-blocks/phonics-demo.tsx)
+
+```jsonc
+{
+  "blockType": "phonicsDemo",
+  "title": "READ ME",
+  "data": {
+    "words": [
+      { "word": "ship",  "graphemes": ["sh", "i", "p"] },
+      { "word": "night", "graphemes": ["n", "igh", "t"] },
+      { "word": "the",   "graphemes": ["the"], "tricky": true }
+    ]
+  }
+}
+```
+
+The font fits the longest word to the paper, up to 160 px. A dot goes under
+each letter and a dash under each digraph.
+
+</td>
+<td><img src="https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/showcase-phonics-demo-digraphs.png" width="320" alt="ship, night and the in large letters with dots and dashes underneath"></td>
+</tr>
+<tr>
+<td>
+
+**Emoji checklist** · custom block reusing the builtin `image` block,
+[`routine-demo.tsx`](https://github.com/diegomarino/pressedslip/blob/main/apps/playground/src/showcase-blocks/routine-demo.tsx)
+
+```jsonc
+{
+  "blockType": "routineDemo",
+  "title": "BEFORE SCHOOL",
+  "data": {
+    "items": [
+      { "text": "Brush teeth", "image": { "src": "data:image/png;base64,…" } },
+      { "text": "Wash hands",  "image": { "src": "data:image/png;base64,…" } },
+      { "text": "Shoes on",    "image": { "src": "data:image/png;base64,…" } },
+      { "text": "Backpack",    "image": { "src": "data:image/png;base64,…" } }
+    ]
+  }
+}
+```
+
+Each emoji is rasterized to PNG so it gets dithered. Light colours survive
+the 1-bit output ([why](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/recipes.md#printing-emoji)).
+
+</td>
+<td><img src="https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/showcase-routine-demo-morning.png" width="320" alt="Checklist with tick boxes, dithered emoji and labels"></td>
+</tr>
+<tr>
+<td>
+
+**Upside-down riddle** · builtin `qaPair` with a theme override
+
+```jsonc
+{
+  "blockType": "qaPair",
+  "title": "RIDDLE",
+  "data": {
+    "question": "What has hands but can't clap?",
+    "answer": "A clock"
+  }
+}
+// theme: shell.textStyles.answer = { rotate: 180 }
+```
+
+No custom code: the reader flips the paper to read the answer.
+
+</td>
+<td><img src="https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/showcase-riddle-upside-down.png" width="320" alt="A riddle with its answer printed upside down"></td>
+</tr>
+</table>
+
 ## Output format
 
 `render()` produces a **1-bit PNG raster** at the printer's native 203 DPI. Width
@@ -203,6 +291,7 @@ be built locally from the published source repo.
 - [Browser rendering](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/browser-rendering.md)
 - [Providers](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/providers.md)
 - [Custom blocks](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/custom-block-walkthrough.md)
+- [Recipes](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/recipes.md): emoji, large type, upside-down answers, i18n
 - [Themes](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/themes.md)
 - [Testing](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/testing.md)
 - [Transports](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/transports.md)

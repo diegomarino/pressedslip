@@ -31,6 +31,8 @@ types are identical.
 }
 ```
 
+![Rendered: Minimal — value only](../assets/visual-refs/doc-kpi-1.png)
+
 ```jsonc
 // Typical — label + value + caption
 {
@@ -44,6 +46,8 @@ types are identical.
 }
 ```
 
+![Rendered: Typical — label + value + caption](../assets/visual-refs/doc-kpi-2.png)
+
 ```jsonc
 // Edge — value-only streak counter, no label or caption
 {
@@ -54,6 +58,8 @@ types are identical.
   }
 }
 ```
+
+![Rendered: Edge — value-only streak counter, no label or caption](../assets/visual-refs/doc-kpi-3.png)
 
 ## Layout notes
 

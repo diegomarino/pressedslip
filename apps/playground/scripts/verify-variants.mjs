@@ -10,7 +10,11 @@ import {
   wordSearchBlock,
 } from "pressedslip";
 import {
+  drawingPromptDemoBlock,
   onThisDayDemoBlock,
+  phonicsDemoBlock,
+  riddleDemoBlock,
+  routineDemoBlock,
   streakDemoBlock,
   wordOfDayDemoBlock,
 } from "../src/showcase-blocks/index.ts";
@@ -29,6 +33,10 @@ const blocks = {
   wordOfDayDemo: wordOfDayDemoBlock,
   streakDemo: streakDemoBlock,
   onThisDayDemo: onThisDayDemoBlock,
+  phonicsDemo: phonicsDemoBlock,
+  routineDemo: routineDemoBlock,
+  drawingPromptDemo: drawingPromptDemoBlock,
+  riddleDemo: riddleDemoBlock,
 };
 let failed = 0;
 for (const group of variantsByBlock) {

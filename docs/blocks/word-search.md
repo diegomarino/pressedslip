@@ -45,13 +45,22 @@ independently constrained to 6–12 by Zod's `.min(6).max(12)`.
 }
 ```
 
+![Rendered: Minimal — 6×6 grid, 4 words](../assets/visual-refs/doc-word-search-1.png)
+
+More grids from `wordSearchFixtures` in `pressedslip/testing`: `animals` is 10×8 with
+six words, and `spanish` shows that accented letters (Ñ, É) work in the cells.
+
+| `animals` | `spanish` |
+|---|---|
+| ![10×8 animals grid](../assets/visual-refs/block-wordSearch-animals.png) | ![Spanish grid with Ñ and É](../assets/visual-refs/block-wordSearch-spanish.png) |
+
 ## Layout notes
 
 The block renders a column-flex wrapper (`alignItems: "center"`) so small grids
 are centered on the full paper width. Inside it:
 
 1. **Grid container** — a column-flex `<div>` that draws the top + left edges in
-   `ctx.theme.separatorColor`. Each row is a row-flex `<div>` of square cells
+   `ctx.theme.wordSearchBorderColor`. Each row is a row-flex `<div>` of square cells
    sized to a NORMAL target (so the grid *grows* with the column count rather than
    filling a fixed width), shrinking only when the grid would overflow the available
    content width — see [Block-local intent](#block-local-intent). Every cell draws
@@ -77,7 +86,13 @@ uniform adjacency — required for diagonal word tracing — is preserved.
 | Element | Slot | Default |
 |---|---|---|
 | Word list items | `body` | `{ fontSize: 20 }` |
-| Grid border color | `separatorColor` (ShellTheme field) | `"#333"` |
+| Grid border color | `wordSearchBorderColor` (ShellTheme field), falling back to the resolved `separatorColor` | `"#000"` |
+
+Keep the grid colour dark. The slip is thresholded to 1 bit at 128, so a light
+grey such as `#b8b0a0` (luminance ≈ 177) prints as white and the grid
+disappears. If your theme wants a light `separatorColor`, set
+`wordSearchBorderColor: "#000"` explicitly, or wrap the block — see
+[Wrapping a builtin](../guide/recipes.md#wrapping-a-builtin-to-override-theme-values).
 
 ## Block-local intent
 

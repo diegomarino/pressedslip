@@ -14,17 +14,18 @@ describe("initial-composition", () => {
     expect(parsed).toEqual(initialComposition);
   });
 
-  it("has the 11 expected slots covering all block types", () => {
-    expect(initialComposition.slots).toHaveLength(11);
+  it("has the 12 expected slots covering all block types", () => {
+    expect(initialComposition.slots).toHaveLength(12);
     expect(initialComposition.slots.map((s) => s.blockType)).toEqual([
       "kpi",
       "list",
-      "list",
+      "routineDemo",
       "qaPair",
       "quotation",
       "keyValue",
       "wordSearch",
       "wordOfDayDemo",
+      "phonicsDemo",
       "streakDemo",
       "onThisDayDemo",
       "textCell",

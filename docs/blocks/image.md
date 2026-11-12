@@ -64,6 +64,24 @@ Full PNG decoding and final-size processing happen when the block renders.
 }
 ```
 
+![Rendered: SVG with no intrinsic size: supply both dimension hints.](../assets/visual-refs/doc-image-1.png)
+
+### Fixture gallery
+
+Each `imageFixtures` scenario from `pressedslip/testing`, rendered at 576 px:
+
+| Fixture | Rendered |
+|---|---|
+| `basic` (default `fit: "reduce"`, Floyd–Steinberg) | ![basic](../assets/visual-refs/block-image-basic.png) |
+| `extend` (scaled up to the content width) | ![extend](../assets/visual-refs/block-image-extend.png) |
+| `gradient` (greyscale ramp, dithered) | ![gradient](../assets/visual-refs/block-image-gradient.png) |
+| `threshold` (same ramp, `dither: "none"`) | ![threshold](../assets/visual-refs/block-image-threshold.png) |
+| `alpha` (transparency composited on white) | ![alpha](../assets/visual-refs/block-image-alpha.png) |
+| `svgHints` (SVG sized by `width`/`height` hints) | ![svgHints](../assets/visual-refs/block-image-svgHints.png) |
+
+Full-colour artwork such as emoji needs dithering to survive the 1-bit output;
+see [Printing emoji](../guide/recipes.md#printing-emoji).
+
 ## Loading a URL before rendering
 
 ```ts

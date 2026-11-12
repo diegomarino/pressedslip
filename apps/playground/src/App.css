@@ -46,6 +46,10 @@ body,
   gap: 6px;
   align-items: center;
 }
+.toolbar-button {
+  font: inherit;
+  padding: 2px 10px;
+}
 .toolbar-loading {
   color: #888;
   font-size: 12px;
