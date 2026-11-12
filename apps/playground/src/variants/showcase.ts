@@ -3,6 +3,7 @@
  * Variants live alongside the existing per-block variant files; they're
  * grouped by demo block type in variantsByBlock.
  */
+import { emojiPng } from "./assets/emoji.js";
 import type { Variant } from "./index.js";
 
 export const wordOfDayDemoVariants: Variant[] = [
@@ -61,6 +62,85 @@ export const onThisDayDemoVariants: Variant[] = [
           "1944 — Claus von Stauffenberg, German military officer.",
         ],
       },
+    },
+  },
+];
+
+export const phonicsDemoVariants: Variant[] = [
+  {
+    id: "phonics-demo-digraphs",
+    label: "phonics-demo · sound buttons (dots + digraph dashes)",
+    slot: {
+      blockType: "phonicsDemo",
+      title: "READ ME",
+      data: {
+        words: [
+          { word: "ship", graphemes: ["sh", "i", "p"] },
+          { word: "night", graphemes: ["n", "igh", "t"] },
+          { word: "the", graphemes: ["the"], tricky: true },
+        ],
+      },
+    },
+  },
+  {
+    id: "phonics-demo-cvc",
+    label: "phonics-demo · three-letter words (capped at 160 px)",
+    slot: {
+      blockType: "phonicsDemo",
+      title: "READ ME",
+      data: {
+        words: [
+          { word: "cat", graphemes: ["c", "a", "t"] },
+          { word: "dog", graphemes: ["d", "o", "g"] },
+        ],
+      },
+    },
+  },
+];
+
+export const routineDemoVariants: Variant[] = [
+  {
+    id: "routine-demo-morning",
+    label: "routine-demo · morning checklist with emoji",
+    slot: {
+      blockType: "routineDemo",
+      title: "BEFORE SCHOOL",
+      data: {
+        items: [
+          { text: "Brush teeth", image: { src: emojiPng.toothbrush, alt: "🪥" } },
+          { text: "Wash hands", image: { src: emojiPng.soap, alt: "🧼" } },
+          { text: "Shoes on", image: { src: emojiPng.shoe, alt: "👟" } },
+          { text: "Backpack", image: { src: emojiPng.backpack, alt: "🎒" } },
+        ],
+      },
+    },
+  },
+  {
+    id: "routine-demo-after-school",
+    label: "routine-demo · after school (light colours dithered)",
+    slot: {
+      blockType: "routineDemo",
+      title: "AFTER SCHOOL",
+      data: {
+        items: [
+          { text: "Snack", image: { src: emojiPng.apple, alt: "🍎" } },
+          { text: "Ballet", image: { src: emojiPng.balletShoes, alt: "🩰" } },
+          { text: "Football", image: { src: emojiPng.soccer, alt: "⚽" } },
+          { text: "Read a book", image: { src: emojiPng.books, alt: "📚" } },
+        ],
+      },
+    },
+  },
+];
+
+export const drawingPromptDemoVariants: Variant[] = [
+  {
+    id: "drawing-prompt-demo-dragon",
+    label: "drawing-prompt-demo · draw a dragon",
+    slot: {
+      blockType: "drawingPromptDemo",
+      title: "DRAW IT",
+      data: { prompt: "Draw a dragon eating breakfast.", height: 300 },
     },
   },
 ];

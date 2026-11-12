@@ -1,3 +1,5 @@
+/** @jsxRuntime automatic */
+/** @jsxImportSource react */
 // Demo block for the pressedslip playground. Uses pressedslip's public
 // defineBlock API as a consumer would. Not part of pressedslip's built-in
 // catalog.

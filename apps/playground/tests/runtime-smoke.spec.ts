@@ -428,8 +428,14 @@ test("12. sp8f — theme switch produces new render with built-ins", async ({ pa
   expect(newSrc.startsWith("blob:")).toBe(true);
 });
 
-for (const label of ["image · logo and stripes", "image · Tux (URL)"]) {
-  test(`${label} adds and renders an image column`, async ({ page }) => {
+for (const label of [
+  "image · logo and stripes",
+  "image · Tux (URL)",
+  "phonics-demo · sound buttons (dots + digraph dashes)",
+  "routine-demo · morning checklist with emoji",
+  "drawing-prompt-demo · draw a dragon",
+]) {
+  test(`${label} adds and renders a taller slip`, async ({ page }) => {
     await page.goto("/");
     await page.locator(".preview-cta").click();
     await page.waitForFunction(() => {

@@ -16,7 +16,14 @@ import { kpiVariants } from "./kpi.js";
 import { listVariants } from "./list.js";
 import { qaPairVariants } from "./qa-pair.js";
 import { quotationVariants } from "./quotation.js";
-import { onThisDayDemoVariants, streakDemoVariants, wordOfDayDemoVariants } from "./showcase.js";
+import {
+  drawingPromptDemoVariants,
+  onThisDayDemoVariants,
+  phonicsDemoVariants,
+  routineDemoVariants,
+  streakDemoVariants,
+  wordOfDayDemoVariants,
+} from "./showcase.js";
 import { textCellVariants } from "./text-cell.js";
 import { wordSearchVariants } from "./word-search.js";
 
@@ -32,4 +39,11 @@ export const variantsByBlock: Array<{ blockType: string; label: string; variants
   { blockType: "wordOfDayDemo", label: "word-of-day-demo", variants: wordOfDayDemoVariants },
   { blockType: "streakDemo", label: "streak-demo", variants: streakDemoVariants },
   { blockType: "onThisDayDemo", label: "on-this-day-demo", variants: onThisDayDemoVariants },
+  { blockType: "phonicsDemo", label: "phonics-demo", variants: phonicsDemoVariants },
+  { blockType: "routineDemo", label: "routine-demo", variants: routineDemoVariants },
+  {
+    blockType: "drawingPromptDemo",
+    label: "drawing-prompt-demo",
+    variants: drawingPromptDemoVariants,
+  },
 ];
