@@ -30,6 +30,8 @@ types are identical.
 }
 ```
 
+![Rendered: Minimal — quote body only](../assets/visual-refs/doc-quotation-1.png)
+
 ```jsonc
 // Typical — quote with attribution
 {
@@ -42,6 +44,8 @@ types are identical.
 }
 ```
 
+![Rendered: Typical — quote with attribution](../assets/visual-refs/doc-quotation-2.png)
+
 ```jsonc
 // Edge — multi-sentence quote with full attribution
 {
@@ -53,6 +57,8 @@ types are identical.
   }
 }
 ```
+
+![Rendered: Edge — multi-sentence quote with full attribution](../assets/visual-refs/doc-quotation-3.png)
 
 ## Layout notes
 

@@ -203,6 +203,7 @@ be built locally from the published source repo.
 - [Browser rendering](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/browser-rendering.md)
 - [Providers](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/providers.md)
 - [Custom blocks](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/custom-block-walkthrough.md)
+- [Recipes](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/recipes.md): emoji, large type, upside-down answers, i18n
 - [Themes](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/themes.md)
 - [Testing](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/testing.md)
 - [Transports](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/transports.md)
@@ -217,6 +218,14 @@ The source repo ships rendered references for builtin blocks and themes:
 | Default | Compact | Mono |
 |---|---|---|
 | ![Default theme](https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/theme-default.png) | ![Compact theme](https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/theme-compact.png) | ![Mono theme](https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/theme-mono.png) |
+
+Custom blocks go well beyond receipts. These come from the
+[recipes](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/recipes.md) and are all in the
+[playground](https://diegomarino.github.io/pressedslip/):
+
+| Phonics sound buttons | Emoji checklist (dithered) | Kids' morning slip |
+|---|---|---|
+| ![Phonics words with dots and dashes under each grapheme](https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/showcase-phonics-demo-digraphs.png) | ![Checklist with tick boxes and dithered emoji](https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/showcase-routine-demo-morning.png) | ![Phonics, checklist, upside-down riddle, word search and drawing frame](https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/composition-kids.png) |
 
 ## Reliability Notes
 

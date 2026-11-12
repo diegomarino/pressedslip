@@ -31,6 +31,8 @@ Both fields are required. Validated by Zod. No optional fields.
 }
 ```
 
+![Rendered: Minimal — both fields required](../assets/visual-refs/doc-qa-pair-1.png)
+
 ```jsonc
 // Typical — daily trivia with shell title
 {
@@ -43,6 +45,8 @@ Both fields are required. Validated by Zod. No optional fields.
 }
 ```
 
+![Rendered: Typical — daily trivia with shell title](../assets/visual-refs/doc-qa-pair-2.png)
+
 ```jsonc
 // Edge — multi-line question and answer
 {
@@ -54,6 +58,8 @@ Both fields are required. Validated by Zod. No optional fields.
   }
 }
 ```
+
+![Rendered: Edge — multi-line question and answer](../assets/visual-refs/doc-qa-pair-3.png)
 
 ## Layout notes
 

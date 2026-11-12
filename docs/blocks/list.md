@@ -51,6 +51,8 @@ All fields validated by Zod. No `.default()` in the schema.
 }
 ```
 
+![Rendered: Minimal — single group, plain items (no id)](../assets/visual-refs/doc-list-1.png)
+
 ```jsonc
 // Typical — sectioned list with group titles and id:value items
 {
@@ -78,6 +80,8 @@ All fields validated by Zod. No `.default()` in the schema.
 }
 ```
 
+![Rendered: Typical — sectioned list with group titles and id:value items](../assets/visual-refs/doc-list-2.png)
+
 ```jsonc
 // Edge — mixed: first group has ids, second group is plain
 {
@@ -103,6 +107,8 @@ All fields validated by Zod. No `.default()` in the schema.
   }
 }
 ```
+
+![Rendered: Edge — mixed: first group has ids, second group is plain](../assets/visual-refs/doc-list-3.png)
 
 ## Layout notes
 
