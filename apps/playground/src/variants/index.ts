@@ -20,6 +20,7 @@ import {
   drawingPromptDemoVariants,
   onThisDayDemoVariants,
   phonicsDemoVariants,
+  riddleDemoVariants,
   routineDemoVariants,
   streakDemoVariants,
   wordOfDayDemoVariants,
@@ -46,4 +47,5 @@ export const variantsByBlock: Array<{ blockType: string; label: string; variants
     label: "drawing-prompt-demo",
     variants: drawingPromptDemoVariants,
   },
+  { blockType: "riddleDemo", label: "riddle-demo", variants: riddleDemoVariants },
 ];

@@ -24,6 +24,7 @@ import { Palette } from "./components/Palette.js";
 import { Preview } from "./components/Preview.js";
 import { Toolbar } from "./components/Toolbar.js";
 import { initialComposition, initialCompositionJsonc } from "./initial-composition.js";
+import { presets } from "./presets.js";
 import { renderDraft, type ThemeId } from "./render-with-wasm.js";
 import { showcaseBlocks } from "./showcase-blocks/index.js";
 import {
@@ -164,10 +165,10 @@ export function App(): JSX.Element {
   );
 
   const triggerRender = useCallback(
-    (opts: { clearStale: boolean; draft?: DraftComposition }) => {
+    (opts: { clearStale: boolean; draft?: DraftComposition; themeId?: ThemeId }) => {
       const draft = opts.draft ?? editor.draft;
       setIsRendering(true);
-      renderDraft(draft, themeId, { width })
+      renderDraft(draft, opts.themeId ?? themeId, { width })
         .then((result) => {
           setPreviewSrc(result.src);
           setError(null);
@@ -232,6 +233,35 @@ export function App(): JSX.Element {
     },
     [draftText, triggerRenderDebounced],
   );
+
+  // Example menu: replace the whole draft (slots, subject, theme) and render
+  // it right away — choosing an example is an explicit user interaction, so
+  // it may boot wasm just like the CTA. The JSON pane gets the canonical
+  // hinted serialization of the preset.
+  const onLoadPreset = useCallback(
+    (id: string) => {
+      const preset = presets.find((p) => p.id === id);
+      if (preset === undefined) return;
+      const draft = structuredClone(preset.draft);
+      setDraftText(composeJsoncWithHints(draft, registry));
+      dispatch({ type: "REPLACE_FROM_JSON", draft });
+      if (preset.themeId !== themeId) {
+        setThemeId(preset.themeId);
+        setIsFontsLoading(true);
+      }
+      triggerRender({ clearStale: true, draft, themeId: preset.themeId });
+    },
+    [registry, themeId, triggerRender],
+  );
+
+  // Clear blocks: drop every slot but keep date, subject and theme, so the
+  // user can start from an empty slip and add blocks from the palette.
+  const onClear = useCallback(() => {
+    const draft: DraftComposition = { ...editor.draft, slots: [] };
+    setDraftText(composeJsoncWithHints(draft, registry));
+    dispatch({ type: "REPLACE_FROM_JSON", draft });
+    setIsStale(true);
+  }, [editor.draft, registry]);
 
   const onWidthChange = useCallback(
     (next: number) => {
@@ -343,6 +373,9 @@ export function App(): JSX.Element {
         isFontsLoading={isFontsLoading}
         width={width}
         onWidthChange={onWidthChange}
+        onLoadPreset={onLoadPreset}
+        onClear={onClear}
+        hasSlots={editor.draft.slots.length > 0}
       />
       <DndContext
         sensors={sensors}

@@ -1,10 +1,12 @@
 /**
- * @fileoverview Top toolbar: width selector + theme selector + GitHub link.
- * Width is playground-only state, not on DraftComposition.
+ * @fileoverview Top toolbar: example loader + clear button + width selector +
+ * theme selector + GitHub link. Width is playground-only state, not on
+ * DraftComposition.
  */
 
 import { themes } from "pressedslip/browser";
 import type { JSX } from "react";
+import { presets } from "../presets.js";
 import { type ThemeId, themeIds } from "../render-with-wasm.js";
 
 const WIDTH_PRESETS: ReadonlyArray<{ value: number; label: string }> = [
@@ -19,6 +21,12 @@ type ToolbarProps = {
   isFontsLoading: boolean;
   width: number;
   onWidthChange: (next: number) => void;
+  /** Replace the whole draft (slots, subject, theme) with a preset from presets.ts. */
+  onLoadPreset: (id: string) => void;
+  /** Remove every slot, keeping date, subject and theme. */
+  onClear: () => void;
+  /** Disables Clear when there is nothing to remove. */
+  hasSlots: boolean;
 };
 
 export function Toolbar({
@@ -27,10 +35,33 @@ export function Toolbar({
   isFontsLoading,
   width,
   onWidthChange,
+  onLoadPreset,
+  onClear,
+  hasSlots,
 }: ToolbarProps): JSX.Element {
   return (
     <div className="toolbar">
       <div className="toolbar-title">pressedslip · playground</div>
+      <label className="toolbar-control">
+        Example:
+        <select
+          value=""
+          onChange={(e) => {
+            if (e.target.value !== "") onLoadPreset(e.target.value);
+          }}
+          aria-label="Example selector"
+        >
+          <option value="">Load example…</option>
+          {presets.map((preset) => (
+            <option key={preset.id} value={preset.id}>
+              {preset.label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <button type="button" className="toolbar-button" onClick={onClear} disabled={!hasSlots}>
+        Clear blocks
+      </button>
       <label className="toolbar-control">
         Width:
         <select

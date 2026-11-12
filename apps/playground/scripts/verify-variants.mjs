@@ -13,6 +13,7 @@ import {
   drawingPromptDemoBlock,
   onThisDayDemoBlock,
   phonicsDemoBlock,
+  riddleDemoBlock,
   routineDemoBlock,
   streakDemoBlock,
   wordOfDayDemoBlock,
@@ -35,6 +36,7 @@ const blocks = {
   phonicsDemo: phonicsDemoBlock,
   routineDemo: routineDemoBlock,
   drawingPromptDemo: drawingPromptDemoBlock,
+  riddleDemo: riddleDemoBlock,
 };
 let failed = 0;
 for (const group of variantsByBlock) {

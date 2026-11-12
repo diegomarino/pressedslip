@@ -52,6 +52,21 @@ describe("routineDemoBlock", () => {
     expect(imgs[0]).toContain('alt="🍎"');
   });
 
+  it("resolves bundled emoji names to the same PNGs", () => {
+    const data = routineDemoBlock.schema.parse({ items: [{ text: "Snack", emoji: "apple" }] });
+    const element = routineDemoBlock.render({ data, ctx: makeCtx("routineDemo") });
+    // biome-ignore lint/style/noNonNullAssertion: render always returns an element
+    const html = renderToStaticMarkup(element!);
+    expect(html.match(/<img[^>]*>/g) ?? []).toHaveLength(1);
+    expect(html).toContain('alt="Snack"');
+  });
+
+  it("rejects unknown emoji names", () => {
+    expect(
+      routineDemoBlock.schema.safeParse({ items: [{ text: "x", emoji: "dragon" }] }).success,
+    ).toBe(false);
+  });
+
   it("rejects an empty checklist", () => {
     expect(routineDemoBlock.schema.safeParse({ items: [] }).success).toBe(false);
   });

@@ -133,8 +133,9 @@ await writeFile("morning-brief.png", bytes);
 Each slot is plain data. Builtin blocks cover the everyday cases. A theme
 override or a small [custom block](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/custom-block-walkthrough.md)
 covers the rest. These three are from the
-[recipes](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/recipes.md), and you can try them in the
-[playground](https://diegomarino.github.io/pressedslip/).
+[recipes](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/recipes.md). The slips at the top of this page
+are in the [playground](https://diegomarino.github.io/pressedslip/) under
+**Example**, ready to edit.
 
 <table>
 <tr><th>Slot data</th><th>Printed</th></tr>

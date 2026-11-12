@@ -9,6 +9,7 @@ import type { AnyBlockDefinition } from "pressedslip/browser";
 import { drawingPromptDemoBlock } from "./drawing-prompt-demo.js";
 import { onThisDayDemoBlock } from "./on-this-day-demo.js";
 import { phonicsDemoBlock } from "./phonics-demo.js";
+import { riddleDemoBlock } from "./riddle-demo.js";
 import { routineDemoBlock } from "./routine-demo.js";
 import { streakDemoBlock } from "./streak-demo.js";
 import { wordOfDayDemoBlock } from "./word-of-day-demo.js";
@@ -17,6 +18,7 @@ export {
   drawingPromptDemoBlock,
   onThisDayDemoBlock,
   phonicsDemoBlock,
+  riddleDemoBlock,
   routineDemoBlock,
   streakDemoBlock,
   wordOfDayDemoBlock,
@@ -29,4 +31,5 @@ export const showcaseBlocks: readonly AnyBlockDefinition[] = Object.freeze([
   phonicsDemoBlock,
   routineDemoBlock,
   drawingPromptDemoBlock,
+  riddleDemoBlock,
 ]);

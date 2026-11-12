@@ -11,8 +11,8 @@
  *   - Recipe illustrations (`recipe-*.png`) for docs/guide/recipes.md.
  *   - One PNG per theme (3).
  *   - Composition example PNGs (morning briefing, kids briefing).
- *   - The README hero (`hero.png`): three themed slips side by side on a grey
- *     background, each ending in a torn paper edge.
+ *   - The README hero (`hero.png`): the playground's example slips (presets.ts)
+ *     side by side on a grey background, each ending in a torn paper edge.
  *
  * Run via: pnpm docs:visual-refs
  * Output goes to docs/assets/visual-refs/.
@@ -22,12 +22,14 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { decode as decodePng, encode as encodePng } from "fast-png";
 import { type ParseError, parse as parseJsonc } from "jsonc-parser";
+import { presets } from "../../apps/playground/src/presets.js";
 import { showcaseBlocks } from "../../apps/playground/src/showcase-blocks/index.js";
 import { emojiPng } from "../../apps/playground/src/variants/assets/emoji.js";
 import {
   drawingPromptDemoVariants,
   onThisDayDemoVariants,
   phonicsDemoVariants,
+  riddleDemoVariants,
   routineDemoVariants,
   streakDemoVariants,
   wordOfDayDemoVariants,
@@ -58,13 +60,11 @@ const registry = createRegistry([...builtinBlocks, ...showcaseBlocks]);
 function makeComposition(
   id: string,
   slots: Array<{ blockType: string; data: unknown; title?: string }>,
-  subjectName?: string,
 ): Composition {
   return {
     id,
     version: 1,
     date: "2026-06-09",
-    ...(subjectName ? { subject: { id: subjectName.toLowerCase(), name: subjectName } } : {}),
     status: "ready",
     slots: slots.map((s, i) => ({ index: i, ...s })),
     failedBlocks: [],
@@ -176,6 +176,7 @@ const showcaseVariants = [
   ...phonicsDemoVariants,
   ...routineDemoVariants,
   ...drawingPromptDemoVariants,
+  ...riddleDemoVariants,
 ];
 for (const variant of showcaseVariants) {
   const composition = makeComposition(`showcase-${variant.id}`, [variant.slot]);
@@ -310,61 +311,15 @@ await renderToPng(
   { crop: true },
 );
 
-// 5. README hero: three slips, three themes, side by side.
-const heroSlips: Array<{ theme: ThemeInput; composition: Composition }> = [
-  {
-    theme: themes.default,
-    composition: makeComposition(
-      "hero-morning",
-      [
-        morningBriefingSlots[0],
-        {
-          blockType: "list",
-          title: "TODAY",
-          data: {
-            groups: [
-              {
-                items: [
-                  { id: "09:00", value: "Weekly sync · Design × Eng" },
-                  { id: "14:00", value: "Deep work block" },
-                  { id: "16:45", value: "Product demo · Acme Corp" },
-                ],
-              },
-            ],
-          },
-        },
-        wordOfDayDemoVariants[0].slot,
-        morningBriefingSlots[2],
-        streakDemoVariants[0].slot,
-        morningBriefingSlots[3],
-      ],
-      "Good morning, María",
-    ),
-  },
-  {
-    theme: themes.mono,
-    composition: makeComposition(
-      "hero-kids",
-      [phonicsDemoVariants[1].slot, routineDemoVariants[0].slot],
-      "Leo's morning",
-    ),
-  },
-  {
-    theme: withUpsideDownAnswers(themes.compact),
-    composition: makeComposition(
-      "hero-puzzles",
-      [
-        kidsSlots[2],
-        { ...kidsSlots[3], title: "FIND 6 ANIMALS" },
-        {
-          ...drawingPromptDemoVariants[0].slot,
-          data: { prompt: "Draw a dragon eating breakfast.", height: 400 },
-        },
-      ],
-      "Puzzle time",
-    ),
-  },
-];
+// 5. README hero: the playground's three example slips (apps/playground/src/
+// presets.ts), each in its own theme, side by side.
+const heroSlips = presets.map((preset) => ({
+  theme: themes[preset.themeId],
+  composition: {
+    ...makeComposition(`hero-${preset.id}`, preset.draft.slots),
+    subject: preset.draft.subject,
+  } as Composition,
+}));
 const strips = [];
 for (const { theme, composition } of heroSlips) {
   const r = await render(composition, { registry, theme, width: PAPER.thermal80 });

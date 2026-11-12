@@ -60,26 +60,18 @@ export const initialCompositionJsonc = `// pressedslip playground seed (visible 
       },
     },
 
+    // Required: \`data.items\`: 1–8 \`{ text, emoji? | image? }\`
+    // Tip: \`emoji\` is one of: toothbrush, backpack, balletShoes, apple, books, soap, shoe, soccer
+    // Tip: or pass any PNG data URI as \`image.src\`; light colours are dithered, not lost
+    // Docs: docs/guide/recipes.md#printing-emoji
     {
-      "blockType": "list",
-      "title": "SHOPPING",
+      "blockType": "routineDemo",
+      "title": "BEFORE SCHOOL",
       "data": {
-        "groups": [
-          {
-            "title": "PRODUCE",
-            "items": [
-              { "value": "Spinach (200 g)" },
-              { "value": "Cherry tomatoes" },
-              { "value": "2 avocados" },
-            ],
-          },
-          {
-            "title": "DAIRY & COLD",
-            "items": [
-              { "value": "Greek yogurt (500 g)" },
-              { "value": "Eggs × 12" },
-            ],
-          },
+        "items": [
+          { "text": "Brush teeth", "emoji": "toothbrush" },
+          { "text": "Shoes on", "emoji": "shoe" },
+          { "text": "Backpack", "emoji": "backpack" },
         ],
       },
     },
@@ -136,6 +128,20 @@ export const initialCompositionJsonc = `// pressedslip playground seed (visible 
         "definition": "The pleasant, earthy smell after rain on dry soil.",
         "example": "The petrichor reminded her of summer mornings.",
         "pronunciation": "/ˈpɛtrɪkɔːr/",
+      },
+    },
+
+    // Required: \`data.words\`: 1–6 \`{ word, graphemes }\`; graphemes must join back into word
+    // Tip: one-letter graphemes get a dot, digraphs/trigraphs (\`sh\`, \`igh\`) get a dash
+    // Docs: docs/guide/recipes.md#large-type-that-fits-the-paper-phonics
+    {
+      "blockType": "phonicsDemo",
+      "title": "READ ME",
+      "data": {
+        "words": [
+          { "word": "ship", "graphemes": ["sh", "i", "p"] },
+          { "word": "the", "graphemes": ["the"], "tricky": true },
+        ],
       },
     },
 

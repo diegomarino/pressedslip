@@ -3,7 +3,6 @@
  * Variants live alongside the existing per-block variant files; they're
  * grouped by demo block type in variantsByBlock.
  */
-import { emojiPng } from "./assets/emoji.js";
 import type { Variant } from "./index.js";
 
 export const wordOfDayDemoVariants: Variant[] = [
@@ -107,10 +106,10 @@ export const routineDemoVariants: Variant[] = [
       title: "BEFORE SCHOOL",
       data: {
         items: [
-          { text: "Brush teeth", image: { src: emojiPng.toothbrush, alt: "🪥" } },
-          { text: "Wash hands", image: { src: emojiPng.soap, alt: "🧼" } },
-          { text: "Shoes on", image: { src: emojiPng.shoe, alt: "👟" } },
-          { text: "Backpack", image: { src: emojiPng.backpack, alt: "🎒" } },
+          { text: "Brush teeth", emoji: "toothbrush" },
+          { text: "Wash hands", emoji: "soap" },
+          { text: "Shoes on", emoji: "shoe" },
+          { text: "Backpack", emoji: "backpack" },
         ],
       },
     },
@@ -123,10 +122,10 @@ export const routineDemoVariants: Variant[] = [
       title: "AFTER SCHOOL",
       data: {
         items: [
-          { text: "Snack", image: { src: emojiPng.apple, alt: "🍎" } },
-          { text: "Ballet", image: { src: emojiPng.balletShoes, alt: "🩰" } },
-          { text: "Football", image: { src: emojiPng.soccer, alt: "⚽" } },
-          { text: "Read a book", image: { src: emojiPng.books, alt: "📚" } },
+          { text: "Snack", emoji: "apple" },
+          { text: "Ballet", emoji: "balletShoes" },
+          { text: "Football", emoji: "soccer" },
+          { text: "Read a book", emoji: "books" },
         ],
       },
     },
@@ -141,6 +140,27 @@ export const drawingPromptDemoVariants: Variant[] = [
       blockType: "drawingPromptDemo",
       title: "DRAW IT",
       data: { prompt: "Draw a dragon eating breakfast.", height: 300 },
+    },
+  },
+];
+
+export const riddleDemoVariants: Variant[] = [
+  {
+    id: "riddle-demo-clock",
+    label: "riddle-demo · answer printed upside down",
+    slot: {
+      blockType: "riddleDemo",
+      title: "RIDDLE",
+      data: { question: "What has hands but can't clap?", answer: "A clock" },
+    },
+  },
+  {
+    id: "riddle-demo-towel",
+    label: "riddle-demo · what gets wetter the more it dries?",
+    slot: {
+      blockType: "riddleDemo",
+      title: "RIDDLE",
+      data: { question: "What gets wetter the more it dries?", answer: "A towel" },
     },
   },
 ];
