@@ -3,26 +3,31 @@
  * Render a pressedslip composition (JSON or JSONC) to a 1-bit PNG.
  *
  *   node render.mjs slip.json [-o slip.png] [--theme default|compact|mono|./theme.mjs]
- *                   [--paper thermal58|thermal80|thermal110]
+ *                   [--paper thermal58|thermal80|thermal110] [--upside-down-answers]
  *                   [--blocks ./my-blocks.mjs] [--print host[:port]]
  *
- * `pressedslip` is resolved from the current working directory, so run this
- * from the project that has it installed. `--blocks` loads a module whose
+ * `pressedslip` is resolved from the current working directory. If the cwd
+ * has no pressedslip, it is installed once into a private cache
+ * (~/.cache/pressedslip-skill, or $PRESSEDSLIP_SKILL_CACHE) and used from
+ * there, so a slip can be rendered from any folder. `--blocks` loads a module whose
  * `blocks` (or default) export is an array of BlockDefinition; for .ts/.tsx
  * modules run the script through `npx tsx` instead of `node`. `--theme` also
  * accepts a module path whose `theme` (or default) export is a theme template.
  *
  * Prints a JSON report on stdout and exits 1 when any block failed.
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
+import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
 
 const USAGE =
   "usage: render.mjs <slip.json> [-o out.png] [--theme default|compact|mono|module] " +
-  "[--paper thermal58|thermal80|thermal110] [--blocks module] [--print host[:port]]";
+  "[--paper thermal58|thermal80|thermal110] [--upside-down-answers] [--blocks module] " +
+  "[--print host[:port]]";
 
 function fail(message) {
   console.error(`render.mjs: ${message}`);
@@ -37,6 +42,7 @@ const { values, positionals } = parseArgs({
     paper: { type: "string", default: "thermal80" },
     blocks: { type: "string", multiple: true, default: [] },
     print: { type: "string" },
+    "upside-down-answers": { type: "boolean" },
     help: { type: "boolean", short: "h" },
   },
 });
@@ -46,15 +52,58 @@ if (values.help || positionals.length !== 1) {
   process.exit(values.help ? 0 : 2);
 }
 
-/** Import a pressedslip entrypoint ("." or "./transports") as installed in the cwd. */
-async function importPressedslip(subpath = ".") {
-  const require = createRequire(join(process.cwd(), "noop.js"));
-  let entry;
+const CACHE_DIR =
+  process.env.PRESSEDSLIP_SKILL_CACHE ??
+  join(process.env.XDG_CACHE_HOME ?? join(homedir(), ".cache"), "pressedslip-skill");
+
+function canResolve(dir, specifier) {
   try {
-    entry = require.resolve(subpath === "." ? "pressedslip" : `pressedslip/${subpath.slice(2)}`);
+    createRequire(join(dir, "noop.js")).resolve(specifier);
+    return true;
   } catch {
-    fail("pressedslip is not installed here. Run `npm install pressedslip react zod` first.");
+    return false;
   }
+}
+
+let installDir;
+/** The project's pressedslip if it has one; otherwise the cache, installing into it once. */
+function pressedslipDir() {
+  if (installDir) return installDir;
+  if (canResolve(process.cwd(), "pressedslip")) {
+    installDir = process.cwd();
+    return installDir;
+  }
+  if (!canResolve(CACHE_DIR, "pressedslip")) {
+    console.error(`render.mjs: pressedslip not found here; installing it once into ${CACHE_DIR}`);
+    mkdirSync(CACHE_DIR, { recursive: true });
+    if (!existsSync(join(CACHE_DIR, "package.json"))) {
+      writeFileSync(join(CACHE_DIR, "package.json"), '{ "private": true }\n');
+    }
+    const npm = spawnSync(
+      "npm",
+      ["install", "--no-audit", "--no-fund", "--silent", "pressedslip", "react", "zod"],
+      {
+        cwd: CACHE_DIR,
+        stdio: ["ignore", "ignore", "inherit"],
+        shell: process.platform === "win32",
+      },
+    );
+    if (npm.status !== 0 || !canResolve(CACHE_DIR, "pressedslip")) {
+      fail(
+        "could not install pressedslip. Install it in the project: npm install pressedslip react zod",
+      );
+    }
+  }
+  installDir = CACHE_DIR;
+  return installDir;
+}
+
+/** Import a pressedslip entrypoint ("." or "./transports") from pressedslipDir(). */
+async function importPressedslip(subpath = ".") {
+  const require = createRequire(join(pressedslipDir(), "noop.js"));
+  const entry = require.resolve(
+    subpath === "." ? "pressedslip" : `pressedslip/${subpath.slice(2)}`,
+  );
   // require.resolve picks the CJS build; walk up to the package root and load the ESM build.
   let root = dirname(entry);
   while (true) {
@@ -111,12 +160,28 @@ if (!Array.isArray(input.slots) || input.slots.length === 0) {
   fail("the composition needs a non-empty `slots` array");
 }
 
+/** Import a --theme/--blocks module; those import pressedslip themselves, from their own folder. */
+async function importUserModule(spec) {
+  try {
+    return await import(pathToFileURL(resolve(spec)).href);
+  } catch (error) {
+    if (error.code === "ERR_MODULE_NOT_FOUND" || error.code === "MODULE_NOT_FOUND") {
+      fail(
+        `${spec}: ${error.message.split("\n")[0]}\n` +
+          "Custom blocks and themes must live in a project with pressedslip, react and zod installed " +
+          "(npm install pressedslip react zod).",
+      );
+    }
+    throw error;
+  }
+}
+
 const ps = await importPressedslip();
 const { nodeFontCache } = await importPressedslip("./providers");
 
 let theme = ps.themes[values.theme];
 if (!theme && /\.[cm]?[jt]sx?$/.test(values.theme)) {
-  const mod = await import(pathToFileURL(resolve(values.theme)).href);
+  const mod = await importUserModule(values.theme);
   theme = mod.theme ?? mod.default;
 }
 if (!theme) {
@@ -124,12 +189,24 @@ if (!theme) {
     `unknown theme "${values.theme}" (use ${Object.keys(ps.themes).join(", ")} or a module path)`,
   );
 }
+if (values["upside-down-answers"]) {
+  // qaPair answers use the `answer` text style; rotate it so riddles make the reader flip the paper.
+  const textStyles = theme.shell?.textStyles ?? {};
+  theme = {
+    ...theme,
+    shell: {
+      ...theme.shell,
+      textStyles: { ...textStyles, answer: { ...textStyles.answer, rotate: 180 } },
+    },
+  };
+}
+
 const width = ps.PAPER[values.paper];
 if (!width || !("px" in width)) fail(`unknown paper "${values.paper}"`);
 
 const customBlocks = [];
 for (const spec of values.blocks) {
-  const mod = await import(pathToFileURL(resolve(spec)).href);
+  const mod = await importUserModule(spec);
   const list = mod.blocks ?? mod.default;
   if (!Array.isArray(list)) fail(`${spec} must export \`blocks\` (an array of block definitions)`);
   customBlocks.push(...list);
@@ -172,6 +249,7 @@ const report = {
     reason: f.reason?.message ?? String(f.reason),
   })),
   canvasOverflow: rendering.canvasOverflow,
+  pressedslip: installDir === process.cwd() ? "project" : installDir,
   printed: false,
 };
 

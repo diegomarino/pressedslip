@@ -52,9 +52,9 @@ to-dos.
 { "question": "What has keys but can't open locks?", "answer": "A piano." }
 ```
 Jokes, riddles, trivia, flashcards. To print the answer upside down, render
-with a theme whose `answer` text style has `rotate: 180`: copy
-`<skill>/references/patterns/upside-down-theme.mjs` into the project and
-pass `--theme ./upside-down-theme.mjs`. The answer stays right-aligned.
+with `--upside-down-answers`. It applies to every qaPair in the slip, and the
+answer stays right-aligned. To flip only some answers, use the custom
+`patterns/riddle-block.tsx`.
 
 ## quotation: a quote with byline
 

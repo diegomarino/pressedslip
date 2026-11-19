@@ -2,7 +2,8 @@
  * Pattern: change how a builtin block looks by overriding the theme, not by
  * writing a block. Here every `qaPair` answer prints upside down, so riddles
  * and quizzes make the reader flip the paper. Adapted from marplanner's
- * render theme (MIT).
+ * render theme (MIT). For just this, `render.mjs --upside-down-answers` is
+ * enough; use a theme module to combine it with other overrides.
  *
  *   node <skill>/scripts/render.mjs slip.json --theme ./upside-down-theme.mjs
  *

@@ -24,7 +24,7 @@ repeatable. Keep the JSON as the record of what was printed.
 | Seeded daily pick | `seeded-pick.mjs` | Same item all day and a new one tomorrow (`hashSeed(date + "\|joke")`); daily shuffle for turn-taking | qaPair, list |
 | Live APIs | `live-data.mjs` | Open-Meteo weather, Wikipedia "on this day", ZenQuotes; timeouts; failed sources skipped, not printed empty | kpi, list, quotation |
 | Dates and calendar | `dates-and-calendar.mjs` | Birthday countdown with Feb 29; agenda sorted all-day first, emoji stripped, lines truncated to fit | list, kpi |
-| Theme override | `upside-down-theme.mjs` | Riddle answers upside down without a custom block | qaPair |
+| Theme override | `upside-down-theme.mjs` | Theme module overriding a text style (same as `--upside-down-answers`) | qaPair |
 | Word search | `../scripts/word-search.mjs` | Seeded grid from any word list, 3 difficulty levels | wordSearch |
 | Custom text block | `riddle-block.tsx` | Theme text styles inside a block, rotated answer | custom |
 | Computed shapes | `streak-block.tsx` | Habit streak from booleans, dots drawn as boxes, weekday letters by language | custom |

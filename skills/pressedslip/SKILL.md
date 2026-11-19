@@ -26,10 +26,13 @@ dithering.
 
 ## Workflow
 
-1. **Set up.** In the user's project, check that `pressedslip` is installed
-   (`npm ls pressedslip`). If not, install it with the project's package
-   manager: `npm install pressedslip react zod`. Node ≥ 22.12. Rendering
-   downloads fonts from Google Fonts on first use, so it needs network access.
+1. **Set up.** Node ≥ 22.12 and network access (fonts download from Google
+   Fonts on first use). Nothing else is needed for builtin blocks:
+   `render.mjs` uses the project's `pressedslip` if it has one, and otherwise
+   installs it once into `~/.cache/pressedslip-skill` without touching the
+   user's folder. Install it in the project (`npm install pressedslip react zod`,
+   with the project's package manager) only when you write custom blocks or
+   themes, or when the user is building on pressedslip anyway.
 2. **Plan the slip.** Decide what goes on it and in which order. One idea per
    block, short titles in capitals. Pick builtin blocks first:
    [references/blocks.md](references/blocks.md) lists them with their data
@@ -61,9 +64,10 @@ dithering.
 
 | Option | Default | Notes |
 |---|---|---|
-| `-o out.png` | `slip.png` next to the input | |
+| `-o out.png` | input name with `.png` | |
 | `--paper` | `thermal80` | `thermal58` (384 px), `thermal80` (576 px), `thermal110` (832 px) |
 | `--theme` | `default` | `default`, `compact`, `mono`, or a module path exporting `theme` |
+| `--upside-down-answers` | off | Prints every `qaPair` answer upside down (riddles, quizzes) |
 | `--blocks mod` | none | Module exporting `blocks: BlockDefinition[]`; repeatable. Run with `npx tsx` for `.ts`/`.tsx` |
 | `--print host[:port]` | off | ESC/POS over TCP, port 9100 by default |
 
@@ -111,10 +115,10 @@ so rerunning it with new words doesn't add a second puzzle. Without
 ## Files that import pressedslip
 
 Anything that imports `pressedslip`, `react` or `zod` (custom blocks, theme
-modules, `.tsx` patterns, `upside-down-theme.mjs`) must be **copied into the
-user's project** before you use it, because those imports resolve from the
-file's own location. The two scripts in `scripts/` and the plain `.mjs` data
-patterns can run straight from the skill directory.
+modules, `.tsx` patterns, `upside-down-theme.mjs`) must be **copied into a
+project that has them installed**, because those imports resolve from the
+file's own location, not from the skill's cache. The two scripts in
+`scripts/` and the plain `.mjs` data patterns run from anywhere.
 
 ## Custom blocks
 

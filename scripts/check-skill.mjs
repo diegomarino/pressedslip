@@ -169,6 +169,32 @@ for (const file of readdirSync(join(SKILL, "examples")).filter((f) => f.endsWith
 }
 
 checkRender(
+  "examples/puzzle-time.json with --upside-down-answers",
+  render(join(SKILL, "examples", "puzzle-time.json"), ["--upside-down-answers"]),
+);
+
+if (NETWORK) {
+  // Outside any project, render.mjs installs pressedslip into its own cache.
+  const empty = mkdtempSync(join(tmpdir(), "pressedslip-noproject-"));
+  const res = spawnSync(
+    process.execPath,
+    [RENDER, join(SKILL, "examples", "shopping-list.json"), "-o", join(empty, "out.png")],
+    {
+      cwd: empty,
+      encoding: "utf8",
+      env: { ...process.env, PRESSEDSLIP_SKILL_CACHE: join(empty, "cache") },
+    },
+  );
+  const report = res.status === 0 ? JSON.parse(res.stdout) : null;
+  check(
+    report?.pressedslip === join(empty, "cache") &&
+      readdirSync(empty).sort().join() === "cache,out.png",
+    "render outside a project installs into the cache only",
+    res.stderr.trim(),
+  );
+}
+
+checkRender(
   "examples/puzzle-time.json with upside-down-theme.mjs",
   render(join(SKILL, "examples", "puzzle-time.json"), [
     "--theme",
