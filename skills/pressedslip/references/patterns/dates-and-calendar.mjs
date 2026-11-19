@@ -28,7 +28,7 @@ export function daysUntil(month, day, today) {
 export const stripEmoji = (s) =>
   s
     .replace(/\p{Extended_Pictographic}/gu, "")
-    .replace(/️/g, "")
+    .replace(/\uFE0F/g, "")
     .trim();
 
 const truncate = (s, max) => (s.length <= max ? s : `${s.slice(0, max - 1)}…`);

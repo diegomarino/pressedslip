@@ -35,8 +35,10 @@ about 25 cm of paper.
 ## Themes
 
 - `default`: Inter, comfortable spacing.
-- `compact`: Atkinson Hyperlegible, tighter spacing; fits more on narrow paper and is easy for early readers.
-- `mono`: JetBrains Mono; a typewriter or terminal look, and every glyph has the same width.
+- `compact`: Atkinson Hyperlegible, tighter spacing; fits more on narrow
+  paper and is easy for early readers.
+- `mono`: JetBrains Mono; a typewriter or terminal look, and every glyph has
+  the same width.
 
 Pass `--theme default|compact|mono`, or a module path whose `theme` export is
 a theme object. Override a builtin by spreading it:
