@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-19",
+  "subject": { "id": "lisa", "name": "Lisa" },
+  "meta": { "language": "en" },
+  "slots": [
+    {
+      "blockType": "kpi",
+      "title": "WEATHER",
+      "data": {
+        "label": "SPRINGFIELD",
+        "value": "16° / 9°",
+        "caption": "Showers · rain 80% · take an umbrella"
+      }
+    },
+    {
+      "blockType": "list",
+      "title": "TODAY",
+      "data": {
+        "groups": [
+          {
+            "items": [
+              { "value": "School trip to the museum" },
+              { "id": "09:30", "value": "Dentist" },
+              { "id": "17:00", "value": "Saxophone lesson" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "blockType": "keyValue",
+      "title": "DINNER",
+      "data": { "label": "Tonight", "value": "Vegetable lasagna" }
+    },
+    {
+      "blockType": "quotation",
+      "title": "QUOTE",
+      "data": {
+        "text": "The secret of getting ahead is getting started.",
+        "attribution": "Mark Twain"
+      }
+    }
+  ]
+}

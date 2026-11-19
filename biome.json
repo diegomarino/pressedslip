@@ -56,7 +56,7 @@
       }
     },
     {
-      "includes": ["scripts/**", "examples/**", "playground/**"],
+      "includes": ["scripts/**", "examples/**", "playground/**", "skills/**"],
       "linter": {
         "rules": {
           "suspicious": { "noConsole": "off" }

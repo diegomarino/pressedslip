@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-19",
+  "slots": [
+    {
+      "blockType": "list",
+      "title": "SHOPPING",
+      "data": {
+        "groups": [
+          {
+            "title": "Fruit & veg",
+            "items": [
+              { "value": "Bananas" },
+              { "value": "Tomatoes (1 kg)" },
+              { "value": "Spinach" }
+            ]
+          },
+          { "title": "Dairy", "items": [{ "value": "Milk x2" }, { "value": "Greek yogurt" }] },
+          {
+            "title": "Other",
+            "separator": "·",
+            "items": [{ "value": "Coffee" }, { "value": "Bin bags" }]
+          }
+        ]
+      }
+    },
+    {
+      "blockType": "kpi",
+      "title": "BUDGET",
+      "data": { "label": "THIS WEEK", "value": "€62", "caption": "€18 left after Monday" }
+    }
+  ]
+}
