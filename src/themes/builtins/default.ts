@@ -3,12 +3,13 @@
  * Best for general-purpose modern receipts. See docs/themes.md.
  */
 import { defineTheme } from "../index.js";
+import type { ThemeTemplate } from "../types.js";
 
 /**
  * Built-in default theme.
  * Uses Inter font with a block-style inverted title (black background, white text).
  */
-export const defaultTheme = defineTheme({
+export const defaultTheme: ThemeTemplate = defineTheme({
   id: "default",
   label: "Default",
   roleUrls: {
