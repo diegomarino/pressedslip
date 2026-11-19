@@ -49,6 +49,25 @@ package directory. If you bundle a Node server (esbuild, Rollup) to ESM, keep
 `ReferenceError: __dirname is not defined`. Browser bundles need the alias in
 [Browser rendering](https://github.com/diegomarino/pressedslip/blob/main/docs/guide/browser-rendering.md).
 
+## Use with AI agents
+
+pressedslip ships an [agent skill](https://github.com/diegomarino/pressedslip/tree/main/skills/pressedslip)
+so coding agents (Claude Code, Cursor, Codex and others) can compose, render,
+check and print slips on their own. Install it in your project with:
+
+```bash
+npx skills add diegomarino/pressedslip
+```
+
+Then ask for a slip in plain words ("a morning slip with the weather, a riddle
+and a word search"). The agent writes the slip JSON, renders it to a PNG,
+checks it for failed blocks and fixes them, and prints only if you ask. It
+doesn't need pressedslip in your project for builtin blocks.
+
+The skill includes a render script, a seeded word-search generator, a block
+catalogue, and data patterns adapted from a real household planner: live APIs,
+dates, calendars, streaks and emoji pictures.
+
 ## Quick Example
 
 ```ts
@@ -284,21 +303,6 @@ pnpm docs:api
 Generated TypeDoc HTML lands in `docs/api/reference/`. GitHub Pages is reserved
 for the interactive playground, so the API reference is generated in CI and can
 be built locally from the published source repo.
-
-## Use with AI agents
-
-The repo ships an [agent skill](https://github.com/diegomarino/pressedslip/tree/main/skills/pressedslip)
-that lets coding agents (Claude Code, Cursor, Codex and others) build, render,
-check and print slips on their own:
-
-```bash
-npx skills add diegomarino/pressedslip
-```
-
-It includes a render script that turns slip JSON into a PNG and reports failed
-blocks, a seeded word-search generator, a block catalogue, and data patterns
-adapted from a real household planner (live APIs, dates, calendars, streaks,
-emoji pictures).
 
 ## Guides
 
