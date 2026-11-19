@@ -88,6 +88,7 @@
     "example:all": "pnpm example:prepare && tsx examples/number-fact/example.ts && tsx examples/dad-joke/example.ts && tsx examples/riddle/example.ts && tsx examples/word-of-day/example.tsx && tsx examples/weather/example.tsx",
     "docs:api": "typedoc",
     "check-public-docs": "node scripts/check-public-docs.mjs",
+    "skill:check": "pnpm build && node scripts/check-skill.mjs",
     "docs:visual-refs": "tsx scripts/docs/render-visual-refs.ts",
     "smoke": "node scripts/ci/tarball-smoke.mjs",
     "typecheck": "tsc --noEmit",

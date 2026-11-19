@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-19",
+  "slots": [
+    {
+      "blockType": "qaPair",
+      "title": "RIDDLE",
+      "data": {
+        "question": "What has keys but can't open locks?",
+        "answer": "A piano."
+      }
+    },
+    {
+      "blockType": "textCell",
+      "title": "DRAW",
+      "data": {
+        "text": "Draw a dragon having breakfast.",
+        "align": "center"
+      }
+    },
+    {
+      "blockType": "wordSearch",
+      "title": "WORD SEARCH",
+      "data": {
+        "grid": [
+          ["V", "K", "W", "F", "B", "X", "G", "I", "Y", "A"],
+          ["R", "V", "P", "Q", "D", "J", "V", "U", "O", "Z"],
+          ["C", "P", "K", "C", "U", "X", "W", "F", "T", "M"],
+          ["A", "L", "E", "L", "N", "E", "B", "K", "F", "J"],
+          ["P", "R", "D", "A", "E", "P", "W", "I", "E", "K"],
+          ["P", "E", "C", "M", "C", "M", "R", "W", "A", "M"],
+          ["L", "B", "U", "W", "A", "H", "O", "I", "U", "W"],
+          ["E", "L", "M", "E", "L", "O", "N", "N", "N", "S"],
+          ["P", "Z", "F", "U", "Z", "M", "J", "M", "G", "N"],
+          ["M", "A", "N", "G", "O", "G", "R", "A", "P", "E"]
+        ],
+        "words": ["APPLE", "GRAPE", "KIWI", "LEMON", "MANGO", "MELON", "PEACH", "PLUM"]
+      }
+    }
+  ]
+}
