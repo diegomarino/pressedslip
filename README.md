@@ -8,7 +8,7 @@
 
 ![Three 80 mm slips rendered by pressedslip: a morning briefing, a kids' phonics and emoji checklist, and a puzzle slip with an upside-down riddle, word search and drawing frame](https://raw.githubusercontent.com/diegomarino/pressedslip/main/docs/assets/visual-refs/hero.png)
 
-<video src="https://github.com/user-attachments/assets/9df1895b-349f-410e-99cd-5cff7bf11700" controls autoplay loop muted width="100%"></video>
+https://github.com/user-attachments/assets/9df1895b-349f-410e-99cd-5cff7bf11700
 
 `pressedslip` lets you describe printable content as data, render it through
 React/Satori/resvg, inspect the resulting composition, and then save the PNG or
