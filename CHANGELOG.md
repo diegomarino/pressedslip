@@ -1,3 +1,20 @@
+## [0.6.0](https://github.com/diegomarino/pressedslip/compare/v0.5.2...v0.6.0) (2026-11-19)
+
+### Features
+
+* **skill:** add pressedslip agent skill for npx skills ([#33](https://github.com/diegomarino/pressedslip/issues/33)) ([9fc25e1](https://github.com/diegomarino/pressedslip/commit/9fc25e14ebe5a5c0f91837252254bdfb76e176ae))
+
+### Documentation
+
+* showcase examples, rendered block examples and recipes guide ([#31](https://github.com/diegomarino/pressedslip/issues/31)) ([0cfec47](https://github.com/diegomarino/pressedslip/commit/0cfec470e8c15e1f51bd213e8ec81286313c5031)), closes [#000](https://github.com/diegomarino/pressedslip/issues/000)
+
+### Maintenance
+
+* **deps-dev:** bump undici from 8.5.0 to 8.12.2 ([#25](https://github.com/diegomarino/pressedslip/issues/25)) ([b7bac06](https://github.com/diegomarino/pressedslip/commit/b7bac0646e0589c9d6ab36cbd454a0682c9d90f1))
+* **deps-dev:** bump vite from 6.4.3 to 6.4.5 ([#24](https://github.com/diegomarino/pressedslip/issues/24)) ([2b58be4](https://github.com/diegomarino/pressedslip/commit/2b58be448fe9e937823daa901ff54c321a18feac))
+* **deps-dev:** bump vitest from 4.1.7 to 4.1.11 ([#16](https://github.com/diegomarino/pressedslip/issues/16)) ([a7c8cb1](https://github.com/diegomarino/pressedslip/commit/a7c8cb146af1580ce8844dd49c32076dae0a64d4))
+* **deps:** bump fast-xml-parser from 5.11.2 to 5.12.0 ([#32](https://github.com/diegomarino/pressedslip/issues/32)) ([4e526a5](https://github.com/diegomarino/pressedslip/commit/4e526a513131ad0036cb90a9f4143cff89778dca))
+
 ## [0.5.2](https://github.com/diegomarino/pressedslip/compare/v0.5.1...v0.5.2) (2026-11-08)
 
 ### Bug Fixes
