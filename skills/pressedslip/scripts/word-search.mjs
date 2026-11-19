@@ -16,6 +16,7 @@ import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
+import { parseJsonc, stripJsonc } from "./jsonc.mjs";
 
 /** Grid size, word lengths and directions per difficulty (marplanner's profiles). */
 export const PROFILES = {
@@ -166,7 +167,8 @@ function main() {
     data: { grid, words },
   };
   if (values.into) {
-    const slip = JSON.parse(readFileSync(values.into, "utf8"));
+    const text = readFileSync(values.into, "utf8");
+    const slip = parseJsonc(text);
     const slots = slip.slots ?? [];
     const existing = slots.findIndex((s) => s.blockType === "wordSearch");
     if (existing === -1) slots.push(slot);
@@ -176,6 +178,11 @@ function main() {
     console.error(
       `word-search.mjs: ${existing === -1 ? "added" : "replaced"} slot ${existing === -1 ? slots.length - 1 : existing} (${words.length} words) in ${values.into}`,
     );
+    if (stripJsonc(text) !== text) {
+      console.error(
+        `word-search.mjs: ${values.into} is rewritten as plain JSON; its comments were removed`,
+      );
+    }
   } else {
     console.log(JSON.stringify(slot, null, 2));
   }

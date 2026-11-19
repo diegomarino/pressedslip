@@ -14,7 +14,8 @@
  * modules run the script through `npx tsx` instead of `node`. `--theme` also
  * accepts a module path whose `theme` (or default) export is a theme template.
  *
- * Prints a JSON report on stdout and exits 1 when any block failed.
+ * Prints a JSON report on stdout and exits 1 when any block failed; with
+ * --print, a slip with failed blocks is not sent to the printer.
  */
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -23,6 +24,7 @@ import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
+import { parseJsonc } from "./jsonc.mjs";
 
 const USAGE =
   "usage: render.mjs <slip.json> [-o out.png] [--theme default|compact|mono|module] " +
@@ -122,37 +124,10 @@ async function importPressedslip(subpath = ".") {
   }
 }
 
-/** Remove // and /* *\/ comments and trailing commas outside of strings. */
-function stripJsonc(text) {
-  let out = "";
-  let inString = false;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (inString) {
-      out += c;
-      if (c === "\\") out += text[++i] ?? "";
-      else if (c === '"') inString = false;
-    } else if (c === '"') {
-      inString = true;
-      out += c;
-    } else if (c === "/" && text[i + 1] === "/") {
-      while (i < text.length && text[i] !== "\n") i++;
-      out += "\n";
-    } else if (c === "/" && text[i + 1] === "*") {
-      i = text.indexOf("*/", i + 2);
-      if (i === -1) break;
-      i++;
-    } else {
-      out += c;
-    }
-  }
-  return out.replace(/,(\s*[}\]])/g, "$1");
-}
-
 const inputPath = resolve(positionals[0]);
 let input;
 try {
-  input = JSON.parse(stripJsonc(readFileSync(inputPath, "utf8")));
+  input = parseJsonc(readFileSync(inputPath, "utf8"));
 } catch (error) {
   fail(`cannot read ${positionals[0]}: ${error.message}`);
 }
@@ -253,6 +228,12 @@ const report = {
   printed: false,
 };
 
+if (values.print && report.failedBlocks.length > 0) {
+  // A partial slip wastes paper; fix the composition first.
+  console.log(JSON.stringify(report, null, 2));
+  console.error("render.mjs: not printing because some blocks failed (see failedBlocks)");
+  process.exit(1);
+}
 if (values.print) {
   const [host, port = "9100"] = values.print.split(":");
   const { createEscPosTransport } = await importPressedslip("./transports");

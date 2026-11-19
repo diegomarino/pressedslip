@@ -125,6 +125,25 @@ for (const difficulty of Object.keys(ws.PROFILES)) {
     slots.length === 2 && slots[1].data.words.includes("MOON"),
     "word-search --into replaces the existing slot",
   );
+
+  const jsonc = join(OUT, "into.jsonc");
+  writeFileSync(
+    jsonc,
+    '{\n  // comment\n  "slots": [{ "blockType": "textCell", "data": { "text": "a // b" } },],\n}\n',
+  );
+  const res = spawnSync(process.execPath, [
+    join(SKILL, "scripts", "word-search.mjs"),
+    "--words",
+    "cat,dog,owl",
+    "--into",
+    jsonc,
+  ]);
+  const after = res.status === 0 ? JSON.parse(readFileSync(jsonc, "utf8")) : null;
+  check(
+    after?.slots.length === 2 && after.slots[0].data.text === "a // b",
+    "word-search --into accepts JSONC",
+    res.stderr?.toString(),
+  );
 }
 
 // 2 + 3. Rendering
@@ -172,6 +191,17 @@ checkRender(
   "examples/puzzle-time.json with --upside-down-answers",
   render(join(SKILL, "examples", "puzzle-time.json"), ["--upside-down-answers"]),
 );
+
+{
+  // Nothing listens on this port: the check passes only if render.mjs never connects.
+  const broken = writeComposition("broken", [{ blockType: "noSuchBlock", data: {} }]);
+  const { status, report, stderr } = render(broken, ["--print", "127.0.0.1:9"]);
+  check(
+    status === 1 && report?.printed === false && /not printing/.test(stderr),
+    "render --print refuses a slip with failed blocks",
+    stderr.trim(),
+  );
+}
 
 if (NETWORK) {
   // Outside any project, render.mjs installs pressedslip into its own cache.

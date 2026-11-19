@@ -69,7 +69,7 @@ dithering.
 | `--theme` | `default` | `default`, `compact`, `mono`, or a module path exporting `theme` |
 | `--upside-down-answers` | off | Prints every `qaPair` answer upside down (riddles, quizzes) |
 | `--blocks mod` | none | Module exporting `blocks: BlockDefinition[]`; repeatable. Run with `npx tsx` for `.ts`/`.tsx` |
-| `--print host[:port]` | off | ESC/POS over TCP, port 9100 by default |
+| `--print host[:port]` | off | ESC/POS over TCP, port 9100 by default. Refuses to print if any block failed |
 
 ## Rules that bite
 
@@ -109,7 +109,8 @@ Pick 6–12 words on the user's theme, 3–12 letters each. Accents are
 stripped and Ñ is kept. Words that don't fit are reported on stderr and left
 out of the list, so the list always matches the grid. With `--into`, it
 replaces the first `wordSearch` slot in place, or appends one at the end,
-so rerunning it with new words doesn't add a second puzzle. Without
+so rerunning it with new words doesn't add a second puzzle. It reads JSONC
+but writes plain JSON, so comments in that file are lost. Without
 `--into`, it prints the slot JSON to add yourself.
 
 ## Files that import pressedslip
