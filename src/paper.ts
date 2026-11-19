@@ -81,7 +81,9 @@ export const PAPER = {
     /** Human-readable label for admin UIs. */
     description: "US Letter, portrait",
   },
-} as const satisfies Record<string, PaperPreset>;
+} as const;
+// Kept out of the declaration above: `satisfies` there breaks isolatedDeclarations.
+PAPER satisfies Record<string, PaperPreset>;
 
 const DEFAULT_DPI = 203;
 const MM_PER_INCH = 25.4;

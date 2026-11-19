@@ -3,12 +3,13 @@
  * Best for developer-notebook / terminal aesthetic. See docs/themes.md.
  */
 import { defineTheme } from "../index.js";
+import type { ThemeTemplate } from "../types.js";
 
 /**
  * Built-in mono theme.
  * Uses JetBrains Mono font with a hash-style title (# characters as separator).
  */
-export const monoTheme = defineTheme({
+export const monoTheme: ThemeTemplate = defineTheme({
   id: "mono",
   label: "Mono · receipt-style",
   roleUrls: {

@@ -3,13 +3,14 @@
  * Best for dense receipts; minimizes ink/heat consumption. See docs/themes.md.
  */
 import { defineTheme } from "../index.js";
+import type { ThemeTemplate } from "../types.js";
 
 /**
  * Built-in compact theme.
  * Uses Atkinson Hyperlegible font with a plain-style title (no inversion or decoration).
  * Optimized for density and accessibility.
  */
-export const compactTheme = defineTheme({
+export const compactTheme: ThemeTemplate = defineTheme({
   id: "compact",
   label: "Compact · hyperlegible",
   roleUrls: {
