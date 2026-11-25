@@ -153,6 +153,15 @@ describe("built-in block audit — LONG BREAKABLE text (classifies layout)", () 
   });
 });
 
+describe("checklist canvas overflow", () => {
+  it("checklist: immune (safe flex-row idiom: text has flexGrow:1 + minWidth:0)", async () => {
+    const r = await renderSlot([
+      { index: 0, blockType: "checklist", data: { items: [LONG_BREAKABLE, "short"] } },
+    ]);
+    expect(r.canvasOverflow).toBeNull();
+  });
+});
+
 describe("built-in block audit — UNBREAKABLE token (content-side issue, not layout)", () => {
   // Every block overflows here. The point of these tests is not to flag layout
   // bugs but to LOCK the diagnostic: the detector correctly fires for content
@@ -183,6 +192,10 @@ describe("built-in block audit — UNBREAKABLE token (content-side issue, not la
     {
       type: "list",
       data: { groups: [{ items: [{ id: "1", value: UNBREAKABLE }] }] },
+    },
+    {
+      type: "checklist",
+      data: { items: [UNBREAKABLE] },
     },
   ];
 

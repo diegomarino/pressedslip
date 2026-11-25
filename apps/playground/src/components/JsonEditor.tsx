@@ -14,6 +14,7 @@ import { type Diagnostic, linter } from "@codemirror/lint";
 import CodeMirror from "@uiw/react-codemirror";
 import { type ParseError, parse as parseJsonc, printParseErrorCode } from "jsonc-parser";
 import {
+  checklistBlock,
   createRegistry,
   keyValueBlock,
   kpiBlock,
@@ -55,6 +56,7 @@ const draftSchema = z.object({
 // `src/registry.ts` module if duplication becomes painful, but for now the
 // two call sites are fine.
 const registry = createRegistry([
+  checklistBlock,
   keyValueBlock,
   kpiBlock,
   listBlock,

@@ -156,6 +156,57 @@ export type ShellTheme = {
    * themes require no changes unless they need grid lines to differ.
    */
   wordSearchBorderColor?: string;
+  /**
+   * How `checklistBlock` (and any block reusing the checkbox tokens) draws the
+   * box before each item.
+   *
+   * - `"box"`: a `div` drawn with a border (`checkboxSize`,
+   *   `checkboxBorderWidth`, `checkboxRadius`, `checkboxColor`). Never a
+   *   Unicode ☐ glyph: font coverage is not guaranteed in Satori.
+   * - `"text"`: renders `checkboxGlyph` as text in the body font, for
+   *   ASCII-only themes.
+   *
+   * A theme token like `titleStyle`; blocks never branch on theme identity.
+   *
+   * Default: "box". Built-in `monoTheme` overrides to "text".
+   */
+  checkboxStyle?: "box" | "text";
+  /**
+   * Text rendered as the checkbox when `checkboxStyle` is `"text"`. Ignored
+   * for `"box"`.
+   *
+   * Default: "[ ]".
+   */
+  checkboxGlyph?: string;
+  /**
+   * Side length in pixels of the drawn checkbox (`checkboxStyle: "box"`).
+   *
+   * A fixed number (not derived from the body font size) so the resolved
+   * theme stays `Required<ShellTheme>`; 16 looks right next to the default
+   * 20px body text. Themes with a different body size should override it.
+   *
+   * Default: 16.
+   */
+  checkboxSize?: number;
+  /**
+   * Border thickness in pixels of the drawn checkbox.
+   *
+   * Default: 2. A 1px line can vanish after 1-bit thresholding at 203 dpi.
+   */
+  checkboxBorderWidth?: number;
+  /**
+   * Corner radius in pixels of the drawn checkbox.
+   *
+   * Default: 0 (square corners).
+   */
+  checkboxRadius?: number;
+  /**
+   * Border color of the drawn checkbox (CSS color string).
+   *
+   * Falls back to the resolved `textStyles.body.color`, else "#000", when
+   * omitted, so the box matches the item text it sits next to.
+   */
+  checkboxColor?: string;
   /** Per-slot text-style vocabulary. See `TextStyles` for slot semantics. */
   textStyles?: TextStyles;
 };

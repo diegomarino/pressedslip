@@ -40,6 +40,8 @@ export const monoTheme: ThemeTemplate = defineTheme({
     contentPadding: "normal",
     separatorThickness: "none",
     listItemBullet: "-",
+    checkboxStyle: "text",
+    checkboxGlyph: "[ ]",
   },
   header: {
     nameFontRole: "mono",

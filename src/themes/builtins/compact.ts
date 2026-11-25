@@ -32,6 +32,7 @@ export const compactTheme: ThemeTemplate = defineTheme({
     titleAlignment: "left",
     contentPadding: "compact",
     separatorThickness: "thin",
+    checkboxSize: 14,
   },
   header: {
     nameFontRole: "body",
