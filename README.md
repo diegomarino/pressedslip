@@ -265,7 +265,7 @@ await transport.send({ bytes });
 
 ## Why pressedslip?
 
-- **Composable content blocks** - eight builtin blocks (text, list, key-value,
+- **Composable content blocks** - nine builtin blocks (text, list, checklist, key-value,
   KPI, Q&A, quotation, word-search, image); write your own via `defineBlock`.
 - **Browser and Node renders from the same source** - `pressedslip/browser`
   ships a resvg-wasm path so the playground and Node CI render with identical

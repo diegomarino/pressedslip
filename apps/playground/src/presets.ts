@@ -6,6 +6,7 @@
  */
 import { wordSearchFixtures } from "pressedslip/testing";
 import type { DraftComposition } from "./state/draft-composition.js";
+import { checklistVariants } from "./variants/checklist.js";
 import {
   drawingPromptDemoVariants,
   phonicsDemoVariants,
@@ -96,6 +97,7 @@ export const presets: readonly Preset[] = [
     draft: draft("Leo's morning", "mono", [
       slotOf(phonicsDemoVariants, "phonics-demo-cvc"),
       slotOf(routineDemoVariants, "routine-demo-morning"),
+      slotOf(checklistVariants, "checklist-before-leaving"),
     ]),
   },
   {

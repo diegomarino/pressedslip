@@ -7,6 +7,7 @@
  * native modules. Verified by `scripts/verify-browser-bundle.mjs`.
  */
 
+import { checklistBlock } from "../blocks/checklist.js";
 import { imageBlock } from "../blocks/image.js";
 import { keyValueBlock } from "../blocks/key-value.js";
 import { kpiBlock } from "../blocks/kpi.js";
@@ -17,6 +18,7 @@ import { textCellBlock } from "../blocks/text-cell.js";
 import { wordSearchBlock } from "../blocks/word-search.js";
 import type { AnyBlockDefinition } from "../types.js";
 
+export { checklistBlock } from "../blocks/checklist.js";
 export { imageFromBuffer } from "../blocks/image/source.js";
 export { type ImageCache, type ImageFromUrlOptions, imageFromUrl } from "../blocks/image/url.js";
 export { type ImageData, imageBlock } from "../blocks/image.js";
@@ -56,6 +58,7 @@ export const builtinBlocks: readonly AnyBlockDefinition[] = Object.freeze([
   textCellBlock,
   wordSearchBlock,
   imageBlock,
+  checklistBlock,
 ]);
 export { defineBlock } from "../define-block.js";
 export { createMemoryCache } from "../orchestrator/cache.js";

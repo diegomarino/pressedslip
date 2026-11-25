@@ -74,6 +74,12 @@ export const SHELL_DEFAULTS: Required<ShellTheme> = {
   listItemGap: 8,
   listItemBullet: "•",
   wordSearchBorderColor: "#000",
+  checkboxStyle: "box",
+  checkboxGlyph: "[ ]",
+  checkboxSize: 16,
+  checkboxBorderWidth: 2,
+  checkboxRadius: 0,
+  checkboxColor: "#000",
   textStyles: TEXT_STYLES_DEFAULTS,
 };
 
@@ -129,6 +135,9 @@ export function applyShellDefaults(input: ShellTheme): Required<ShellTheme> {
   return {
     ...resolved,
     wordSearchBorderColor: input.wordSearchBorderColor ?? resolved.separatorColor,
+    // checkboxColor falls back to the resolved body text color so the box
+    // matches the item text; "#000" when the body slot sets no color.
+    checkboxColor: input.checkboxColor ?? resolved.textStyles.body.color ?? "#000",
   };
 }
 

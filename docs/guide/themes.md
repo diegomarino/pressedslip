@@ -131,6 +131,21 @@ The `shell.titleStyle` field controls how block titles render:
 - **`"hash"`** — Text on white, filled left to right with `titleFillChar` (default `"#"`). Used by `mono`.
 - **`"plain"`** — Text on white, no inversion, optional alignment. Used by `compact`.
 
+## Checkbox tokens
+
+Blocks that draw a checkbox (currently `checklist`) read these `shell` tokens, so themes choose the look without any block branching on theme identity:
+
+| Token | Default | Meaning |
+|---|---|---|
+| `checkboxStyle` | `"box"` | `"box"` draws a bordered `div`; `"text"` renders `checkboxGlyph` in the body font. `mono` uses `"text"`. |
+| `checkboxGlyph` | `"[ ]"` | Text shown when `checkboxStyle` is `"text"`. |
+| `checkboxSize` | `16` | Box side in px (a fixed number, sized for the default 20px body text). `compact` uses `14`. |
+| `checkboxBorderWidth` | `2` | Border thickness in px. Avoid `1`: it can vanish after 1-bit thresholding at 203 dpi. |
+| `checkboxRadius` | `0` | Corner radius in px. |
+| `checkboxColor` | body text color, else `"#000"` | Border color of the box. |
+
+The gap between box and text is `listItemGap`, shared with `list`.
+
 ## Font format
 
 **Fonts must be TTF or OTF.** The underlying renderer (Satori) cannot parse WOFF2. If your font source defaults to WOFF2 (e.g., Google Fonts web interface), use the static TTF endpoint instead:

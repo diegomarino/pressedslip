@@ -1,5 +1,6 @@
 /** biome-ignore-all lint/suspicious/noConsole: CLI script; stdout/stderr ARE the output channel. */
 import {
+  checklistBlock,
   imageBlock,
   keyValueBlock,
   kpiBlock,
@@ -22,6 +23,7 @@ import { tuxPng } from "../src/variants/assets/tux.ts";
 import { variantsByBlock } from "../src/variants/index.ts";
 
 const blocks = {
+  checklist: checklistBlock,
   image: imageBlock,
   keyValue: keyValueBlock,
   kpi: kpiBlock,

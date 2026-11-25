@@ -113,3 +113,48 @@ describe("applyShellDefaults — wordSearchBorderColor", () => {
     expect(out.wordSearchBorderColor).toBe(SHELL_DEFAULTS.separatorColor);
   });
 });
+
+describe("applyShellDefaults — checkbox tokens", () => {
+  it("fills checkbox defaults", () => {
+    const out = applyShellDefaults({ titleStyle: "block" } as ShellTheme);
+    expect(out.checkboxStyle).toBe("box");
+    expect(out.checkboxGlyph).toBe("[ ]");
+    expect(out.checkboxSize).toBe(16);
+    expect(out.checkboxBorderWidth).toBe(2);
+    expect(out.checkboxRadius).toBe(0);
+    expect(out.checkboxColor).toBe("#000");
+  });
+
+  it("checkboxColor falls back to the resolved body text color", () => {
+    const out = applyShellDefaults({
+      titleStyle: "block",
+      textStyles: { body: { color: "#333" } },
+    } as ShellTheme);
+    expect(out.checkboxColor).toBe("#333");
+  });
+
+  it("explicit checkboxColor wins over the body color", () => {
+    const out = applyShellDefaults({
+      titleStyle: "block",
+      checkboxColor: "#111",
+      textStyles: { body: { color: "#333" } },
+    } as ShellTheme);
+    expect(out.checkboxColor).toBe("#111");
+  });
+
+  it("keeps explicit overrides", () => {
+    const out = applyShellDefaults({
+      titleStyle: "block",
+      checkboxStyle: "text",
+      checkboxGlyph: "( )",
+      checkboxSize: 12,
+      checkboxBorderWidth: 3,
+      checkboxRadius: 4,
+    } as ShellTheme);
+    expect(out.checkboxStyle).toBe("text");
+    expect(out.checkboxGlyph).toBe("( )");
+    expect(out.checkboxSize).toBe(12);
+    expect(out.checkboxBorderWidth).toBe(3);
+    expect(out.checkboxRadius).toBe(4);
+  });
+});

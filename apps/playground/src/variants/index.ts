@@ -10,6 +10,7 @@ export type Variant = {
   slot: DraftSlot;
 };
 
+import { checklistVariants } from "./checklist.js";
 import { imageVariants } from "./image.js";
 import { keyValueVariants } from "./key-value.js";
 import { kpiVariants } from "./kpi.js";
@@ -33,6 +34,7 @@ export const variantsByBlock: Array<{ blockType: string; label: string; variants
   { blockType: "textCell", label: "text-cell", variants: textCellVariants },
   { blockType: "kpi", label: "kpi", variants: kpiVariants },
   { blockType: "list", label: "list", variants: listVariants },
+  { blockType: "checklist", label: "checklist", variants: checklistVariants },
   { blockType: "qaPair", label: "qa-pair", variants: qaPairVariants },
   { blockType: "quotation", label: "quotation", variants: quotationVariants },
   { blockType: "keyValue", label: "key-value", variants: keyValueVariants },

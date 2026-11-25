@@ -63,6 +63,14 @@ answer stays right-aligned. To flip only some answers, use the custom
 ```
 Italic text; `attribution` prints right-aligned after an em dash.
 
+## checklist: items to tick
+
+```json
+{ "items": ["Keys", "Wallet", "Phone"] }
+```
+At least one string. Each prints with an empty checkbox (drawn box, or `[ ]` in
+the `mono` theme); long items wrap. No checked state.
+
 ## wordSearch: letter grid with word list
 
 ```json

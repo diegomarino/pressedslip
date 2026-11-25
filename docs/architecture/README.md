@@ -31,7 +31,7 @@ The module map below is a supplemental source-oriented index.
 | `src/testing/index.ts` | `/testing` subpath barrel — aggregated builtin fixtures + per-shape re-exports | Yes — `"pressedslip/testing"` |
 | `src/providers/index.ts` | `/providers` subpath barrel — provider factories incl. Node-only `createOpenMeteoProvider` and `createFileCache` | Yes — `"pressedslip/providers"` |
 | `src/browser/index.ts` | `/browser` subpath barrel — strictly browser-safe surface; enforced by `scripts/verify-browser-bundle.mjs`. Exposes `render` + `BrowserRenderOptions`. | Yes — `"pressedslip/browser"` |
-| `src/blocks/<name>.tsx` | One file per builtin shape: `text-cell`, `key-value`, `kpi`, `list`, `qa-pair`, `quotation`, `word-search`. Owns the `BlockDefinition`. | No (re-exported via root) |
+| `src/blocks/<name>.tsx` | One file per builtin shape: `text-cell`, `key-value`, `kpi`, `list`, `qa-pair`, `quotation`, `word-search`, `checklist`. Owns the `BlockDefinition`. | No (re-exported via root) |
 | `src/blocks/<name>.fixtures.ts` | Sibling fixture data for each builtin shape (≥3 scenarios) | No (re-exported via `/testing`) |
 | `src/define-block.ts` | `defineBlock<TData>()` factory (typed identity narrowing); accepts optional `dependencies` | No |
 | `src/registry.ts` | `createRegistry()` — builds `type → BlockDefinition` lookup; accepts `readonly AnyBlockDefinition[]` | No |

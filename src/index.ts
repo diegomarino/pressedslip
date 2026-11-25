@@ -8,6 +8,7 @@
  */
 // Functions
 
+export { checklistBlock } from "./blocks/checklist.js";
 export { imageFromBuffer } from "./blocks/image/source.js";
 export { type ImageCache, type ImageFromUrlOptions, imageFromUrl } from "./blocks/image/url.js";
 export { type ImageData, imageBlock } from "./blocks/image.js";
@@ -30,6 +31,7 @@ export { PAPER } from "./paper.js";
 export { createRegistry } from "./registry.js";
 export { render } from "./render.js";
 
+import { checklistBlock } from "./blocks/checklist.js";
 import { imageBlock } from "./blocks/image.js";
 import { keyValueBlock } from "./blocks/key-value.js";
 import { kpiBlock } from "./blocks/kpi.js";
@@ -46,7 +48,7 @@ import type { AnyBlockDefinition } from "./types.js";
  * Pass directly to `createRegistry` to obtain a registry with every default
  * block type registered. The order is stable and matches the order of the
  * individual block exports above (`keyValueBlock`, `kpiBlock`, `listBlock`,
- * `qaPairBlock`, `quotationBlock`, `textCellBlock`, `wordSearchBlock`, `imageBlock`).
+ * `qaPairBlock`, `quotationBlock`, `textCellBlock`, `wordSearchBlock`, `imageBlock`, `checklistBlock`).
  *
  * For browser bundles, import the structurally-identical mirror from
  * `pressedslip/browser` — that subpath re-declares `builtinBlocks` locally so
@@ -68,6 +70,7 @@ export const builtinBlocks: readonly AnyBlockDefinition[] = Object.freeze([
   textCellBlock,
   wordSearchBlock,
   imageBlock,
+  checklistBlock,
 ]);
 
 export { createMemoryCache } from "./orchestrator/cache.js";

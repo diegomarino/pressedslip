@@ -122,6 +122,7 @@ async function renderToPng(
 const blockTypes = [
   "textCell",
   "list",
+  "checklist",
   "keyValue",
   "qaPair",
   "kpi",

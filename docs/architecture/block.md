@@ -23,8 +23,8 @@ BlockDefinitionSpec<TData>  --defineBlock()-->  BlockDefinition<TData>
                                          dispatched by composeTree per slot
 ```
 
-The seven builtin blocks (`textCell`, `keyValue`, `kpi`, `list`, `qaPair`,
-`quotation`, `wordSearch`) cover the general-purpose visual-shape catalog. They
+The builtin blocks (`textCell`, `keyValue`, `kpi`, `list`, `checklist`, `qaPair`,
+`quotation`, `wordSearch`, `image`) cover the general-purpose visual-shape catalog. They
 are domain-agnostic primitives. Content-source specifics (weather, jokes, meal
 plans) belong in consumer-side definitions written with the same `defineBlock`
 API.
@@ -138,6 +138,7 @@ call, not in the caller of `render()`.
 | `qaPairBlock` | `src/blocks/qa-pair.tsx` |
 | `quotationBlock` | `src/blocks/quotation.tsx` |
 | `wordSearchBlock` | `src/blocks/word-search.tsx` |
+| `checklistBlock` | `src/blocks/checklist.tsx` |
 
 ---
 

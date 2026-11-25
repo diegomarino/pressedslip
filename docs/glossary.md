@@ -11,7 +11,7 @@ returns the React tree for that block.
 
 Builtin block definitions are exported individually (`textCellBlock`,
 `keyValueBlock`, `kpiBlock`, `listBlock`, `qaPairBlock`, `quotationBlock`,
-`wordSearchBlock`) and collectively as `builtinBlocks`.
+`wordSearchBlock`, `imageBlock`, `checklistBlock`) and collectively as `builtinBlocks`.
 
 ## Block Type
 
