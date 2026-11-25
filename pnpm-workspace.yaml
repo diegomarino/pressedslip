@@ -5,3 +5,5 @@ packages:
 # satori pins fflate 0.7.3 (GHSA unzipSync infinite loop); 0.7.5 is the patched release of the same line.
 overrides:
   "fflate@>=0.7.0 <0.7.5": "^0.7.5"
+  # @semantic-release/release-notes-generator@14 bundles conventional-changelog-writer@8, which cannot render preset v10+ ("Missing helper"). Keep v9 until semantic-release moves to writer@9.
+  "conventional-changelog-conventionalcommits": "^9"
