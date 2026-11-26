@@ -1,3 +1,21 @@
+## [0.7.0](https://github.com/diegomarino/pressedslip/compare/v0.6.0...v0.7.0) (2026-11-26)
+
+### Features
+
+* **blocks:** Add checklist block ([#36](https://github.com/diegomarino/pressedslip/issues/36)) ([d6469bd](https://github.com/diegomarino/pressedslip/commit/d6469bd28cbb9b8f128272a06338dc2d83e89e8a))
+
+### Bug Fixes
+
+* **deps:** pin conventional-changelog-conventionalcommits to v9 for release notes ([#37](https://github.com/diegomarino/pressedslip/issues/37)) ([0d950ad](https://github.com/diegomarino/pressedslip/commit/0d950ad4c7c15fade562b93277afde3a2a71b595)), closes [#34](https://github.com/diegomarino/pressedslip/issues/34)
+
+### Documentation
+
+* **readme:** embed demo video as a bare attachment URL ([#35](https://github.com/diegomarino/pressedslip/issues/35)) ([dd95555](https://github.com/diegomarino/pressedslip/commit/dd955557c6bbff7aed929fb8e1c9dfbda8221b68))
+
+### Maintenance
+
+* **deps:** refresh lockfile to clear Dependabot alerts ([#34](https://github.com/diegomarino/pressedslip/issues/34)) ([187b1db](https://github.com/diegomarino/pressedslip/commit/187b1db0fdbdaec3d132a7b1828aa81af4d34bb0))
+
 ## [0.6.0](https://github.com/diegomarino/pressedslip/compare/v0.5.2...v0.6.0) (2026-11-19)
 
 ### Features
